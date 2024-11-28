@@ -1,0 +1,80 @@
+/* Tailwind CSS classes used in the form component */
+
+/* General styling for the form container */
+.max-w-md {
+    max-width: 28rem;  /* Set max width to 28rem */
+  }
+  
+  .mx-auto {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .p-4 {
+    padding: 1rem;  /* Padding around the form */
+  }
+  
+  .border {
+    border-width: 1px;  /* Add border */
+  }
+  
+  .rounded {
+    border-radius: 0.375rem;  /* Rounded corners */
+  }
+  
+  .shadow-lg {
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);  /* Large shadow */
+  }
+  
+  /* Form heading styling */
+  .text-2xl {
+    font-size: 1.5rem;  /* Set font size to 1.5rem */
+  }
+  
+  .font-semibold {
+    font-weight: 600;  /* Apply semi-bold font weight */
+  }
+  
+  .mb-4 {
+    margin-bottom: 1rem;  /* Margin bottom for spacing */
+  }
+  
+  /* Input fields styling */
+  input[type="text"],
+  input[type="date"] {
+    padding: 0.5rem;  /* Padding inside the input */
+    border: 1px solid #d1d5db;  /* Border color */
+    border-radius: 0.375rem;  /* Rounded corners */
+    width: 100%;  /* Full width input */
+  }
+  
+  input[type="text"]:focus,
+  input[type="date"]:focus {
+    border-color: #3b82f6;  /* Blue border on focus */
+    outline: none;  /* Remove outline */
+  }
+  
+  input[type="text"]:disabled,
+  input[type="date"]:disabled {
+    background-color: #f3f4f6;  /* Light gray for disabled fields */
+  }
+  
+  /* Button styling */
+  button {
+    padding: 0.75rem;  /* Padding inside the button */
+    background-color: #3b82f6;  /* Blue background */
+    color: white;  /* White text */
+    border-radius: 0.375rem;  /* Rounded corners */
+    width: 100%;  /* Full width button */
+    cursor: pointer;  /* Pointer cursor on hover */
+  }
+  
+  button:hover {
+    background-color: #2563eb;  /* Darker blue on hover */
+  }
+  
+  button:disabled {
+    background-color: #d1d5db;  /* Gray button for disabled state */
+    cursor: not-allowed;  /* Disable the cursor */
+  }
+  
