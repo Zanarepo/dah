@@ -1,47 +1,54 @@
-import React from "react";
-import { Link } from "react-router-dom";  // For navigation
-import { useState } from "react";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import "./AdminPanel.css";
 
-// Importing other components
-import ViewProfiles from "./ViewProfiles"; // A component to view all profiles
-import EmployeeForm from "./EmployeeForm"; // A component for creating new profiles
-import LoginForm from "../auth/LoginForm"; // A component for login form
 
-function Admin() {
-  const [activeTab, setActiveTab] = useState("viewProfiles");  // State to track active tab
+function AdminPanel() {
+  const [activeTab, setActiveTab] = useState("viewProfiles");
 
   return (
     <div className="admin-dashboard">
-      <div className="tabs">
-        {/* Tabs navigation */}
-        <button
-          className={`tab ${activeTab === "viewProfiles" ? "active" : ""}`}
-          onClick={() => setActiveTab("viewProfiles")}
+      <h1 className="text-2xl font-bold mb-4">Admin Panel</h1>
+      <div className="tabs flex gap-4 mb-4">
+        {/* Navigation Tabs */}
+        <Link
+          to="/personal-details"
+          className={`tab ${activeTab === "personalDetails" ? "active" : ""}`}
+          onClick={() => setActiveTab("personalDetails")}
         >
-          View Profiles
-        </button>
-        <button
-          className={`tab ${activeTab === "createProfile" ? "active" : ""}`}
-          onClick={() => setActiveTab("createProfile")}
+          Personal Details
+        </Link>
+        <Link
+          to="/employment-details"
+          className={`tab ${activeTab === "employmentDetails" ? "active" : ""}`}
+          onClick={() => setActiveTab("employmentDetails")}
         >
-          Create Profile
-        </button>
-        <button
-          className={`tab ${activeTab === "loginForm" ? "active" : ""}`}
-          onClick={() => setActiveTab("loginForm")}
+          Employment Details
+        </Link>
+        <Link
+          to="/leave-retirement-details"
+          className={`tab ${activeTab === "leaveDetails" ? "active" : ""}`}
+          onClick={() => setActiveTab("leaveDetails")}
         >
-          Login Form
-        </button>
-      </div>
-
-      <div className="tab-content">
-        {/* Render content based on active tab */}
-        {activeTab === "viewProfiles" && <ViewProfiles />}
-        {activeTab === "employeeForm" && <EmployeeForm />}
-        {activeTab === "loginForm" && <LoginForm />}
+          Leave & Retirement
+        </Link>
+        <Link
+          to="/register"
+          className={`tab ${activeTab === "register" ? "active" : ""}`}
+          onClick={() => setActiveTab("register")}
+        >
+          Register Employee
+        </Link>
+        <Link
+          to="/login"
+          className={`tab ${activeTab === "login" ? "active" : ""}`}
+          onClick={() => setActiveTab("login")}
+        >
+          Login
+        </Link>
       </div>
     </div>
   );
 }
 
-export default Admin;
+export default AdminPanel;

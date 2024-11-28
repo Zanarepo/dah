@@ -1,7 +1,10 @@
-// src/components/EmployeePersonalDetails.js
 import React, { useState } from "react";
 
 const EmployeePersonalDetails = ({ employeeData, setEmployeeData }) => {
+  const [avatar, setAvatar] = useState(employeeData.avatar || null);
+  const [isEditable, setIsEditable] = useState(false); // Track if the form is in edit mode
+
+  // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setEmployeeData((prevData) => ({
@@ -10,101 +13,72 @@ const EmployeePersonalDetails = ({ employeeData, setEmployeeData }) => {
     }));
   };
 
+  // Handle avatar image upload
+  const handleAvatarChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      setAvatar(imageUrl);
+
+      setEmployeeData((prevData) => ({
+        ...prevData,
+        avatar: imageUrl, // Update avatar
+      }));
+    }
+  };
+
+  // Toggle edit mode
+  const handleEditClick = () => {
+    setIsEditable(!isEditable);
+  };
+
   return (
     <div className="mb-6">
       <h2 className="text-xl font-semibold">Personal Details</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-        <div>
-          <label htmlFor="employee_id" className="block text-sm font-medium">Employee ID</label>
-          <input
-            type="text"
-            id="employee_id"
-            name="employee_id"
-            value={employeeData.employee_id}
-            onChange={handleChange}
-            className="w-full mt-1 p-2 border border-gray-300 rounded"
-            required
-          />
+        {/* Avatar Section */}
+        <div className="col-span-2">
+          <label htmlFor="avatar" className="block text-sm font-medium">Profile Picture</label>
+          <div className="flex items-center mt-2">
+            <div className="w-24 h-24 rounded-full border-2 border-gray-300 overflow-hidden">
+              {avatar ? (
+                <img src={avatar} alt="Avatar" className="w-full h-full object-cover" />
+              ) : (
+                <span className="w-full h-full flex items-center justify-center text-gray-400">No Image</span>
+              )}
+            </div>
+            {isEditable && (
+              <input
+                type="file"
+                id="avatar"
+                name="avatar"
+                onChange={handleAvatarChange}
+                className="ml-4 p-2 border border-gray-300 rounded"
+              />
+            )}
+          </div>
         </div>
 
-        <div>
-          <label htmlFor="first_name" className="block text-sm font-medium">First Name</label>
-          <input
-            type="text"
-            id="first_name"
-            name="first_name"
-            value={employeeData.first_name}
-            onChange={handleChange}
-            className="w-full mt-1 p-2 border border-gray-300 rounded"
-            required
-          />
-        </div>
+        {/* Other Input Fields */}
+        {["employee_id", "first_name", "last_name", "date_of_birth", "email", "phone_number", "address", "marital_status", "sex", "nationality", "state_of_origin", "lga_of_origin"].map((field) => (
+          <div key={field}>
+            <label htmlFor={field} className="block text-sm font-medium">
+              {field.replace(/_/g, " ").toUpperCase()}
+            </label>
+            <input
+              type={field === "date_of_birth" ? "date" : "text"}
+              id={field}
+              name={field}
+              value={employeeData[field]}
+              onChange={handleChange}
+              className="w-full mt-1 p-2 border border-gray-300 rounded"
+              disabled={!isEditable} // Disable input if not in edit mode
+            />
+          </div>
+        ))}
 
-        <div>
-          <label htmlFor="last_name" className="block text-sm font-medium">Last Name</label>
-          <input
-            type="text"
-            id="last_name"
-            name="last_name"
-            value={employeeData.last_name}
-            onChange={handleChange}
-            className="w-full mt-1 p-2 border border-gray-300 rounded"
-            required
-          />
-        </div>
-
-        <div>
-          <label htmlFor="date_of_birth" className="block text-sm font-medium">Date of Birth</label>
-          <input
-            type="date"
-            id="date_of_birth"
-            name="date_of_birth"
-            value={employeeData.date_of_birth}
-            onChange={handleChange}
-            className="w-full mt-1 p-2 border border-gray-300 rounded"
-            required
-          />
-        </div>
-
-        <div>
-          <label htmlFor="email" className="block text-sm font-medium">Email</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={employeeData.email}
-            onChange={handleChange}
-            className="w-full mt-1 p-2 border border-gray-300 rounded"
-            required
-          />
-        </div>
-
-        <div>
-          <label htmlFor="phone_number" className="block text-sm font-medium">Phone Number</label>
-          <input
-            type="tel"
-            id="phone_number"
-            name="phone_number"
-            value={employeeData.phone_number}
-            onChange={handleChange}
-            className="w-full mt-1 p-2 border border-gray-300 rounded"
-            required
-          />
-        </div>
-
-        <div>
-          <label htmlFor="address" className="block text-sm font-medium">Address</label>
-          <input
-            type="text"
-            id="address"
-            name="address"
-            value={employeeData.address}
-            onChange={handleChange}
-            className="w-full mt-1 p-2 border border-gray-300 rounded"
-          />
-        </div>
-
+        {/* Marital Status and Sex dropdown */}
         <div>
           <label htmlFor="marital_status" className="block text-sm font-medium">Marital Status</label>
           <select
@@ -113,6 +87,7 @@ const EmployeePersonalDetails = ({ employeeData, setEmployeeData }) => {
             value={employeeData.marital_status}
             onChange={handleChange}
             className="w-full mt-1 p-2 border border-gray-300 rounded"
+            disabled={!isEditable}
           >
             <option value="">Select</option>
             <option value="Single">Single</option>
@@ -129,7 +104,7 @@ const EmployeePersonalDetails = ({ employeeData, setEmployeeData }) => {
             value={employeeData.sex}
             onChange={handleChange}
             className="w-full mt-1 p-2 border border-gray-300 rounded"
-            required
+            disabled={!isEditable}
           >
             <option value="">Select</option>
             <option value="Male">Male</option>
@@ -138,42 +113,17 @@ const EmployeePersonalDetails = ({ employeeData, setEmployeeData }) => {
           </select>
         </div>
 
-        <div>
-          <label htmlFor="nationality" className="block text-sm font-medium">Nationality</label>
-          <input
-            type="text"
-            id="nationality"
-            name="nationality"
-            value={employeeData.nationality}
-            onChange={handleChange}
-            className="w-full mt-1 p-2 border border-gray-300 rounded"
-            required
-          />
-        </div>
+      </div>
 
-        <div>
-          <label htmlFor="state_of_origin" className="block text-sm font-medium">State of Origin</label>
-          <input
-            type="text"
-            id="state_of_origin"
-            name="state_of_origin"
-            value={employeeData.state_of_origin}
-            onChange={handleChange}
-            className="w-full mt-1 p-2 border border-gray-300 rounded"
-          />
-        </div>
-
-        <div>
-          <label htmlFor="lga_of_origin" className="block text-sm font-medium">LGA of Origin</label>
-          <input
-            type="text"
-            id="lga_of_origin"
-            name="lga_of_origin"
-            value={employeeData.lga_of_origin}
-            onChange={handleChange}
-            className="w-full mt-1 p-2 border border-gray-300 rounded"
-          />
-        </div>
+      {/* Edit Button */}
+      <div className="mt-4 flex justify-end">
+        <button
+          type="button"
+          onClick={handleEditClick}
+          className="bg-blue-500 text-white py-2 px-4 rounded"
+        >
+          {isEditable ? "Save Changes" : "Edit Details"}
+        </button>
       </div>
     </div>
   );
