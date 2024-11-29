@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { supabase } from "../../supabaseClient"; // Make sure you have Supabase client initialized
+import { supabase } from "../../supabaseClient"; // Ensure you have Supabase client initialized
 
 const EmployeePersonalDetails = ({ employeeData, setEmployeeData }) => {
   const [profilePicture, setProfilePicture] = useState(employeeData.profile_picture || null);
@@ -132,7 +132,7 @@ const EmployeePersonalDetails = ({ employeeData, setEmployeeData }) => {
         </div>
 
         {/* Other Input Fields */}
-        {["employee_id", "first_name", "last_name", "date_of_birth", "email", "phone_number", "address", "marital_status", "sex", "nationality", "state_of_origin", "lga_of_origin"].map((field) => (
+        {["employee_id", "first_name", "last_name", "date_of_birth", "email", "phone_number", "address", "nationality", "state_of_origin", "lga_of_origin"].map((field) => (
           <div key={field}>
             <label htmlFor={field} className="block text-sm font-medium">
               {field.replace(/_/g, " ").toUpperCase()}
@@ -149,7 +149,7 @@ const EmployeePersonalDetails = ({ employeeData, setEmployeeData }) => {
           </div>
         ))}
 
-        {/* Marital Status and Sex dropdown */}
+        {/* Marital Status Dropdown */}
         <div>
           <label htmlFor="marital_status" className="block text-sm font-medium">
             Marital Status
@@ -169,6 +169,7 @@ const EmployeePersonalDetails = ({ employeeData, setEmployeeData }) => {
           </select>
         </div>
 
+        {/* Sex Dropdown */}
         <div>
           <label htmlFor="sex" className="block text-sm font-medium">
             Sex

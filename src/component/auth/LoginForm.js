@@ -70,6 +70,11 @@ const LoginForm = () => {
     }
   };
 
+  // Navigate to Forgot Password Page
+  const handleForgotPassword = () => {
+    navigate("/forgot-password");
+  };
+
   return (
     <div className="max-w-sm mx-auto p-4 bg-white shadow-md rounded relative">
       <h2 className="text-2xl font-bold mb-4">Login</h2>
@@ -122,6 +127,16 @@ const LoginForm = () => {
           {loading ? "Logging in..." : "Login"}
         </button>
       </form>
+
+      {/* Forgot Password Link */}
+      <div className="mt-4 text-center">
+        <button
+          onClick={handleForgotPassword}
+          className="text-blue-500 hover:underline"
+        >
+          Forgot Password?
+        </button>
+      </div>
     </div>
   );
 };

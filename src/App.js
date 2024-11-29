@@ -15,6 +15,7 @@ import MinistryActivity from "./component/GeneralActivities/MinistryActivity";
 import LeaveRequestDashboard from "./component/admin/LeaveRequestDashboard";
 import Settings from "./component/admin/Settings"; 
 import RegistrationForm from "./component/admin/RegistrationForm";
+import ForgotPassword from "./component/auth/ForgotPassword";
 
 
 function App() {
@@ -33,6 +34,7 @@ function App() {
           <Route path="/leave-retirement-details" element={<EmployeeLeaveRetirementDetails />} />
           <Route path="/register" element={<EmployeeForm/>} />
           <Route path="/login" element={<LoginForm/>} />
+          <Route path="/forgot-password" element={<ForgotPassword/>} />
           <Route path="/leave-requests" element={<LeaveRequestDashboard/>} />
           <Route path="/settings" element={<Settings/>} />
           <Route path="/reg" element={<RegistrationForm/>} />
