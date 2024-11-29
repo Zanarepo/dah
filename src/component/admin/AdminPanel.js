@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, Route, Routes } from "react-router-dom";
+import LeaveRequestDashboard from "./LeaveRequestDashboard"; // Importing the dashboard
+import Settings from "./Settings"; // Import the Settings component
 import "./AdminPanel.css";
-
 
 function AdminPanel() {
   const [activeTab, setActiveTab] = useState("viewProfiles");
@@ -9,8 +10,9 @@ function AdminPanel() {
   return (
     <div className="admin-dashboard">
       <h1 className="text-2xl font-bold mb-4">Admin Panel</h1>
+
+      {/* Navigation Tabs */}
       <div className="tabs flex gap-4 mb-4">
-        {/* Navigation Tabs */}
         <Link
           to="/personal-details"
           className={`tab ${activeTab === "personalDetails" ? "active" : ""}`}
@@ -33,6 +35,13 @@ function AdminPanel() {
           Leave & Retirement
         </Link>
         <Link
+          to="/leave-requests"
+          className={`tab ${activeTab === "leaveRequests" ? "active" : ""}`}
+          onClick={() => setActiveTab("leaveRequests")}
+        >
+          Leave Requests
+        </Link>
+        <Link
           to="/register"
           className={`tab ${activeTab === "register" ? "active" : ""}`}
           onClick={() => setActiveTab("register")}
@@ -46,6 +55,22 @@ function AdminPanel() {
         >
           Login
         </Link>
+        <Link
+          to="/settings"
+          className={`tab ${activeTab === "settings" ? "active" : ""}`}
+          onClick={() => setActiveTab("settings")}
+        >
+          Settings
+        </Link>
+      </div>
+
+      {/* Routes */}
+      <div className="content">
+        <Routes>
+          {/* Other routes */}
+          <Route path="/leave-requests" element={<LeaveRequestDashboard />} />
+          <Route path="/settings" element={<Settings />} />
+        </Routes>
       </div>
     </div>
   );

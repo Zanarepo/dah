@@ -11,10 +11,13 @@ const EmployeeRegistrationForm = () => {
     department: "",
     position: "",
     employment_date: "",
-   // Default set to WhatsApp
+    temporary_password: "",
+    shared_via: "WhatsApp", // Default set to WhatsApp
   });
 
   const [error, setError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -33,6 +36,11 @@ const EmployeeRegistrationForm = () => {
       return;
     }
 
+    // Reset success and error messages
+    setError(null);
+    setSuccessMessage(null);
+    setLoading(true);
+
     // Insert form data into the `employee_registration` table in Supabase
     try {
       const { data, error } = await supabase.from("employee_registration").insert([
@@ -50,9 +58,32 @@ const EmployeeRegistrationForm = () => {
         },
       ]);
 
-      if (error) throw error;
+      if (error) {
+        // Handle specific unique constraint errors
+        if (error.code === "23505") {  // Unique violation error code
+          if (error.message.includes("email")) {
+            setError("Email already exists.");
+          } else if (error.message.includes("phone_number")) {
+            setError("Phone number already in use.");
+          } else if (error.message.includes("employee_id")) {
+            setError("Employee ID already in use.");
+          } else {
+            setError("An error occurred. Please check the details and try again.");
+          }
+        } else {
+          setError("An unexpected error occurred. Please try again later.");
+        }
+        setTimeout(() => {
+          setError(null); // Hide message after 3 seconds
+        }, 5000);
+        return;
+      }
 
-      alert("Employee registration initiated successfully!");
+      setSuccessMessage(" Registration  successfully!");
+      setTimeout(() => {
+        setSuccessMessage(null); // Hide message after 3 seconds
+      }, 5000);
+
       setFormData({
         employee_id: "",
         first_name: "",
@@ -67,7 +98,12 @@ const EmployeeRegistrationForm = () => {
       });
     } catch (error) {
       console.error("Error inserting registration data:", error);
-      setError("An error occurred during registration. Please try again.");
+      setError("An unexpected error occurred. Please try again later.");
+      setTimeout(() => {
+        setError(null); // Hide message after 3 seconds
+      }, 3000);
+    } finally {
+      setLoading(false); // Reset loading state
     }
   };
 
@@ -75,8 +111,13 @@ const EmployeeRegistrationForm = () => {
     <div className="max-w-lg mx-auto p-4 border border-gray-300 rounded-lg shadow-md">
       <h2 className="text-2xl font-semibold text-center mb-4">Employee Registration</h2>
 
+      {/* Error message */}
       {error && <div className="bg-red-500 text-white p-2 rounded mb-4">{error}</div>}
 
+      {/* Success message */}
+      {successMessage && <div className="bg-green-500 text-white p-2 rounded mb-4">{successMessage}</div>}
+
+      {/* Form */}
       <form onSubmit={handleSubmit}>
         <div className="space-y-4">
           <div className="flex space-x-4">
@@ -182,8 +223,9 @@ const EmployeeRegistrationForm = () => {
           <button
             type="submit"
             className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700"
+            disabled={loading} // Disable the button while loading
           >
-            Register Employee
+            {loading ? "Registering..." : "Register Employee"}
           </button>
         </div>
       </form>
