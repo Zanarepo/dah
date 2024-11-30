@@ -3,22 +3,38 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 import EmployeePersonalDetails from "./component/profile/EmployeePersonalDetails";
 import EmployeeEmploymentDetails from "./component/profile/EmployeeEmploymentDetails";
-
 import ProfileForm from "./component/profile/ProfileForm";
 import EmployeeForm from "./component/admin/EmployeeForm";
 import ActivateAccount from "./component/admin/ActivateAccount";
-
 import Leave from "./component/profile/Leave";
-
+import LeaveHistory from "./component/profile/LeaveHistory.js";
 import LoginForm from "./component/auth/LoginForm";
 import AdminPanel from "./component/admin/AdminPanel";
+//import LeaveApproval from "./component/admin/LeaveApproval";
 import MinistryActivity from "./component/GeneralActivities/MinistryActivity";
-//import LeaveRequestForm from "./component/admin/LeaveRequestForm"; // Import LeaveRequestForm
-//import RetirementCountdown from "./component/admin/RetirementCountdown"; // Import RetirementCountdown
-//import LeaveRetirementDashboard from "./component/admin/LeaveRetirementDashboard"; // Single correct import
 import Settings from "./component/admin/Settings";
 import RegistrationForm from "./component/admin/RegistrationForm";
 import ForgotPassword from "./component/auth/ForgotPassword";
+import LeaveApproval from "./component/auth/LeaveApproval";
+import Countdown from "./component/profile/Countdown";
+import LeaveTracking from "./component/auth/LeaveTracking;";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 function App() {
   return (
@@ -30,12 +46,16 @@ function App() {
           <Route path="/general" element={<MinistryActivity />} />
           <Route path="/profile" element={<ProfileForm />} />
           <Route path="/leave" element={<Leave />} />
+          <Route path="/History" element={<LeaveHistory />} />
+          <Route path="/leave-approval" element={<LeaveApproval />} /> 
+          <Route path="/leave-track" element={<LeaveTracking />} />
+          <Route path="/count" element={<Countdown />} />
 
           {/* Routes for each specific section of the profile form */}
           <Route path="/personal-details" element={<EmployeePersonalDetails />} />
           <Route path="/employment-details" element={<EmployeeEmploymentDetails />} />
         
-       
+ 
           <Route path="/register" element={<EmployeeForm />} />
           <Route path="/login" element={<LoginForm />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />

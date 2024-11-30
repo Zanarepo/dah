@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../../supabaseClient";
+import Countdown from "./Countdown";
+import LeaveHistory from './LeaveHistory.js';  // Correct relative path to LeaveHistory component
+
+
 
 const Leave = () => {
   const [employeeId, setEmployeeId] = useState(null);
@@ -25,12 +29,14 @@ useEffect(() => {
       setError("Employee ID is missing in local storage.");
     }
   }, []);
+
+  <Countdown leaveId={123} employeeId={456} />
   
   // Fetch leave records and leave history
   useEffect(() => {
     if (employeeId) {
       fetchLeaveRecords();
-      fetchLeaveHistory();
+   
     }
   }, [employeeId]);
   
@@ -52,24 +58,10 @@ useEffect(() => {
       setLoading(false);
     }
   };
-  
+
+
   // Function to fetch leave history (archived leaves)
-  const fetchLeaveHistory = async () => {
-    try {
-      const { data, error } = await supabase
-        .from("leave_history")
-        .select("*")
-        .eq("employee_id", employeeId)
-        .order("archived_at", { ascending: false });
-  
-      if (error) throw error;
-      setLeaveHistory(data);
-    } catch (err) {
-      console.error("Error fetching leave history:", err);
-      setError("Failed to fetch leave history");
-    }
-  };
-  
+
   // Handle leave submission
   const handleLeaveSubmit = async () => {
     if (!leaveDetails.leaveType || !leaveDetails.startDate || !leaveDetails.endDate) {
@@ -159,8 +151,10 @@ useEffect(() => {
             className="bg-blue-500 text-white py-2 px-4 rounded-lg mb-6 hover:bg-blue-600"
           >
             Request Leave
-          </button>
+  
 
+          </button>
+        
           {/* Leave Request Modal */}
           {isModalOpen && (
             <div className="modal-overlay fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center">
@@ -274,7 +268,10 @@ useEffect(() => {
               </table>
             </div>
           ) : (
-            <p>No leave history records.</p>
+            <p>  
+            {/* Leave History Section */}
+            <LeaveHistory /> {/* This is where the LeaveHistory component is inserted */}
+             </p>
           )}
         </>
       )}
@@ -283,3 +280,5 @@ useEffect(() => {
 };
 
 export default Leave;
+
+       
