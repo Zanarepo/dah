@@ -3,7 +3,7 @@ import EmployeePersonalDetails from "./EmployeePersonalDetails";
 import EmployeeEmploymentDetails from "./EmployeeEmploymentDetails";
 import Leave from "./Leave";
 
-import { supabase } from "../../supabaseClient"; // Ensure your supabase client is correctly imported
+import { supabase } from "../../supabaseClient"; // Ensure your Supabase client is correctly imported
 
 const ProfileForm = () => {
   const [activeSection, setActiveSection] = useState("personal");
@@ -16,7 +16,7 @@ const ProfileForm = () => {
     phone_number: "",
     address: "",
     marital_status: "",
-    //sex: "",
+    sex: "",
     nationality: "",
     state_of_origin: "",
     lga_of_origin: "",
@@ -36,17 +36,15 @@ const ProfileForm = () => {
   const [error, setError] = useState(""); // Track error state
 
   useEffect(() => {
-    // Get the employee_id from localStorage or other means
     const storedEmployeeId = localStorage.getItem("employee_id"); // Assuming employee_id is stored in localStorage
     console.log("Stored Employee ID: ", storedEmployeeId); // Debugging log
 
     if (storedEmployeeId) {
-      // Fetch the employee data from Supabase based on the employee_id
       const fetchEmployeeData = async () => {
         try {
           setLoading(true);
           const { data, error } = await supabase
-            .from("employee_profiles")  // Use the correct table name here
+            .from("employee_profiles") // Use the correct table name here
             .select("*")
             .eq("employee_id", storedEmployeeId)
             .single(); // Fetch a single record
@@ -56,8 +54,7 @@ const ProfileForm = () => {
             throw error;
           }
 
-          // Set the employee data in the state
-          setEmployeeData(data);
+          setEmployeeData(data); // Set the employee data in the state
           setLoading(false); // Data fetched, stop loading
         } catch (error) {
           setError("Failed to load employee data.");
@@ -73,33 +70,14 @@ const ProfileForm = () => {
     }
   }, []); // Empty dependency array ensures this runs once on mount
 
-  const handleSectionChange = (section) => {
-    setActiveSection(section);
-  };
-
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Form Data Submitted", employeeData);
+    // Implement form submission logic, e.g., saving data to Supabase or API
+  };
 
-    try {
-      // Update the personal details in Supabase
-      const { data, error } = await supabase
-        .from("employee_profiles") // Use the correct table name
-        .upsert([employeeData], { onConflict: ["employee_id"] }); // Use upsert to insert or update
-
-      if (error) {
-        console.error("Error updating data: ", error);
-        setError("Failed to update employee data.");
-        return;
-      }
-
-      // Success feedback
-      console.log("Employee data successfully updated:", data);
-      // Optionally, show a success message to the user or navigate to a different page
-    } catch (error) {
-      console.error("Unexpected error: ", error);
-      setError("Failed to update employee data.");
-    }
+  const handleSectionChange = (section) => {
+    setActiveSection(section);
   };
 
   if (loading) {
@@ -138,13 +116,12 @@ const ProfileForm = () => {
           </li>
           <li>
             <button
-              onClick={() => handleSectionChange("leave")}
+              onClick={() => handleSectionChange("leaveRetirement")}
               className={`w-full text-left p-2 rounded ${
-                activeSection === "leave" ? "bg-blue-500 text-white" : "bg-transparent"
+                activeSection === "leaveRetirement" ? "bg-blue-500 text-white" : "bg-transparent"
               }`}
             >
-              Leave & Retirement Details
-              
+              Leave & Retirement Dashboard
             </button>
           </li>
         </ul>
@@ -165,13 +142,19 @@ const ProfileForm = () => {
               setEmployeeData={setEmployeeData}
             />
           )}
-           {activeSection === "leave" && (
+          {activeSection === "leaveRetirement" && (
+            <LeaveRetirementDashboard
+              employeeData={employeeData}
+              setEmployeeData={setEmployeeData}
+            />
+          )}
+
+{activeSection === "leaveRetirement" && (
             <Leave
               employeeData={employeeData}
               setEmployeeData={setEmployeeData}
             />
           )}
-        
           <div className="flex justify-end">
             <button
               type="submit"

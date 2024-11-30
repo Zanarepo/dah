@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, Route, Routes } from "react-router-dom";
-import LeaveRequestDashboard from "./LeaveRequestDashboard"; // Importing the dashboard
+import LeaveRequestDashboard from "./LeaveRetirementDashboard.js"; // Importing the dashboard
 import Settings from "./Settings"; // Import the Settings component
 import "./AdminPanel.css";
 
