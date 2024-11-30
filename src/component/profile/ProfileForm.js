@@ -143,7 +143,7 @@ const ProfileForm = () => {
                 activeSection === "leave" ? "bg-blue-500 text-white" : "bg-transparent"
               }`}
             >
-              Leave & Retirement Details
+              Leave Zone
               
             </button>
           </li>
@@ -171,6 +171,7 @@ const ProfileForm = () => {
               setEmployeeData={setEmployeeData}
             />
           )}
+          
         
           <div className="flex justify-end">
             <button

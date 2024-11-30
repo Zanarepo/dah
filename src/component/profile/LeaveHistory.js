@@ -9,33 +9,30 @@ const LeaveHistory = () => {
   useEffect(() => {
     const fetchLeaveHistory = async () => {
       try {
-        // Fetch past leave requests with nested relationships
+        // Fetch leave history from employee_leave table
         const { data, error } = await supabase
-          .from("employee_leave")
+          .from("employee_leave") // Fetching from the employee_leave table
           .select(`
             id,
             leave_type,
             start_date,
             end_date,
             status,
-            employee_id,
-            employee_profiles!inner (
+            employee_profiles (
               first_name,
               last_name,
               department
             )
           `)
-          .lt("end_date", new Date().toISOString()) // Leaves where the end date is in the past
-          .or("status.eq.finished,status.eq.approved") // Status could be either finished or approved
           .order("end_date", { ascending: false }); // Order by end date, most recent first
 
         if (error) throw error;
 
-        if (data) {
-          console.log("Fetched Leave History:", data); // Log fetched data for debugging
-        }
+        // Filter out the expired leaves (leaves where end_date has passed)
+        const currentDate = new Date();
+        const expiredLeaves = data.filter((leave) => new Date(leave.end_date) < currentDate);
 
-        setLeaveHistory(data || []); // Ensure `data` is not null
+        setLeaveHistory(expiredLeaves || []); // Ensure `data` is not null
         setLoading(false);
       } catch (err) {
         console.error("Error fetching leave history:", err);
@@ -55,7 +52,7 @@ const LeaveHistory = () => {
       {error && <p className="text-red-500">{error}</p>}
 
       {leaveHistory.length === 0 ? (
-        <p>No past leave records available.</p>
+        <p>No expired leave records available.</p>
       ) : (
         <div className="overflow-x-auto">
           <table className="min-w-full table-auto">
