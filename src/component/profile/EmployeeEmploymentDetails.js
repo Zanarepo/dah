@@ -162,7 +162,7 @@ const EmployeeEmploymentDetails = ({ employeeData, setEmployeeData }) => {
             value={employeeData.manager || ""}
             onChange={handleChange}
             className="w-full mt-1 p-2 border border-gray-300 rounded"
-            required
+            
           >
             <option value="">Select Manager</option>
             {managers.map((manager) => (

@@ -1,28 +1,31 @@
 import React from 'react';
 import { supabase } from "../../supabaseClient";
 
-const PopulateMinistries = () => {
+const PopulateDepartments = () => {
     const handlePopulate = async () => {
-        const ministries = [
-         
+        const departments = [
             {
-                name: 'Ministry of Education',
-                admin_id: 2,
-                contact_email: 'education@ministry.gov',
-                contact_phone: '+1234567891',
-                address: '456 Education Avenue, City',
+                name: 'Department of Art', 
+                ministry_id: 2,  // Ensure you use correct ministry ID
+              
+               
             },
-            // Add more ministries as needed
+            {
+                name: 'Department of Science', 
+                ministry_id: 8,  // Correct ministry ID
+               
+            },
+            // Add more departments as needed
         ];
 
         try {
-            const { data, error } = await supabase.from('ministries').insert(ministries);
+            const { data, error } = await supabase.from('departments').insert(departments);
 
             if (error) {
-                console.error('Error inserting ministries:', error.message);
+                console.error('Error inserting departments:', error.message);
             } else {
-                console.log('Ministries inserted successfully:', data);
-                alert('Ministries inserted successfully!');
+                console.log('Departments inserted successfully:', data);
+                alert('Departments inserted successfully!');
             }
         } catch (err) {
             console.error('Unexpected error:', err);
@@ -35,10 +38,10 @@ const PopulateMinistries = () => {
                 onClick={handlePopulate}
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
             >
-                Populate Ministries
+                Populate Departments
             </button>
         </div>
     );
 };
 
-export default PopulateMinistries;
+export default PopulateDepartments;

@@ -15,61 +15,67 @@ const LoginForm = () => {
       [e.target.name]: e.target.value,
     });
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setMessage({ text: "", type: "" }); // Clear any existing messages
+    setMessage({ text: "", type: "" });
     setLoading(true);
-
+  
     const { employee_id, password } = formData;
-
+  
     try {
-      // Fetch the user by employee_id from employee_profiles table
+      // Fetch the user from the employee_profiles table
       const { data: user, error: fetchError } = await supabase
-        .from("employee_profiles")  // Query employee_profiles table
-        .select("employee_id, password") // Select password column
+        .from("employee_profiles")
+        .select("employee_id, password, is_admin")
         .eq("employee_id", employee_id)
         .single();
-
+  
       if (fetchError || !user) {
         setMessage({ text: "Invalid Employee ID or password.", type: "error" });
         setLoading(false);
         return;
       }
-
-      // Check if password is undefined
-      if (!user.password) {
-        setMessage({ text: "Password not found for this employee.", type: "error" });
-        setLoading(false);
-        return;
-      }
-
-      // Verify password with bcrypt (compare password with password)
+  
+      // Verify password
       const isPasswordValid = await bcrypt.compare(password, user.password);
       if (!isPasswordValid) {
         setMessage({ text: "Invalid Employee ID or password.", type: "error" });
         setLoading(false);
         return;
       }
-
-      // Successful login
+  
+      // Save employee_id in localStorage for session persistence
+      localStorage.setItem("employee_id", employee_id);
+  
+      // Dual-role check
+      if (user.is_admin) {
+        // Check if the user is both an admin and an employee
+        const { data: employeeCheck } = await supabase
+          .from("employee_profiles")
+          .select("*")
+          .eq("employee_id", employee_id)
+          .single();
+  
+        if (employeeCheck && user.is_admin) {
+          navigate("/role-selection"); // Redirect to role selection page
+          return;
+        }
+        // If user is only an admin
+        navigate("/");
+      } else {
+        // If user is only an employee
+        navigate("/profile");
+      }
+  
       setMessage({ text: "Login successful!", type: "success" });
       setLoading(false);
-
-      // Save employee_id in localStorage
-      localStorage.setItem("employee_id", employee_id);
-
-      // Redirect to profile page after 3 seconds
-      setTimeout(() => {
-        navigate("/profile");
-      }, 3000);
     } catch (err) {
       console.error("Login error:", err.message);
       setMessage({ text: "An unexpected error occurred. Please try again.", type: "error" });
       setLoading(false);
     }
   };
-
+  
   // Navigate to Forgot Password Page
   const handleForgotPassword = () => {
     navigate("/forgot-password");

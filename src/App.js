@@ -9,6 +9,8 @@ import ActivateAccount from "./component/admin/ActivateAccount";
 import Leave from "./component/profile/Leave";
 import LeaveHistory from "./component/profile/LeaveHistory.js";
 import LoginForm from "./component/auth/LoginForm";
+import RoleSelection from "./component/auth/RoleSelection";
+import AssignAdminRoles from "./component/auth/AssignAdminRoles";
 import AdminPanel from "./component/admin/AdminPanel";
 //import LeaveApproval from "./component/admin/LeaveApproval";
 import MinistryActivity from "./component/GeneralActivities/MinistryActivity";
@@ -46,6 +48,8 @@ function App() {
           <Route path="/" element={<AdminPanel />} />
           <Route path="/general" element={<MinistryActivity />} />
           <Route path="/profile" element={<ProfileForm />} />
+          <Route path="/role-selection" element={<RoleSelection />}/>
+
           <Route path="/leave" element={<Leave />} />
           <Route path="/History" element={<LeaveHistory />} />
           <Route path="/leave-approval" element={<LeaveApproval />} /> 
@@ -61,6 +65,7 @@ function App() {
           <Route path="/register" element={<EmployeeForm />} />
           <Route path="/login" element={<LoginForm />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/super-admin" element={<AssignAdminRoles />} />
   
           <Route path="/settings" element={<Settings />} />
           <Route path="/reg" element={<RegistrationForm />} />
