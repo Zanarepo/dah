@@ -55,7 +55,7 @@ const EmployeeRegistrationForm = () => {
       !last_name ||
       !email ||
       !phone_number ||
-      !department ||
+     // !department ||
       !position ||
       !step ||
       !manager ||
@@ -86,7 +86,7 @@ const EmployeeRegistrationForm = () => {
             last_name,
             email,
             phone_number,
-            department,
+            //department,
             position,
             step,
             manager,
@@ -108,7 +108,7 @@ const EmployeeRegistrationForm = () => {
         last_name: "",
         email: "",
         phone_number: "",
-        department: "",
+       // department: "",
         position: "",
         step: "",
         manager: "",
@@ -220,23 +220,7 @@ const EmployeeRegistrationForm = () => {
           />
         </div>
 
-        <div className="mb-4">
-          <label
-            htmlFor="department"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Department
-          </label>
-          <input
-            type="text"
-            id="department"
-            name="department"
-            value={formData.department}
-            onChange={handleChange}
-            className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-            required
-          />
-        </div>
+       
 
         <div className="mb-4">
           <label

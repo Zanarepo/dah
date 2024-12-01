@@ -13,11 +13,12 @@ import AdminPanel from "./component/admin/AdminPanel";
 //import LeaveApproval from "./component/admin/LeaveApproval";
 import MinistryActivity from "./component/GeneralActivities/MinistryActivity";
 import Settings from "./component/admin/Settings";
+import PopulateMinistries from "./component/admin/PopulateMinistries";
 import RegistrationForm from "./component/admin/RegistrationForm";
 import ForgotPassword from "./component/auth/ForgotPassword";
 import LeaveApproval from "./component/auth/LeaveApproval";
 import Countdown from "./component/profile/Countdown";
-import LeaveTracking from "./component/auth/LeaveTracking;";
+import LeaveTracking from "./component/auth/LeaveTracking;"; 
 
 
 
@@ -49,7 +50,8 @@ function App() {
           <Route path="/History" element={<LeaveHistory />} />
           <Route path="/leave-approval" element={<LeaveApproval />} /> 
           <Route path="/leave-track" element={<LeaveTracking />} />
-          <Route path="/count" element={<Countdown />} />
+          <Route path="/count" element={<Countdown />} /> 
+          <Route path="/mini" element={<PopulateMinistries />} />
 
           {/* Routes for each specific section of the profile form */}
           <Route path="/personal-details" element={<EmployeePersonalDetails />} />
