@@ -21,6 +21,12 @@ import ForgotPassword from "./component/auth/ForgotPassword";
 import LeaveApproval from "./component/auth/LeaveApproval";
 import Countdown from "./component/profile/Countdown";
 import LeaveTracking from "./component/auth/LeaveTracking;"; 
+import LeaveApprovalDetail from "./component/auth/LeaveApprovalDetail"; 
+import AssignManager from "./component/admin/AssignManager"
+import MakeManager from "./component/admin/MakeManager"
+import AddManager from "./component/admin/AddManager"
+
+
 
 
 
@@ -45,10 +51,15 @@ function App() {
       <div className="App">
         <Routes>
           {/* Route for the main profile form that includes all sections */}
-          <Route path="/" element={<AdminPanel />} />
+          <Route path="/admin" element={<AdminPanel />} />
           <Route path="/general" element={<MinistryActivity />} />
           <Route path="/profile" element={<ProfileForm />} />
-          <Route path="/role-selection" element={<RoleSelection />}/>
+          <Route path="/role-selection" element={<RoleSelection />}/> 
+          <Route path="/assign" element={<AssignManager />}/> 
+          <Route path="/make" element={<MakeManager />}/> 
+          <Route path="/addmanager" element={<AddManager />}/>
+
+       
 
           <Route path="/leave" element={<Leave />} />
           <Route path="/History" element={<LeaveHistory />} />
@@ -56,6 +67,7 @@ function App() {
           <Route path="/leave-track" element={<LeaveTracking />} />
           <Route path="/count" element={<Countdown />} /> 
           <Route path="/mini" element={<PopulateMinistries />} />
+          <Route path="/details" element={<LeaveApprovalDetail />} />
 
           {/* Routes for each specific section of the profile form */}
           <Route path="/personal-details" element={<EmployeePersonalDetails />} />

@@ -14,6 +14,8 @@ const Leave = () => {
     startDate: "",
     endDate: "",
     status: "Pending",
+    ministryId: null,  // Ministry ID for leave
+    departmentId: null,  // Department ID for leave
   });
   const [isSubmitting, setIsSubmitting] = useState(false); // State for tracking form submission
 
@@ -66,18 +68,30 @@ const Leave = () => {
       setLoading(false); // Stop loading
     }
   };
-
-  // Handle leave submission
   const handleLeaveSubmit = async () => {
     if (!leaveDetails.leaveType || !leaveDetails.startDate || !leaveDetails.endDate) {
       setError("All fields are required");
       return;
     }
-
+  
     try {
       setIsSubmitting(true); // Start submitting
       setIsModalOpen(false); // Close modal immediately for better UX
-
+  
+      // Fetch employee profile from the employee_profiles table
+      const { data: employeeProfile, error: profileError } = await supabase
+        .from("employee_profiles")
+        .select("ministry_id, department_id")
+        .eq("employee_id", employeeId)  // Using employee_id from employee_profiles
+        .single();
+  
+      if (profileError) {
+        console.error("Error fetching employee profile:", profileError);
+        setError("Failed to fetch employee profile");
+        return;
+      }
+  
+      // Insert leave request with dynamic ministry and department info
       const { data, error } = await supabase
         .from("employee_leave")
         .insert([{
@@ -86,21 +100,21 @@ const Leave = () => {
           start_date: leaveDetails.startDate,
           end_date: leaveDetails.endDate,
           status: leaveDetails.status,
+          ministry_id: employeeProfile.ministry_id, // Automatically set ministry_id
+          department_id: employeeProfile.department_id, // Automatically set department_id
         }])
         .select(); // Ensure inserted data is returned
-
-      // Handle any error returned by Supabase
+  
       if (error) {
         console.error("Error inserting leave:", error);
         setError("Failed to submit leave request");
         return;
       }
-
-      // Validate the `data` returned
+  
       if (data && data.length > 0) {
         setLeaveRecords([data[0], ...leaveRecords]); // Add new record
         setSuccessMessage("Leave request submitted successfully!");
-
+  
         // Clear the leave details form
         setLeaveDetails({
           leaveType: "",
@@ -108,21 +122,20 @@ const Leave = () => {
           endDate: "",
           status: "Pending",
         });
-
+  
         // Automatically clear success message after 3 seconds
         setTimeout(() => setSuccessMessage(null), 3000);
       } else {
-        // If `data` is empty, treat it as an unexpected issue
         setError("Unexpected error: No data returned from server");
       }
     } catch (err) {
-      console.error("Unexpected error:", err); // Log unexpected errors
+      console.error("Unexpected error:", err);
       setError("An unexpected error occurred while submitting the leave request");
     } finally {
       setIsSubmitting(false); // Stop submitting
     }
   };
-
+  
   return (
     <div className="leave-component-container p-6 bg-gray-100 rounded-lg shadow-md">
       <h2 className="text-2xl font-semibold mb-6">Leave Management</h2>
@@ -193,18 +206,19 @@ const Leave = () => {
                     className="w-full p-2 border border-gray-300 rounded-md"
                   />
                 </div>
-                <div className="form-group mb-6">
+               
+                <div className="flex justify-end">
                   <button
                     onClick={handleLeaveSubmit}
-                    className="bg-blue-500 text-white py-2 px-4 rounded-lg w-full hover:bg-blue-600"
+                    className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600"
                     disabled={isSubmitting}
                   >
-                    {isSubmitting ? "Submitting..." : "Submit Leave Request"}
+                    Submit Request
                   </button>
                 </div>
                 <button
                   onClick={() => setIsModalOpen(false)}
-                  className="bg-gray-500 text-white py-2 px-4 rounded-lg w-full hover:bg-gray-600"
+                  className="mt-4 text-sm text-gray-500"
                 >
                   Close
                 </button>
@@ -214,32 +228,25 @@ const Leave = () => {
 
           {/* Active Leave Records */}
           {leaveRecords.length > 0 ? (
-            <div className="active-leave mb-6">
-              <h3 className="text-xl font-semibold mb-2">Active Leave</h3>
-              <table className="table-auto w-full border-collapse">
-                <thead>
-                  <tr>
-                    <th className="text-left py-2 px-4 border-b">Leave Type</th>
-                    <th className="text-left py-2 px-4 border-b">Start Date</th>
-                    <th className="text-left py-2 px-4 border-b">End Date</th>
-                    <th className="text-left py-2 px-4 border-b">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {leaveRecords.map((record) => (
-                    <tr key={record.id}>
-                      <td className="py-2 px-4 border-b">{record.leave_type}</td>
-                      <td className="py-2 px-4 border-b">{record.start_date}</td>
-                      <td className="py-2 px-4 border-b">{record.end_date}</td>
-                      <td className="py-2 px-4 border-b">{record.status}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            leaveRecords.map((leave, index) => (
+              <div key={index} className="leave-record mb-4 p-4 bg-white rounded-lg shadow-sm">
+                <div className="leave-details flex justify-between">
+                  <div className="leave-type">
+                    <strong>{leave.leave_type}</strong>
+                  </div>
+                  <div className="leave-dates text-sm text-gray-500">
+                    {new Date(leave.start_date).toLocaleDateString()} - {new Date(leave.end_date).toLocaleDateString()}
+                  </div>
+                </div>
+                <div className="leave-status text-sm">
+                  Status: {leave.status}
+                </div>
+                <Countdown date={leave.end_date} />
+              </div>
+            ))
           ) : (
-            <div className="no-leave text-sm text-gray-500">
-              <p>No active leave records found.</p>
+            <div className="no-leave-records text-sm text-gray-500">
+              No active leave records found.
             </div>
           )}
         </>

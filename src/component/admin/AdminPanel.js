@@ -35,9 +35,9 @@ function AdminPanel() {
           Leave & Retirement
         </Link>
         <Link
-          to="/leave-requests"
-          className={`tab ${activeTab === "leaveRequests" ? "active" : ""}`}
-          onClick={() => setActiveTab("leaveRequests")}
+          to="/leave-approval"
+          className={`tab ${activeTab === "LeaveApproval" ? "active" : ""}`}
+          onClick={() => setActiveTab("LeaveApproval")}
         >
           Leave Requests
         </Link>

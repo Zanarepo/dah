@@ -8,6 +8,7 @@ const LoginForm = () => {
   const [message, setMessage] = useState({ text: "", type: "" }); // For pop-up messages
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate(); // Hook for navigation
+  
 
   const handleChange = (e) => {
     setFormData({
@@ -61,7 +62,7 @@ const LoginForm = () => {
           return;
         }
         // If user is only an admin
-        navigate("/");
+        navigate("/admin");
       } else {
         // If user is only an employee
         navigate("/profile");

@@ -6,7 +6,7 @@ const RoleSelection = () => {
 
   const handleRoleSelect = (role) => {
     if (role === "admin") {
-      navigate("/"); // Redirect to admin dashboard
+      navigate("/admin"); // Redirect to admin dashboard
     } else if (role === "employee") {
       navigate("/profile"); // Redirect to employee dashboard
     }

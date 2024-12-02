@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { supabase } from "../../supabaseClient"; // Assuming you have a Supabase client setup
+import { supabase } from "../../supabaseClient";
 
 const LeaveApproval = () => {
   const [leaveRequests, setLeaveRequests] = useState([]);
-  const [selectedRequest, setSelectedRequest] = useState(null);
   const [status, setStatus] = useState("Pending");
   const [comments, setComments] = useState("");
   const [loading, setLoading] = useState(true);
@@ -12,6 +11,7 @@ const LeaveApproval = () => {
 
   useEffect(() => {
     const fetchPendingRequests = async () => {
+      console.log("Fetching pending leave requests...");
       try {
         const { data, error } = await supabase
           .from("employee_leave")
@@ -21,72 +21,84 @@ const LeaveApproval = () => {
             start_date,
             end_date,
             status,
-            leave_type,
             employee_id,
-            employee_profiles (first_name, last_name, profile_picture, department, email, phone_number)
+            employee_profiles!employee_leave_employee_id_fkey (
+              first_name,
+              last_name,
+              profile_picture,
+              department_id,
+              email,
+              phone_number
+            )
           `)
           .eq("status", "Pending")
           .order("start_date", { ascending: true });
-
-        if (error) throw error;
-
-        setLeaveRequests(data);
-        setLoading(false);
+  
+        if (error) {
+          console.error("Error fetching leave requests:", error);
+          setError("Failed to fetch leave requests.");
+        }
+  
+        console.log("Fetched leave requests:", data);
+        setLeaveRequests(data || []);
       } catch (err) {
+        console.error("Exception while fetching leave requests:", err);
         setError("Failed to fetch leave requests.");
+      } finally {
         setLoading(false);
       }
     };
-
+  
     fetchPendingRequests();
   }, []);
-
+  
   const handleApproval = async (requestId) => {
-    if (!comments) {
-      setError("Please provide comments before submitting the decision.");
+    if (!comments || status === "Pending") {
+      setError("Please provide comments and select a status before submitting.");
       return;
     }
 
     try {
       setLoading(true);
 
-      // Update the leave request status in employee_leave table
-      const { data: leaveData, error: leaveError } = await supabase
+      // Update leave request status in `employee_leave`
+      const { error: leaveError } = await supabase
         .from("employee_leave")
-        .update({ status: status })
+        .update({ status })
         .eq("id", requestId);
 
       if (leaveError) throw leaveError;
 
-      // Insert approval record into leave_approvals table
-      const { data: approvalData, error: approvalError } = await supabase
+      // Insert approval record into `leave_approvals`
+      const { error: approvalError } = await supabase
         .from("leave_approvals")
         .insert([
           {
             leave_request_id: requestId,
-            approver_id: 1, // This should be the ID of the logged-in approver
+            manager_id: 5, // Example manager ID
+            department_id: 1, // Example department ID
             status: status,
             approval_date: new Date(),
-            comments: comments,
+            comments,
           },
         ]);
 
       if (approvalError) throw approvalError;
 
-      // Immediately remove the approved/rejected request from the leaveRequests state
+      // Remove processed leave request from state
       setLeaveRequests((prevRequests) =>
         prevRequests.filter((request) => request.id !== requestId)
       );
 
+      // Show success message
       setSuccessMessage("Leave request processed successfully!");
       setStatus("Pending");
       setComments("");
       setLoading(false);
 
-      // Automatically clear success message after 3 seconds
       setTimeout(() => setSuccessMessage(null), 3000);
     } catch (err) {
-      console.error("Error processing leave request:", err);
+      console.error(err);
       setError("Failed to process leave request.");
       setLoading(false);
     }
@@ -110,16 +122,17 @@ const LeaveApproval = () => {
               <div className="flex items-center mb-4">
                 {request.employee_profiles ? (
                   <>
-                    <img 
-                      src={request.employee_profiles.profile_picture} 
-                      alt="Profile" 
+                    <img
+                      src={request.employee_profiles.profile_picture}
+                      alt="Profile"
                       className="w-16 h-16 rounded-full mr-4"
                     />
                     <div>
                       <p className="font-semibold">
-                        {request.employee_profiles.first_name} {request.employee_profiles.last_name}
+                        {request.employee_profiles.first_name}{" "}
+                        {request.employee_profiles.last_name}
                       </p>
-                      <p>{request.employee_profiles.department}</p>
+                      <p>Department ID: {request.employee_profiles.department_id}</p>
                       <p>{request.employee_profiles.email}</p>
                       <p>{request.employee_profiles.phone_number}</p>
                     </div>
@@ -141,11 +154,10 @@ const LeaveApproval = () => {
                   value={status}
                   onChange={(e) => setStatus(e.target.value)}
                   className="border p-2 rounded-md"
-
-                >  <option value="Select">--Select--</option>
-                  <option value="Approved">Approve</option>
-                  <option value="Rejected">Reject</option>
-                  
+                >
+                  <option value="Pending">--Select--</option>
+                  <option value="Approved">Approved</option>
+                  <option value="Rejected">Rejected</option>
                 </select>
               </div>
 
@@ -167,12 +179,6 @@ const LeaveApproval = () => {
                   className="bg-blue-500 text-white py-2 px-4 rounded-md mr-2"
                 >
                   Submit
-                </button>
-                <button
-                  onClick={() => setSelectedRequest(null)}
-                  className="bg-gray-500 text-white py-2 px-4 rounded-md"
-                >
-                  Cancel
                 </button>
               </div>
             </div>
