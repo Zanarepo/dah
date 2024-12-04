@@ -32,7 +32,6 @@ const EmployeePersonalDetails = ({ employeeData, setEmployeeData }) => {
     }));
   };
 
-  // Handle profile picture upload
   const handleProfilePictureChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -42,60 +41,102 @@ const EmployeePersonalDetails = ({ employeeData, setEmployeeData }) => {
         const { data, error: uploadError } = await supabase.storage
           .from("Images") // Ensure the bucket name matches
           .upload(fileName, file);
-  
+
         if (uploadError) {
-          throw uploadError;
+          throw new Error("Failed to upload file: " + uploadError.message);
         }
-  
+
         // Get the public URL of the uploaded image
         const { data: publicURLData, error: urlError } = supabase.storage
           .from("Images")
           .getPublicUrl(fileName);
-  
+
         if (urlError) {
-          throw urlError;
+          throw new Error("Failed to retrieve file URL: " + urlError.message);
         }
-  
+
         const publicURL = publicURLData.publicUrl;
-  
+
         // Update profile picture in the database
         const { data: updateData, error: updateError } = await supabase
-          .from("employees") // Replace with your actual table name
+          .from("employee_profiles") // Correct table name
           .update({ profile_picture: publicURL })
           .eq("id", employeeData.id); // Ensure the correct user ID is used
-  
+
         if (updateError) {
-          throw updateError;
+          throw new Error("Failed to update the database: " + updateError.message);
         }
-  
-        // Update the local state
+
+        // Update the local state and display success message
         setProfilePicture(publicURL);
         setEmployeeData((prevData) => ({
           ...prevData,
           profile_picture: publicURL,
         }));
-  
+        localStorage.setItem(
+          "employeeData",
+          JSON.stringify({ ...employeeData, profile_picture: publicURL })
+        );
         setSuccess("Profile picture updated successfully!");
         setError("");
       } catch (error) {
-        setError("Failed to upload profile picture: " + error.message);
+        setError(error.message);
         setSuccess("");
       }
     }
   };
-  
-  // Toggle edit mode and validate before saving
-  const handleEditClick = () => {
-    setIsEditable(!isEditable);
-    if (isEditable) {
-      // Validate fields when saving
+
+  // Handle save changes and update data in Supabase
+  const handleSaveChanges = async () => {
+    try {
+      // Validate fields before saving
       if (!employeeData.first_name || !employeeData.last_name) {
         setError("First Name and Last Name are required!");
         setSuccess(""); // Clear success if validation fails
-      } else {
-        setError(""); // Clear error if validation passes
-        setSuccess("Profile updated successfully!"); // Show success message
+        return;
       }
+
+      // Update employee profile in Supabase
+      const { data, error } = await supabase
+        .from("employee_profiles") // Ensure correct table name
+        .update({
+          first_name: employeeData.first_name,
+          last_name: employeeData.last_name,
+          date_of_birth: employeeData.date_of_birth,
+          email: employeeData.email,
+          phone_number: employeeData.phone_number,
+          address: employeeData.address,
+          nationality: employeeData.nationality,
+          state_of_origin: employeeData.state_of_origin,
+          lga_of_origin: employeeData.lga_of_origin,
+          marital_status: employeeData.marital_status,
+          sex: employeeData.sex,
+          profile_picture: profilePicture,
+        })
+        .eq("id", employeeData.id); // Ensure to use the correct employee ID
+
+      if (error) {
+        throw new Error("Failed to update the database: " + error.message);
+      }
+
+      // Update localStorage with the new data
+      localStorage.setItem("employeeData", JSON.stringify(employeeData));
+
+      // Set success message
+      setSuccess("Profile updated successfully!");
+      setError(""); // Clear error message if save is successful
+    } catch (error) {
+      setError(error.message);
+      setSuccess(""); // Clear success if there is an error
+    }
+  };
+
+  // Toggle edit mode
+  const handleEditClick = () => {
+    setIsEditable(!isEditable);
+    if (isEditable) {
+      // If exiting edit mode, save changes
+      handleSaveChanges();
     }
   };
 
@@ -195,13 +236,12 @@ const EmployeePersonalDetails = ({ employeeData, setEmployeeData }) => {
       {success && <p className="text-green-500 mt-2">{success}</p>}
 
       {/* Edit Button */}
-      <div className="mt-4 flex justify-end">
+      <div className="mt-4">
         <button
-          type="button"
           onClick={handleEditClick}
-          className="bg-blue-500 text-white py-2 px-4 rounded"
+          className="bg-blue-500 text-white px-4 py-2 rounded"
         >
-          {isEditable ? "Save Changes" : "Edit Details"}
+          {isEditable ? "Save Changes" : "Edit"}
         </button>
       </div>
     </div>

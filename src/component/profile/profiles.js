@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import EmployeePersonalDetails from "./EmployeePersonalDetails";
 import EmployeeEmploymentDetails from "./EmployeeEmploymentDetails";
 import Leave from "./Leave";
+import Notifications from "../admin/Notification";
 
 import { supabase } from "../../supabaseClient"; // Ensure your Supabase client is correctly imported
 

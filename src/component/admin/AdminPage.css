@@ -1,0 +1,50 @@
+/* AdminPage.css */
+
+.admin-page {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+  }
+  
+  .admin-tabs {
+    display: flex;
+    margin-bottom: 20px;
+  }
+  
+  .admin-tab-button {
+    margin-right: 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+  }
+  
+  .admin-tab-button a {
+    color: white;
+    text-decoration: none;
+  }
+  
+  .admin-main-content {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+  }
+  
+  .leave-approval {
+    padding: 10px;
+    background-color: #f0f0f0;
+    border-radius: 5px;
+    margin-top: 20px;
+  }
+  
+  .notifications-page {
+    padding: 20px;
+  }
+  
+  .notifications-container {
+    margin-top: 20px;
+  }
+  

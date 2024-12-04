@@ -62,7 +62,7 @@ const LoginForm = () => {
           return;
         }
         // If user is only an admin
-        navigate("/admin");
+        navigate("/admin-page");
       } else {
         // If user is only an employee
         navigate("/profile");

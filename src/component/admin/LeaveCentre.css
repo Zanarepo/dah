@@ -1,0 +1,29 @@
+.leave-centre {
+    padding: 20px;
+    background-color: #f9f9f9;
+  }
+  
+  .leave-centre-tabs {
+    display: flex;
+    gap: 20px;
+  }
+  
+  .leave-centre-tab-button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+  }
+  
+  .leave-centre-tab-button:hover {
+    background-color: #0056b3;
+  }
+  
+  .leave-centre h1 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  

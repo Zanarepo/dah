@@ -69,6 +69,31 @@ const EmployeeEmploymentDetails = ({ employeeData, setEmployeeData }) => {
     }));
   };
 
+  // Save employee data to Supabase
+  const saveEmployeeData = async () => {
+    const { error } = await supabase
+      .from("employee_details") // Assuming the table where employment details are stored
+      .upsert([
+        {
+          employee_id: employeeData.employee_id, // Assuming employee_id is in employeeData
+          employment_date: employeeData.employment_date,
+          employment_type: employeeData.employment_type,
+          ministry_id: employeeData.ministry_id,
+          department_id: employeeData.department_id,
+          manager: employeeData.manager,
+          position: employeeData.position,
+          grade_level: employeeData.grade_level,
+          step: employeeData.step,
+          qualification: employeeData.qualification,
+        },
+      ]);
+    if (error) {
+      console.error("Error saving employee data:", error.message);
+    } else {
+      alert("Employee details saved successfully!");
+    }
+  };
+
   return (
     <div className="mb-6">
       <h2 className="text-xl font-semibold">Employment Details</h2>
@@ -162,7 +187,6 @@ const EmployeeEmploymentDetails = ({ employeeData, setEmployeeData }) => {
             value={employeeData.manager || ""}
             onChange={handleChange}
             className="w-full mt-1 p-2 border border-gray-300 rounded"
-            
           >
             <option value="">Select Manager</option>
             {managers.map((manager) => (
@@ -233,6 +257,15 @@ const EmployeeEmploymentDetails = ({ employeeData, setEmployeeData }) => {
             required
           />
         </div>
+      </div>
+
+      <div className="mt-4">
+        <button
+          onClick={saveEmployeeData}
+          className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+        >
+          Save
+        </button>
       </div>
     </div>
   );

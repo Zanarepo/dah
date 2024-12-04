@@ -1,0 +1,102 @@
+/* notifications.css */
+.notifications-container .notification {
+    @apply bg-white p-4 mb-4 rounded-lg shadow-md;
+  }
+  
+  .notifications-container .notification.unread {
+    @apply border-l-4 border-green-500;
+  }
+  
+  .notifications-container .notification.read {
+    @apply bg-gray-100;
+  }
+  
+  .notifications-container .mark-as-read-button {
+    @apply mt-2 px-4 py-2 bg-green-500 text-white rounded-md;
+  }
+  
+  .notifications-container .mark-as-read-button:hover:not(:disabled) {
+    @apply bg-green-600;
+  }
+  
+
+
+
+/* notifications.css */
+.notifications-container {
+    position: relative;
+    padding: 20px;
+  }
+  
+  .notifications-container .notifications-icon-container {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .notifications-container .notification-icon {
+    font-size: 30px;
+    color: #333;
+  }
+  
+  .notifications-container .unread-count {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: red;
+    color: white;
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 50%;
+    font-weight: bold;
+  }
+  
+  .notifications-container .notifications-list {
+    margin-top: 20px;
+  }
+  
+  .notifications-container .notification {
+    background-color: #fff;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s;
+  }
+  
+  .notifications-container .notification.unread {
+    border-left: 4px solid #4caf50;
+  }
+  
+  .notifications-container .notification.read {
+    background-color: #f5f5f5;
+  }
+  
+  .notifications-container .notification:hover {
+    background-color: #f0f0f0;
+  }
+  
+  .notifications-container .notification-type {
+    font-size: 14px;
+    color: #777;
+  }
+  
+  .notifications-container .mark-as-read-button {
+    margin-top: 10px;
+    padding: 6px 12px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .notifications-container .mark-as-read-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+  
+  .notifications-container .mark-as-read-button:hover:not(:disabled) {
+    background-color: #45a049;
+  }
+  

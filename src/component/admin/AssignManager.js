@@ -1,144 +1,195 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import { supabase } from "../../supabaseClient";
 import "./assign.css";
+import "./Notification.css"
 
 const AssignManagerToDepartments = () => {
   const [managers, setManagers] = useState([]);
   const [departments, setDepartments] = useState([]);
-  const [selectedDepartments, setSelectedDepartments] = useState({});
+  const [selectedManager, setSelectedManager] = useState(null);
+  const [selectedDepartment, setSelectedDepartment] = useState(null);
+  const [notification, setNotification] = useState(null); // Notification state
+  const [confirmationModal, setConfirmationModal] = useState(false); // Modal state
+  const [departmentToReplace, setDepartmentToReplace] = useState(null); // Track department being updated
   const [error, setError] = useState(null);
 
-  // Fetch the list of managers and their details
+  // Fetch managers and departments
   useEffect(() => {
-    const fetchManagers = async () => {
-      const { data, error } = await supabase
-        .from('managers')
-        .select(`
-          id,
-          employee_id,
-          department_id,
-          ministry_id,
-          employee_profiles(first_name, last_name, email, phone_number)
-        `);
+    const fetchData = async () => {
+      try {
+        const { data: managerData, error: managerError } = await supabase
+          .from("managers")
+          .select(`
+            id,
+            employee_id,
+            employee_profiles:employee_id (first_name, last_name)
+          `);
 
-      if (error) {
-        setError(error.message);
-        return;
+        if (managerError) throw new Error(managerError.message);
+
+        const { data: departmentData, error: departmentError } = await supabase
+          .from("departments")
+          .select("id, name, manager_id, ministry_id");
+
+        if (departmentError) throw new Error(departmentError.message);
+
+        setManagers(managerData);
+        setDepartments(departmentData);
+      } catch (fetchError) {
+        setError(fetchError.message);
       }
-
-      setManagers(data);
     };
 
-    // Fetch the list of departments, including the ministry_id, manager_id, and name
-    const fetchDepartments = async () => {
-      const { data, error } = await supabase
-        .from('departments')
-        .select('id, name, manager_id, ministry_id'); // Ensure name and manager_id are included
-
-      if (error) {
-        setError(error.message);
-        return;
-      }
-
-      setDepartments(data);
-    };
-
-    fetchManagers();
-    fetchDepartments();
+    fetchData();
   }, []);
 
-  // Handle the change in department selection
-  const handleDepartmentChange = (managerId, departmentId, isChecked) => {
-    setSelectedDepartments((prevSelected) => {
-      const updatedSelection = { ...prevSelected };
-      if (isChecked) {
-        if (!updatedSelection[managerId]) updatedSelection[managerId] = [];
-        updatedSelection[managerId].push(departmentId);
-      } else {
-        updatedSelection[managerId] = updatedSelection[managerId].filter(
-          (id) => id !== departmentId
-        );
-      }
-      return updatedSelection;
-    });
+  // Helper to find manager details by ID
+  const findManagerDetails = (managerId) => {
+    const manager = managers.find((mgr) => mgr.id === managerId);
+    if (manager) {
+      const { first_name, last_name } = manager.employee_profiles || {};
+      return `${first_name} ${last_name}`;
+    }
+    return "Unknown Manager";
   };
 
-  // Handle the submit to update the departments for the selected manager
-  const handleSubmit = async (managerId) => {
-    const departmentsToAssign = selectedDepartments[managerId];
+  // Handle notifications
+  const showNotification = (message, type) => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification(null), 3000); // Clear notification after 3 seconds
+  };
 
-    if (!departmentsToAssign || departmentsToAssign.length === 0) {
-      alert("Please select at least one department for the manager.");
+  // Handle manager assignment logic
+  const handleAssign = async (confirmed = false) => {
+    const departmentToUpdate = departments.find(
+      (department) => department.id === selectedDepartment
+    );
+
+    if (!departmentToUpdate) {
+      showNotification("Invalid department selection.", "error");
+      return;
+    }
+
+    // Check if there's an existing manager
+    if (
+      departmentToUpdate.manager_id &&
+      departmentToUpdate.manager_id !== selectedManager &&
+      !confirmed
+    ) {
+      setDepartmentToReplace(departmentToUpdate);
+      setConfirmationModal(true); // Show confirmation modal
       return;
     }
 
     try {
-      // Prepare the departments with their corresponding ministry_id, manager_id, and name
-      const departmentsWithMinistry = departments.filter(department =>
-        departmentsToAssign.includes(department.id)
-      );
+      const updatedDepartment = {
+        ...departmentToUpdate,
+        manager_id: selectedManager,
+      };
 
-      const updatedDepartments = departmentsWithMinistry.map(department => ({
-        id: department.id,
-        name: department.name, // Ensure name is included
-        manager_id: managerId,
-        ministry_id: department.ministry_id // Ensure ministry_id is included
-      }));
-
-      // Update the department manager_id, ministry_id, and name
       const { error } = await supabase
-        .from('departments')
-        .upsert(updatedDepartments, { onConflict: ['id'] });
+        .from("departments")
+        .upsert(updatedDepartment, { onConflict: ["id"] });
 
-      if (error) {
-        setError(error.message);
-        return;
-      }
+      if (error) throw new Error(error.message);
 
-      alert("Manager has been successfully assigned to departments.");
-    } catch (error) {
-      setError(error.message);
+      showNotification("Manager successfully assigned to the department.", "success");
+      // Reset selection
+      setSelectedManager(null);
+      setSelectedDepartment(null);
+      setConfirmationModal(false); // Close modal if open
+    } catch (assignError) {
+      showNotification(assignError.message, "error");
     }
+  };
+
+  // Confirm replacement of existing manager
+  const confirmReplacement = () => {
+    handleAssign(true);
   };
 
   if (error) return <div>Error: {error}</div>;
 
   return (
     <div>
-      <h2>Assign Managers to Departments</h2>
+      <h2>Assign Manager to a Department</h2>
+
+      {/* Notification */}
+      {notification && (
+        <div className={`notification ${notification.type}`}>
+          {notification.message}
+        </div>
+      )}
+
+      {/* Confirmation Modal */}
+      {confirmationModal && departmentToReplace && (
+        <div className="modal">
+          <div className="modal-content">
+            <h3>Confirm Manager Replacement</h3>
+            <p>
+              This department already has a manager:{" "}
+              {findManagerDetails(departmentToReplace.manager_id)}. Do you want
+              to replace them?
+            </p>
+            <div className="modal-actions">
+              <button onClick={confirmReplacement} className="confirm-button">
+                Yes
+              </button>
+              <button
+                onClick={() => setConfirmationModal(false)}
+                className="cancel-button"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {managers.length === 0 || departments.length === 0 ? (
         <div>Loading...</div>
       ) : (
         <div>
-          {managers.map((manager) => (
-            <div key={manager.id} style={{ marginBottom: '20px' }}>
-              <h3>{manager.employee_profiles.first_name} {manager.employee_profiles.last_name}</h3>
-              <p>Email: {manager.employee_profiles.email}</p>
-              <p>Phone: {manager.employee_profiles.phone_number}</p>
+          <div className="dropdown">
+            <label htmlFor="manager-select">Select Manager:</label>
+            <select
+              id="manager-select"
+              value={selectedManager || ""}
+              onChange={(e) => setSelectedManager(Number(e.target.value))}
+            >
+              <option value="" disabled>
+                -- Select a Manager --
+              </option>
+              {managers.map((manager) => (
+                <option key={manager.id} value={manager.id}>
+                  {manager.employee_profiles.first_name}{" "}
+                  {manager.employee_profiles.last_name}
+                </option>
+              ))}
+            </select>
+          </div>
 
-              <div>
-                <h4>Select Departments:</h4>
-                {departments.map((department) => (
-                  <div key={department.id}>
-                    <label>
-                      <input
-                        type="checkbox"
-                        value={department.id}
-                        checked={selectedDepartments[manager.id]?.includes(department.id)}
-                        onChange={(e) =>
-                          handleDepartmentChange(manager.id, department.id, e.target.checked)
-                        }
-                      />
-                      {department.name}
-                    </label>
-                  </div>
-                ))}
-              </div>
+          <div className="dropdown">
+            <label htmlFor="department-select">Select Department:</label>
+            <select
+              id="department-select"
+              value={selectedDepartment || ""}
+              onChange={(e) => setSelectedDepartment(Number(e.target.value))}
+            >
+              <option value="" disabled>
+                -- Select a Department --
+              </option>
+              {departments.map((department) => (
+                <option key={department.id} value={department.id}>
+                  {department.name}
+                </option>
+              ))}
+            </select>
+          </div>
 
-              <button onClick={() => handleSubmit(manager.id)}>Assign Manager to Departments</button>
-            </div>
-          ))}
+          <button onClick={() => handleAssign()} style={{ marginTop: "20px" }}>
+            Assign Manager to Department
+          </button>
         </div>
       )}
     </div>

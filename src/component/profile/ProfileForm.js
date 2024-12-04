@@ -2,10 +2,11 @@ import React, { useState, useEffect } from "react";
 import EmployeePersonalDetails from "./EmployeePersonalDetails";
 import EmployeeEmploymentDetails from "./EmployeeEmploymentDetails";
 import Leave from "./Leave";
+import Notifications from "../admin/Notification";
 
 import { supabase } from "../../supabaseClient"; // Ensure your supabase client is correctly imported
 
-const ProfileForm = () => {
+const ProfilePage = () => {
   const [activeSection, setActiveSection] = useState("personal");
   const [employeeData, setEmployeeData] = useState({
     employee_id: "",
@@ -16,7 +17,6 @@ const ProfileForm = () => {
     phone_number: "",
     address: "",
     marital_status: "",
-    //sex: "",
     nationality: "",
     state_of_origin: "",
     lga_of_origin: "",
@@ -144,7 +144,17 @@ const ProfileForm = () => {
               }`}
             >
               Leave Zone
-              
+            </button>
+          </li>
+          {/* Profile Button */}
+          <li>
+            <button
+              onClick={() => handleSectionChange("notifications")}  // Change to "notifications"
+              className={`w-full text-left p-2 rounded ${
+                activeSection === "notifications" ? "bg-blue-500 text-white" : "bg-transparent"
+              }`}
+            >
+              Notifications
             </button>
           </li>
         </ul>
@@ -165,26 +175,22 @@ const ProfileForm = () => {
               setEmployeeData={setEmployeeData}
             />
           )}
-           {activeSection === "leave" && (
+        </form>
+          {activeSection === "leave" && (
             <Leave
               employeeData={employeeData}
               setEmployeeData={setEmployeeData}
             />
           )}
-          
-        
-          <div className="flex justify-end">
-            <button
-              type="submit"
-              className="bg-blue-500 text-white py-2 px-4 rounded"
-            >
-              Submit
-            </button>
-          </div>
-        </form>
+          {/* Profile Section */}
+          {activeSection === "notifications" && (
+            <Notifications employee_id={employeeData.employee_id} />  // Passing employee_id as prop
+          )}
+
+</div>
       </div>
-    </div>
+    
   );
 };
 
-export default ProfileForm;
+export default ProfilePage;
