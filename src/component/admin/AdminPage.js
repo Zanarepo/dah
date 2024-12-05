@@ -1,8 +1,7 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-// Import LeaveApproval Component
-import NotificationIcon from './NotificationIcon'; // Import Notifications Component
-import './AdminPage.css'; // You can add custom styles here
+import React from "react";
+import { Link } from "react-router-dom";
+import AdminLeaveNotification from "../Notifications/AdminLeaveNotification";
+import "./AdminPage.css"; // Add any custom styles here
 
 const AdminPage = () => {
   return (
@@ -10,15 +9,14 @@ const AdminPage = () => {
       <h1>Admin Dashboard</h1>
 
       <div className="admin-tabs">
+        {/* Link to Leave Approval */}
         <button className="admin-tab-button">
           <Link to="/leave-centre">Leave Centre</Link>
         </button>
-        
-        {/* Render NotificationIcon as a component */}
-        <NotificationIcon />
 
+        {/* Notification Icon */}
+        <AdminLeaveNotification />
       </div>
-
     </div>
   );
 };

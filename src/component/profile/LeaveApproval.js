@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../../supabaseClient";
 
+
+
 // Add the insertLeaveNotification function
 const insertLeaveNotification = async (employeeId, leaveRequestId, status) => {
   const message = status === "Approved"
@@ -59,7 +61,7 @@ const LeaveApproval = () => {
     try {
       const { data, error } = await supabase
         .from("employee_profiles")
-        .select("first_name, last_name, department_id, departments(name)") // Include department name
+        .select("first_name, last_name, profile_picture, department_id, departments(name)") // Include department name
         .eq("employee_id", employee_id)
         .single();
   
@@ -189,7 +191,7 @@ const LeaveApproval = () => {
           ))}
         </tbody>
       </table>
-
+         
       {selectedLeave && (
         <div
           className="modal fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center"
@@ -239,6 +241,11 @@ const LeaveApproval = () => {
           </div>
         </div>
       )}
+   
+
+    
+
+
     </div>
   );
 };

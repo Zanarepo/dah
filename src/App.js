@@ -42,6 +42,10 @@ import  Notification from "./component/admin/Notification"
 import NotificationCenter from "./component/admin/NotificationCenter"
 import AdminPage from "./component/admin/AdminPage"
 import LeaveCentre from "./component/admin/LeaveCenter"
+import LeaveApprovalNotification from "./component/Notifications/LeaveApprovalNotification";
+import Navbar from "./component/Dashbaord/Navbar"
+import Sidebar from "./component/Dashbaord/Sidebar"
+import MainDashboard from "./component/Dashbaord/MainDashboard"
 
 
 
@@ -67,6 +71,12 @@ function App() {
   return (
     <Router>
       <div className="App">
+
+          {/* Routes for dashboards*/}
+          <Route path="/navbar" element={<Navbar />} />
+           <Route path="/sidebar" element={<Sidebar />} />
+             <Route path="/sidebar" element={<MainDashboard />} />
+          
         <Routes>
           {/* Route for the main profile form that includes all sections */}
           <Route path="/admin" element={<AdminPanel />} />
@@ -89,9 +99,10 @@ function App() {
          <Route path="/leave-status" element={<LeaveStatusTracker />}/>
          <Route path="/on-vacation" element={<OnVacation />}/>
         <Route path="/notifications" element={<Notification />}/>
-        <Route path="/notifications" element={<NotificationCenter />}/>
+        <Route path="/notification-centre" element={<NotificationCenter />}/>
          <Route path="/Admin-page" element={<AdminPage />}/>
         <Route path="/leave-centre" element={<LeaveCentre />}/>
+        <Route path="/leave-notification" element={<LeaveApprovalNotification/>}/>
 
           <Route path="/leave" element={<Leave />} />
           <Route path="/History" element={<LeaveHistory />} />

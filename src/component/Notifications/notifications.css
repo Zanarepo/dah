@@ -1,0 +1,28 @@
+.leave-approval-notification {
+    position: relative;
+    display: inline-block;
+    margin-left: 20px;
+  }
+  
+  .notifications-icon-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  
+  .notification-icon {
+    font-size: 24px;
+    color: #007bff;
+  }
+  
+  .unread-count {
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    font-size: 12px;
+    padding: 4px;
+    position: absolute;
+    top: -5px;
+    right: -5px;
+  }
+  

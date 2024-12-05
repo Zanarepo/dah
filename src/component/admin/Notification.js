@@ -1,23 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { supabase } from "../../supabaseClient"; 
-import { FaBell } from "react-icons/fa"; 
-import "./Notification.css";
+import { supabase } from "../../supabaseClient"; // Ensure supabase client is correctly imported
+import { FaBell } from "react-icons/fa"; // Importing bell icon from react-icons
 
-const Notifications = ({ user_id, isManager = false }) => {
+const Notifications = ({ employee_id }) => {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [unreadCount, setUnreadCount] = useState(0);
+  const [unreadCount, setUnreadCount] = useState(0); // Track unread notifications count
 
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
         setLoading(true);
-        // Fetch notifications for employee or manager based on user_id
         const { data, error } = await supabase
           .from("notifications")
           .select("*")
-          .eq(isManager ? "employee_id" : "admin_id", user_id) // Check if it's a manager or employee
+          .eq("employee_id", employee_id)
           .order("created_at", { ascending: false });
 
         if (error) {
@@ -25,7 +23,7 @@ const Notifications = ({ user_id, isManager = false }) => {
           console.error("Error fetching notifications:", error);
         } else {
           setNotifications(data);
-          setUnreadCount(data.filter((notif) => notif.status === "unread").length);
+          setUnreadCount(data.filter((notif) => notif.status === "unread").length); // Set unread count
         }
       } catch (err) {
         setError("Failed to fetch notifications.");
@@ -35,10 +33,10 @@ const Notifications = ({ user_id, isManager = false }) => {
       }
     };
 
-    if (user_id) {
+    if (employee_id) {
       fetchNotifications();
     }
-  }, [user_id, isManager]);
+  }, [employee_id]);
 
   const handleMarkAsRead = async (notification_id) => {
     try {
