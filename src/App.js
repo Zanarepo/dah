@@ -72,13 +72,17 @@ function App() {
     <Router>
       <div className="App">
 
-          {/* Routes for dashboards*/}
-          <Route path="/navbar" element={<Navbar />} />
-           <Route path="/sidebar" element={<Sidebar />} />
-             <Route path="/sidebar" element={<MainDashboard />} />
+    {/* Route for the main profile form that includes all sections */}
           
         <Routes>
-          {/* Route for the main profile form that includes all sections */}
+         
+          {/* Routes for dashboards*/}
+          <Route path="/navbar" element={<Navbar />} />
+          <Route path="/sidebar" element={<Sidebar />} />
+          <Route path="/sidebar" element={<MainDashboard />} />
+           {/* Routes for dashboards*/}
+
+           
           <Route path="/admin" element={<AdminPanel />} />
           <Route path="/general" element={<MinistryActivity />} />
           <Route path="/profile" element={<ProfileForm />} />
