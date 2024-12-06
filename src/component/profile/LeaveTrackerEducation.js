@@ -1,91 +1,180 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { supabase } from "../../supabaseClient";
+import { useNavigate } from "react-router-dom";
 
-const LeaveTracker = () => {
-  const [leaveStats, setLeaveStats] = useState({
-    approved: 0,
-    pending: 0,
-    expired: 0,
-    rejected: 0,
-    active: 0,
-  });
+const OnVacation = () => {
+  const [onVacationEmployees, setOnVacationEmployees] = useState([]);
+  const [error, setError] = useState(null);
+  const [departmentAdminId, setDepartmentAdminId] = useState(null);
+  const carouselRef = useRef(null); // Ref for carousel to enable scrolling
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchLeaveStats = async () => {
-      try {
-        // Fetch data from the employee_leave table
-        const { data, error } = await supabase
-          .from("employee_leave")
-          .select("id, leave_type, start_date, end_date, status");
-
-        if (error) throw error;
-
-        // Log fetched data for debugging
-        console.log("Fetched leave data:", data);
-
-        // Categorize leaves
-        const currentDate = new Date();
-        const approvedCount = data.filter((leave) => leave.status.toLowerCase() === "approved").length;
-        const pendingCount = data.filter((leave) => leave.status.toLowerCase() === "pending").length;
-        const rejectedCount = data.filter((leave) => leave.status.toLowerCase() === "rejected").length;
-        const expiredCount = data.filter(
-          (leave) =>
-            leave.status.toLowerCase() === "approved" && new Date(leave.end_date) < currentDate
-        ).length;
-        const activeCount = data.filter(
-          (leave) =>
-            leave.status.toLowerCase() === "approved" &&
-            new Date(leave.start_date) <= currentDate &&
-            new Date(leave.end_date) >= currentDate
-        ).length;
-
-        // Update state
-        setLeaveStats({
-          approved: approvedCount,
-          pending: pendingCount,
-          expired: expiredCount,
-          rejected: rejectedCount,
-          active: activeCount,
-        });
-      } catch (err) {
-        console.error("Error fetching leave stats:", err.message);
-      }
-    };
-
-    fetchLeaveStats();
+    fetchDepartmentAdminId();
   }, []);
 
-  return (
-    <div className="p-6 bg-gray-100 rounded-lg shadow-lg max-w-4xl mx-auto">
-      <h2 className="text-2xl font-bold text-center text-green-600 mb-6">
-        Leave Tracker
-      </h2>
+  const fetchDepartmentAdminId = async () => {
+    const adminEmployeeId = localStorage.getItem("employee_id");
 
-      {/* Leave Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="p-4 bg-blue-100 text-center rounded-lg">
-          <h4 className="text-lg font-bold">Pending</h4>
-          <p className="text-2xl text-blue-700">{leaveStats.pending}</p>
+    if (!adminEmployeeId) {
+      setError("You are not logged in.");
+      return;
+    }
+
+    try {
+      const { data: adminData, error: adminError } = await supabase
+        .from("department_admins")
+        .select("department_id")
+        .eq("employee_id", adminEmployeeId)
+        .maybeSingle();
+
+      if (adminError) {
+        throw new Error(adminError.message);
+      }
+
+      if (!adminData) {
+        setError("You are not assigned to any department.");
+        return;
+      }
+
+      const departmentId = adminData.department_id;
+      setDepartmentAdminId(departmentId);
+      fetchOnVacationEmployees(departmentId);
+    } catch (err) {
+      console.error(err);
+      setError("Failed to fetch department information.");
+    }
+  };
+
+  const fetchOnVacationEmployees = async (departmentId) => {
+    try {
+      const currentDate = new Date().toISOString().slice(0, 10);
+
+      const { data, error } = await supabase
+        .from("employee_leave")
+        .select(
+          `employee_id, start_date, end_date, leave_type, employee_profiles!employee_leave_employee_id_fkey(first_name, last_name, profile_picture, department_id, departments(name))`
+        )
+        .lte("start_date", currentDate)
+        .gte("end_date", currentDate)
+        .eq("status", "Approved")
+        .eq("employee_profiles.department_id", departmentId);
+
+      if (error) throw error;
+
+      const filteredData = data.filter(
+        (employee) => employee.employee_profiles !== null
+      );
+
+      setOnVacationEmployees(filteredData);
+    } catch (err) {
+      console.error(err);
+      setError("Failed to fetch employees on vacation.");
+    }
+  };
+
+  const slideLeft = () => {
+    if (carouselRef.current) {
+      carouselRef.current.scrollBy({
+        left: -300,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  const slideRight = () => {
+    if (carouselRef.current) {
+      carouselRef.current.scrollBy({
+        left: 300,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  return (
+    <div className="on-vacation-container bg-gradient-to-br from-blue-500 to-green-400 min-h-screen flex flex-col items-center relative p-6">
+      {/* Back Button */}
+      <button
+        onClick={() => navigate(-1)}
+        className="absolute top-4 left-4 bg-white text-blue-500 px-4 py-2 rounded-full shadow-lg hover:bg-blue-600 hover:text-white transition"
+      >
+        Back
+      </button>
+
+      {/* Header */}
+      <h2 className="text-4xl font-bold text-white mb-6">
+        Employees On Vacation 🌴
+      </h2>
+      <p className="text-lg text-white text-center mb-12">
+        Enjoying some well-deserved time off!
+      </p>
+
+      {/* Error Message */}
+      {error && <p className="text-red-500 mb-4">{error}</p>}
+
+      {/* Carousel Container */}
+      <div className="carousel-container w-full max-w-6xl overflow-hidden relative">
+        <div
+          ref={carouselRef}
+          className="carousel-slide flex gap-6 transition-transform duration-500 ease-in-out"
+        >
+          {onVacationEmployees.length === 0 ? (
+            <p className="text-center text-white">No employees on vacation.</p>
+          ) : (
+            onVacationEmployees.map((employee) => (
+              <div
+                key={employee.employee_id}
+                className="carousel-card bg-white p-6 rounded-xl shadow-lg flex flex-col items-center w-72 hover:scale-105 transition-transform"
+              >
+                {/* Profile Picture */}
+                <img
+                  src={
+                    employee.employee_profiles?.profile_picture ||
+                    "/default-profile.png"
+                  }
+                  alt={`${employee.employee_profiles?.first_name} ${employee.employee_profiles?.last_name}`}
+                  className="w-24 h-24 rounded-full object-cover border-4 border-blue-300 mb-4"
+                />
+                <h3 className="text-lg font-semibold text-gray-800 text-center">
+                  {employee.employee_profiles?.first_name}{" "}
+                  {employee.employee_profiles?.last_name}
+                </h3>
+                <p className="text-sm text-gray-600 text-center">
+                  <strong>Department:</strong>{" "}
+                  {employee.employee_profiles?.departments?.name}
+                </p>
+                <p className="text-sm text-gray-600">
+                  <strong>Vacation:</strong>{" "}
+                  {employee.start_date} - {employee.end_date}
+                </p>
+                <div className="mt-4 text-4xl text-yellow-500">
+                  {employee.leave_type === "vacation" ? "🌴" : "🏖️"}
+                </div>
+              </div>
+            ))
+          )}
         </div>
-        <div className="p-4 bg-green-100 text-center rounded-lg">
-          <h4 className="text-lg font-bold">Approved</h4>
-          <p className="text-2xl text-green-700">{leaveStats.approved}</p>
-        </div>
-        <div className="p-4 bg-yellow-100 text-center rounded-lg">
-          <h4 className="text-lg font-bold">Active</h4>
-          <p className="text-2xl text-yellow-700">{leaveStats.active}</p>
-        </div>
-        <div className="p-4 bg-red-100 text-center rounded-lg">
-          <h4 className="text-lg font-bold">Expired</h4>
-          <p className="text-2xl text-red-700">{leaveStats.expired}</p>
-        </div>
-        <div className="p-4 bg-gray-300 text-center rounded-lg">
-          <h4 className="text-lg font-bold">Rejected</h4>
-          <p className="text-2xl text-gray-800">{leaveStats.rejected}</p>
-        </div>
+      </div>
+
+      {/* Controls (Prev & Next buttons) */}
+      <div className="absolute top-1/2 left-2 transform -translate-y-1/2">
+        <button
+          onClick={slideLeft}
+          className="bg-white text-blue-500 p-3 rounded-full shadow-lg hover:bg-blue-600 hover:text-white transition"
+        >
+          ←
+        </button>
+      </div>
+      <div className="absolute top-1/2 right-2 transform -translate-y-1/2">
+        <button
+          onClick={slideRight}
+          className="bg-white text-blue-500 p-3 rounded-full shadow-lg hover:bg-blue-600 hover:text-white transition"
+        >
+          →
+        </button>
       </div>
     </div>
   );
 };
 
-export default LeaveTracker;
+export default OnVacation;

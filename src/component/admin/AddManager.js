@@ -14,30 +14,23 @@ const AddManager = () => {
     const fetchEmployees = async () => {
       if (searchQuery.length > 0) {
         try {
-          // Fetch employees by first name, last name, department, or ministry
-          const queries = [
-            supabase.from("employee_profiles").select("employee_id, first_name, last_name, department_id, ministry_id")
-              .ilike("first_name", `%${searchQuery}%`),
-            supabase.from("employee_profiles").select("employee_id, first_name, last_name, department_id, ministry_id")
-              .ilike("last_name", `%${searchQuery}%`),
-            supabase.from("employee_profiles").select("employee_id, first_name, last_name, department_id, ministry_id")
-              .ilike("department", `%${searchQuery}%`),
-            supabase.from("employee_profiles").select("employee_id, first_name, last_name, department_id, ministry_id")
-              .ilike("ministry", `%${searchQuery}%`),
-          ];
+          // Consolidated query for search
+          const { data, error } = await supabase
+            .from("employee_profiles")
+            .select(
+              "employee_id, first_name, last_name, department_id, ministry_id"
+            )
+            .or(
+              `first_name.ilike.%${searchQuery}%,last_name.ilike.%${searchQuery}%`
+            );
 
-          // Execute all queries concurrently
-          const results = await Promise.all(queries);
+          if (error) {
+            throw error;
+          }
 
-          // Combine and remove duplicates based on employee_id
-          const allEmployees = results.flatMap((result) => result.data || []);
-          const uniqueEmployees = [
-            ...new Map(allEmployees.map((item) => [item.employee_id, item])).values(),
-          ];
-
-          setEmployees(uniqueEmployees); // Set the combined list of employees
-        } catch (error) {
-          console.error(error);
+          setEmployees(data || []);
+        } catch (err) {
+          console.error(err);
           setError("An error occurred while searching for employees.");
         }
       } else {
@@ -50,8 +43,23 @@ const AddManager = () => {
 
   // Handle adding the selected employee to the managers table
   const handleAddManager = async () => {
-    if (!selectedEmployee || !role) {
-      setError("Please select an employee and a role.");
+    setError("");
+    setSuccessMessage("");
+
+    if (!selectedEmployee) {
+      setError("Please select an employee.");
+      return;
+    }
+
+    if (!selectedEmployee.department_id || !selectedEmployee.ministry_id) {
+      setError(
+        "The selected employee does not have a valid department or ministry assigned."
+      );
+      return;
+    }
+
+    if (!role) {
+      setError("Please select a role for the manager.");
       return;
     }
 
@@ -66,17 +74,17 @@ const AddManager = () => {
       ]);
 
       if (error) {
-        setError("Error adding manager.");
-        console.error(error);
-      } else {
-        setSuccessMessage("Manager added successfully!");
-        setSelectedEmployee(null);
-        setRole("");
-        setSearchQuery(""); // Clear search query
+        throw error;
       }
+
+      setSuccessMessage("Manager added successfully!");
+      setSelectedEmployee(null);
+      setRole("");
+      setSearchQuery(""); // Clear search query
+      setEmployees([]);
     } catch (err) {
-      setError("An unexpected error occurred.");
       console.error(err);
+      setError("Error adding manager: " + err.message);
     }
   };
 
@@ -86,14 +94,16 @@ const AddManager = () => {
 
       {/* Employee Search */}
       <div className="mb-4">
-        <label htmlFor="searchQuery" className="block">Search Employee</label>
+        <label htmlFor="searchQuery" className="block">
+          Search Employee
+        </label>
         <input
           type="text"
           id="searchQuery"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="border p-1 w-full"
-          placeholder="Search by employee name, department, or ministry"
+          placeholder="Search by employee name"
         />
         {employees.length > 0 && (
           <ul className="mt-2 bg-white border rounded-md shadow-md">
@@ -101,7 +111,11 @@ const AddManager = () => {
               <li
                 key={employee.employee_id}
                 onClick={() => setSelectedEmployee(employee)}
-                className="cursor-pointer p-2 hover:bg-gray-200"
+                className={`cursor-pointer p-2 hover:bg-gray-200 ${
+                  selectedEmployee?.employee_id === employee.employee_id
+                    ? "bg-gray-200"
+                    : ""
+                }`}
               >
                 {employee.first_name} {employee.last_name}
               </li>
@@ -119,12 +133,21 @@ const AddManager = () => {
         <div className="mb-4">
           <h2 className="text-xl font-medium">Selected Employee</h2>
           <p>
-            {selectedEmployee.first_name} {selectedEmployee.last_name}
+            <strong>Name:</strong> {selectedEmployee.first_name}{" "}
+            {selectedEmployee.last_name}
+          </p>
+          <p>
+            <strong>Department ID:</strong> {selectedEmployee.department_id}
+          </p>
+          <p>
+            <strong>Ministry ID:</strong> {selectedEmployee.ministry_id}
           </p>
 
           {/* Role Dropdown */}
           <div className="mb-4">
-            <label htmlFor="role" className="block">Select Role</label>
+            <label htmlFor="role" className="block">
+              Select Role
+            </label>
             <select
               id="role"
               value={role}

@@ -80,10 +80,10 @@ const EmployeeEmploymentDetails = ({ employeeData, setEmployeeData }) => {
           employment_type: employeeData.employment_type,
           ministry_id: employeeData.ministry_id,
           department_id: employeeData.department_id,
-          manager: employeeData.manager,
+          //manager: employeeData.manager,
           position: employeeData.position,
-          grade_level: employeeData.grade_level,
-          step: employeeData.step,
+          //grade_level: employeeData.grade_level,
+          //step: employeeData.step,
           qualification: employeeData.qualification,
         },
       ]);
@@ -124,7 +124,7 @@ const EmployeeEmploymentDetails = ({ employeeData, setEmployeeData }) => {
             value={employeeData.employment_type}
             onChange={handleChange}
             className="w-full mt-1 p-2 border border-gray-300 rounded"
-            required
+          
           >
             <option value="">Select</option>
             <option value="Contract">Contract</option>
@@ -191,12 +191,12 @@ const EmployeeEmploymentDetails = ({ employeeData, setEmployeeData }) => {
             <option value="">Select Manager</option>
             {managers.map((manager) => (
               <option key={manager.id} value={manager.id}>
-                {manager.first_name} {manager.last_name} {/* Showing manager's first and last name */}
+                {manager.first_name} {manager.last_name} {/* Showing manager's first and last name*/}
               </option>
             ))}
           </select>
         </div>
-
+ 
         {/* Other input fields */}
         <div>
           <label htmlFor="position" className="block text-sm font-medium">
@@ -209,10 +209,10 @@ const EmployeeEmploymentDetails = ({ employeeData, setEmployeeData }) => {
             value={employeeData.position}
             onChange={handleChange}
             className="w-full mt-1 p-2 border border-gray-300 rounded"
-            required
+            
           />
         </div>
-
+ {/* Other input fields 
         <div>
           <label htmlFor="grade_level" className="block text-sm font-medium">
             Grade Level
@@ -227,7 +227,7 @@ const EmployeeEmploymentDetails = ({ employeeData, setEmployeeData }) => {
             required
           />
         </div>
-
+*/}
         <div>
           <label htmlFor="step" className="block text-sm font-medium">
             Step
@@ -239,7 +239,7 @@ const EmployeeEmploymentDetails = ({ employeeData, setEmployeeData }) => {
             value={employeeData.step}
             onChange={handleChange}
             className="w-full mt-1 p-2 border border-gray-300 rounded"
-            required
+            
           />
         </div>
 

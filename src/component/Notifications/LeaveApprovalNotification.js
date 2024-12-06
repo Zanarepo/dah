@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "../../supabaseClient";
+import NotificationMessage from './NotificationMessage';
 
 const AdminLeaveNotification = () => {
   const [notifications, setNotifications] = useState([]);
   const [departments, setDepartments] = useState([]); // To store department data
 
+  // Fetch departments once
   useEffect(() => {
-    // Fetch departments once
     const fetchDepartments = async () => {
       try {
         const { data, error } = await supabase
@@ -21,7 +22,13 @@ const AdminLeaveNotification = () => {
       }
     };
 
-    // Fetch leave requests and employee details
+    fetchDepartments();
+  }, []); // Run only once when the component mounts
+
+  // Fetch leave requests and employee details
+  useEffect(() => {
+    if (departments.length === 0) return; // Don't fetch notifications if departments are not loaded yet
+
     const fetchNotifications = async () => {
       try {
         const { data, error } = await supabase
@@ -53,8 +60,8 @@ const AdminLeaveNotification = () => {
             id: leave.id,
             employee_id: leave.employee_id,
             leave_type: leave.leave_type,
-            start_date: leave.start_date,
-            end_date: leave.end_date,
+            start_date: new Date(leave.start_date).toLocaleDateString(), // Format date
+            end_date: new Date(leave.end_date).toLocaleDateString(), // Format date
             first_name: leave.employee_profiles.first_name,
             last_name: leave.employee_profiles.last_name,
             department_name: department ? department.name : "No department found", // Handle missing department
@@ -67,14 +74,16 @@ const AdminLeaveNotification = () => {
       }
     };
 
-    // Fetch both departments and notifications
-    fetchDepartments();
     fetchNotifications();
-  }, [departments]); // Re-run fetchNotifications when departments are loaded
+  }, [departments]); // Run when departments are fetched
 
   return (
     <div className="p-4">
       <h2 className="text-lg font-bold mb-4">Leave Notifications</h2>
+      
+      {/* Notification Message Component */}
+      <NotificationMessage notifications={notifications} />
+      
       {notifications.length > 0 ? (
         <ul>
           {notifications.map((notification) => (

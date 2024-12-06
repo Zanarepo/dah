@@ -82,19 +82,35 @@ const LeaveRequest = () => {
     setError(null);
     setSelectedLeave(null);
   };
-
   const handleSaveLeave = async () => {
     if (!leaveDetails.leaveType || !leaveDetails.startDate || !leaveDetails.endDate) {
       setError("All fields are required.");
       return;
     }
-
+  
     if (new Date(leaveDetails.startDate) > new Date(leaveDetails.endDate)) {
       setError("Start date cannot be later than end date.");
       return;
     }
-
+  
     try {
+      // Fetch the employee profile to get department_id and ministry_id
+      const { data: profileData, error: profileError } = await supabase
+        .from("employee_profiles")
+        .select("department_id, ministry_id")
+        .eq("employee_id", employeeId)
+        .single(); // Assuming employee_id is unique
+  
+      if (profileError) throw profileError;
+  
+      if (!profileData) {
+        setError("Employee profile not found.");
+        return;
+      }
+  
+      const { department_id, ministry_id } = profileData; // Destructure department_id and ministry_id
+  
+      // Payload for the leave request
       const payload = {
         employee_id: employeeId,
         leave_type: leaveDetails.leaveType,
@@ -102,31 +118,36 @@ const LeaveRequest = () => {
         end_date: leaveDetails.endDate,
         status: leaveDetails.status,
         comment: leaveDetails.comment || "",
+        department_id, // Include department_id
+        ministry_id,   // Include ministry_id
       };
-
+  
       if (modalType === "edit" && selectedLeave) {
+        // Update existing leave request
         const { error } = await supabase
           .from("employee_leave")
           .update(payload)
           .eq("id", selectedLeave.id);
-
+  
         if (error) throw error;
-
+  
         fetchLeaveRecords();
       } else {
+        // Insert new leave request
         const { error } = await supabase.from("employee_leave").insert([payload]);
-
+  
         if (error) throw error;
-
+  
         fetchLeaveRecords();
       }
-
+  
       handleCloseModal();
     } catch (err) {
       console.error(err);
       setError("Failed to save leave request.");
     }
   };
+  
 
   const handleDeleteLeave = async (leaveId) => {
     try {

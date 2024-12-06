@@ -15,7 +15,8 @@ const AdminPage = () => {
         </button>
 
         {/* Notification Icon */}
-        <AdminLeaveNotification />
+          <AdminLeaveNotification />
+        
       </div>
     </div>
   );

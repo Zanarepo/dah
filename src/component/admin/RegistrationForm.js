@@ -10,10 +10,10 @@ const EmployeeRegistrationForm = () => {
     last_name: "",
     email: "",
     phone_number: "",
-    department: "",
-    position: "",
-    step: "",
-    manager: "",
+    //department: "",
+    //position: "",
+    //step: "",
+    //manager: "",
     employment_date: "", // Added employment date
     password: "",
   });
@@ -42,10 +42,10 @@ const EmployeeRegistrationForm = () => {
       last_name,
       email,
       phone_number,
-      department,
-      position,
-      step,
-      manager,
+      //department,
+      //position,
+      //step,
+      //manager,
       employment_date, // Destructure employment date
       password,
     } = formData;
@@ -56,9 +56,9 @@ const EmployeeRegistrationForm = () => {
       !email ||
       !phone_number ||
      // !department ||
-      !position ||
-      !step ||
-      !manager ||
+      //!position ||
+      //!step ||
+      //!manager ||
       !employment_date || // Check if employment date is filled
       !password
     ) {
@@ -87,9 +87,9 @@ const EmployeeRegistrationForm = () => {
             email,
             phone_number,
             //department,
-            position,
-            step,
-            manager,
+            //position,
+           // step,
+            //manager,
             employment_date, // Include employment date in the insert
             password: hashedPassword,
           },
@@ -109,9 +109,8 @@ const EmployeeRegistrationForm = () => {
         email: "",
         phone_number: "",
        // department: "",
-        position: "",
-        step: "",
-        manager: "",
+        //position: "",
+       //manager: "",
         employment_date: "", // Clear employment date
         password: "",
       });
@@ -220,7 +219,7 @@ const EmployeeRegistrationForm = () => {
           />
         </div>
 
-       
+         {/*
 
         <div className="mb-4">
           <label
@@ -258,23 +257,7 @@ const EmployeeRegistrationForm = () => {
           />
         </div>
 
-        <div className="mb-4">
-          <label
-            htmlFor="manager"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Manager
-          </label>
-          <input
-            type="text"
-            id="manager"
-            name="manager"
-            value={formData.manager}
-            onChange={handleChange}
-            className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-            required
-          />
-        </div>
+       */ }
 
         <div className="mb-4">
           <label

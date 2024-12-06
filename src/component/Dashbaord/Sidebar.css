@@ -1,0 +1,99 @@
+/* Sidebar Container */
+.sidebar-container {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transition: all 0.3s ease;
+    width: 100%;
+  }
+  
+  /* Sidebar Styles */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: -250px; /* Initially hidden when sidebar is closed */
+    width: 250px;
+    height: 100%;
+    background-color: #2d3748;
+    color: white;
+    transition: left 0.3s ease;
+    z-index: 50;
+  }
+  
+  .sidebar.open {
+    left: 0; /* When open, sidebar slides in */
+  }
+  
+  .sidebar .sidebar-list {
+    padding: 0;
+    margin: 0;
+    list-style-type: none;
+  }
+  
+  .sidebar-item {
+    padding: 10px 20px;
+  }
+  
+  .sidebar-link {
+    display: flex;
+    align-items: center;
+    color: white;
+    text-decoration: none;
+  }
+  
+  .sidebar-link:hover {
+    background-color: #4a5568;
+  }
+  
+  .sidebar-icon {
+    margin-right: 10px;
+  }
+  
+  .sidebar-text {
+    display: none;
+    font-size: 16px;
+  }
+  
+  .sidebar-text.show {
+    display: inline-block;
+  }
+  
+  .sidebar-text.hide {
+    display: none;
+  }
+  
+  /* Active Link */
+  .sidebar-link.active {
+    background-color: #3182ce;
+  }
+  
+  /* Toggle Button for Sidebar */
+  .toggle-btn {
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    z-index: 100;
+    padding: 10px;
+    background-color: #2d3748;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  /* Content Area */
+  .content {
+    margin-left: 250px; /* Default when sidebar is open */
+    padding: 20px;
+    transition: margin-left 0.3s ease;
+  }
+  
+  .content.with-sidebar {
+    margin-left: 250px;
+  }
+  
+  .content.no-sidebar {
+    margin-left: 0; /* When sidebar is off, content adjusts to full width */
+    width: 100%;
+  }
+  
