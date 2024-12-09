@@ -1,0 +1,29 @@
+
+
+
+<Route path="/general-roles" element={< AssignRole />} /> Create all Admin Access
+<Route path="/delete-access" element={< DeleteAccess />} /> delete all Admin Access
+<Route path="/manager-admin" element={<RoleAssignmentManagers />} /make a manager an admin
+<Route path="/addmini" element={<AddMinistryForm />} />{/* Allows the admin to add a new ministry to the ministry database */}  
+<Route path="/adddep" element={<AddDepartment />} />  
+{/* Enables the admin to add a new department to the department database */}  
+/addmanager	<AddManager /> add manager t the manager table
+/deletemanager	<DeleteManager /> delete manager from the managers table
+/remove-ministry	<RemoveMinistry />	Deletes a ministry from the ministry database.
+/removedep	<RemoveDepartment />	Deletes a department from the department database.
+
+
+
+
+<AssignRole/> /general-roles Function:  Create all Admin Access
+<RoleAssignmentManagers /> /manager-admin : assign Manager an admin role
+<DeleteAccess/> /delete-access : delete all Admin Access
+
+<AddManager /> /addmanager : add manager to the manager table
+<DeleteManager/> /deletemanager : delete manager from the managers table
+
+<AddMinistryForm />/admini: Add an ministry to the database
+<RemoveMinistry />/ remove-ministry : Remove ministry from the database
+
+<AddDepartment />/ adddep : Add Department to the database
+<RemoveDepartment/> /removedep : Delete Department to the database

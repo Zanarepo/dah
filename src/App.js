@@ -1,16 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
-
-
-
-
-
-
-
-
-
-
 import EmployeePersonalDetails from "./component/profile/EmployeePersonalDetails";
 import EmployeeEmploymentDetails from "./component/profile/EmployeeEmploymentDetails";
 import ProfileForm from "./component/profile/ProfileForm";
@@ -69,7 +59,24 @@ import MainDashboard from "./component/Dashbaord/MainDashboard"
 import AdminLayout from "./component/Layout/Layout.js"
 import EmployeeTable from "./component/MinistriesFunctions/EmployeeTable"
 import EmployeePortal from "./component/Dashbaord/EmployeePortal"
+import GeneralEmployeesSearch from "./component/SuperAdmins/GeneralEmployeesSearch"
+import GeneralVacation from "./component/SuperAdmins/GeneralVacation"
+import GeneralEmployeeTable from "./component/SuperAdmins/GeneralEmployeeTable"
+import GeneralLeaveApproval from "./component/SuperAdmins/GeneralLeaveApproval"
+import GeneralLeaveHistory from "./component/SuperAdmins/GeneralLeaveHistory"
+import GeneralLeaveStatus from "./component/SuperAdmins/GeneralLeaveStatus"
 
+import GeneralUpcomingRetiremnt  from "./component/SuperAdmins/GeneralUpcomingRetiremnt"
+
+import GeneralRetirees from "./component/SuperAdmins/GeneralRetirees"
+
+import GeneralGratuityClearance from "./component/SuperAdmins/GeneralGratuityClearance"
+import GeneralPendingRetirement from "./component/SuperAdmins/GeneralPendingRetirement"
+import GeneralLeaveRequests from "./component/SuperAdmins/GeneralLeaveRequests"
+import AssignSuperAdmin from "./component/SuperAdmins/AssignSuperAdmin"
+import AssignRole from "./component/SuperAdmins/AssignRole"
+import SuperAdminSettings from "./component/SuperAdmins/SuperAdminSettings"
+import SuperLayout from "./component/Layout/SuperLayout"
 import Analytics from "./component/SuperAdmins/Analytics";
 import SuperAdmin from "./component/SuperAdmins/SuperAdmin";
 import GeneralDepartments from "./component/SuperAdmins/GeneralDepartments";
@@ -78,7 +85,34 @@ import GeneralDashboards from "./component/SuperAdmins/GeneralDashboards";
 import GeneralSettings from "./component/SuperAdmins/GeneralSettings";
 
 import GeneralAdmins from "./component/SuperAdmins/GeneralAdmins";
+import GeneralNotifications from "./component/SuperAdmins/GeneralNotifications"
+import Backfunction from "./component/MinistryDashboard/Backfunction.js";
 
+
+import GeneralEmployeePortal from "./component/SuperAdmins/GeneralEmployeePortal"
+//import GeneralNotifications from "./component/SuperAdmins/GeneralNotifications"
+//import GeneralNotifications from "./component/SuperAdmins/GeneralNotifications"
+import GeneralLeaveCentre from "./component/SuperAdmins/GeneralLeaveCentre"
+import DeleteAccess from "./component/SuperAdmins/DeleteAccess"
+import RoleAssignmentManagers from "./component/SuperAdmins/RoleAssignmentManagers"
+import SuperAdminRoleDashboard from "./component/SuperAdmins/SuperAdminRoleDashboard"
+import AddManagerDashboard from "./component/SuperAdmins/AddManagerDashboard"
+import  AddMinistryDashboard from "./component/SuperAdmins/AddMinistryDashboard"
+import AddDepartmentDashboard from "./component/SuperAdmins/AddDepartmentDashboard"
+import MinistryDashboard from "./component/MinistryDashboard/MinistryDashboard"
+import MinistryLayout from "./component/Layout/MinistryLayout.js"
+
+import MinistryDepartments from "./component/MinistryDashboard/MinistryDepartment"
+import MinistryList from "./component/MinistryDashboard/MinistryList"
+import DepartmentDashboard from "./component/MinistryDashboard/DepartmentDashboard"
+import DepartmentList from "./component/MinistryDashboard/DepartmentList"
+ import MinistryLeave from "./component/MinistryDashboard/MinistryLeave"
+import MinLeaveRequests from "./component/MinistryDashboard/MinLeaveRequests"
+import MinLeaveTracker from "./component/MinistryDashboard/MinLeaveTracker"
+import MinLeaveApproval from "./component/MinistryDashboard/MinLeaveApproval"
+import MinLeaveHistory from "./component/MinistryDashboard/MinLeaveHistory"
+import VacationTracker from "./component/MinistryDashboard/VacationTracker"
+import MinistryActivities from "./component/MinistryDashboard/MinistryActivities"
 
 
 
@@ -92,26 +126,91 @@ function App() {
 
     {/* Route for the main profile form that includes all sections */}
           
+          
         <Routes>
-         
-
-
-          
        
-        <Route path="/g-departsment" element={<GeneralDepartments />} />
-          <Route path="/superadmins" element={<SuperAdmin />} />    
-          <Route path="/g-settings" element={<GeneralSettings />} />
-          <Route path="/g-dashboards" element={<GeneralDashboards />} />
-          <Route path="/g-settings" element={<GeneralSettings />} />
-          <Route path="/g-admins" element={<GeneralAdmins />} />
-          <Route path="/g-ministries" element={<GeneralMinistries />} />
+        <Route path="/" element={<SuperLayout />}>
+        {/* Nested routes under SuperLayout */}
+        <Route path="g-departments" element={<GeneralDepartments />} />
+        <Route path="superadmins" element={<SuperAdmin />} />
+        <Route path="g-settings" element={<GeneralSettings />} />
+        <Route path="g-dashboards" element={<GeneralDashboards />} />
+        <Route path="g-admins" element={<GeneralAdmins />} />
+        <Route path="g-ministries" element={<GeneralMinistries />} />
+        <Route path="g-notifications" element={<GeneralNotifications />} />
+
+
+        {/* Ministry Dashboard*/}
+        
+
+
+
+      
+
+           {/* SuperAdmins children*/}
+        
+                  <Route path="/GeneralEmployeesSearch" element={<GeneralEmployeesSearch />} />
+                  <Route path="/GeneralVacation" element={< GeneralVacation/>} />
+                  <Route path="/GeneralEmployeeTable" element={<GeneralEmployeeTable />} />
+                   <Route path="/GeneralLeaveApproval" element={<GeneralLeaveApproval />} />
+                  <Route path="/GeneralLeaveStatus" element={<GeneralLeaveStatus />} />
+                  <Route path="/general-roles" element={< AssignRole />} />
+                   <Route path="/delete-access" element={< DeleteAccess />} />
+                  <Route path="/GeneralLeaveHistory" element={<GeneralLeaveHistory />} />
+                  <Route path="/manager-admin" element={<RoleAssignmentManagers />} />
+
+                  <Route path="/GeneralVacation" element={< GeneralVacation/>} />
+
+                  <Route path="/GeneralUpcomingRetiremnt " element={<GeneralUpcomingRetiremnt  />} />
+
+
+                   <Route path="/GeneralRetirees" element={<GeneralRetirees />} />
+                  <Route path="/GeneralPendingRetirement" element={<GeneralPendingRetirement />} />
+                  <Route path="/GeneralGratuityClearance" element={<GeneralGratuityClearance />} />
+                  <Route path="/GeneralLeaveRequests" element={<GeneralLeaveRequests />} />
+                  <Route path="/GeneralEmployeePortal" element={<GeneralEmployeePortal />} />
+                  <Route path="/GeneralLeaveCentre" element={<GeneralLeaveCentre />} />
+                  <Route path="/super-admins" element={<SuperAdminSettings />} />
+                  <Route path="/role-dashboard" element={<SuperAdminRoleDashboard />} />
+                  <Route path="/addmanager-dashboard" element={<AddManagerDashboard />} />
+                  <Route path="/addministry-dashboard" element={< AddMinistryDashboard />} />
+                  <Route path="/adddept-dashboard" element={< AddDepartmentDashboard />} /> 
+
+                </Route>
+                      
+                  
+              <Route path="/" element={<MinistryLayout />}>
+              <Route path="/Back" element={<Backfunction />}></Route> 
+
+              <Route path="/adminministry" element={<MinistryDashboard /> } 
+              />
+              <Route path="/ministry-leave" element={<MinistryLeave />} />
           
-          
+              <Route path="/mini-departments" element={<MinistryDepartments />} />
+              <Route path="/ministry-list" element={<MinistryList />} />
+              <Route path="/department-dashboard" element={<DepartmentDashboard />} />
+              <Route path="/department-list" element={<DepartmentList />} />
+              <Route path="/" element={<MinistryLeave />} />
+              <Route path="/minleave-requests/:departmentId" element={<MinLeaveRequests />} />
+              <Route path="/minleave-tracker/:departmentId" element={<MinLeaveTracker />} />
+              <Route path="/minleave-approval/:departmentId" element={<MinLeaveApproval />} />
+              <Route path="/minleave-history/:departmentId" element={<MinLeaveHistory />} />
+              <Route path="/minvacation" element={<VacationTracker/>} />
+              <Route path="/activities" element={<MinistryActivities/>} />
+              
+              
+
+              </Route>
+
+
+
+
           <Route path="/admin" element={<AdminPanel />} />
           <Route path="/general" element={<MinistryActivity />} />
-          <Route path="/profile" element={<ProfileForm />} />
+          <Route path="/profiles" element={<ProfileForm />} />
           <Route path="/role-selection" element={<RoleSelection />}/> 
           <Route path="/leave-centres" element={<LeaveCentre />}/> 
+          <Route path="/create-superadmin" element={<AssignSuperAdmin />}/> 
 
 
           {/* Routes for MinistreisFunctions*/}
@@ -202,5 +301,6 @@ function App() {
     </Router>
   );
 }
+
 
 export default App;

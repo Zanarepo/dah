@@ -67,6 +67,7 @@ const DeleteManager = () => {
   const handleDeleteConfirmation = async () => {
     if (selectedManagers.length === 0) {
       setError("Please select at least one manager to delete.");
+      setTimeout(() => setError(""), 3000); // Clear error after 3 seconds
       return;
     }
 
@@ -79,15 +80,18 @@ const DeleteManager = () => {
 
       if (deleteError) {
         setError("Error deleting managers.");
+        setTimeout(() => setError(""), 3000); // Clear error after 3 seconds
         console.error(deleteError);
       } else {
         setSuccessMessage("Managers deleted successfully!");
+        setTimeout(() => setSuccessMessage(""), 3000); // Clear success message after 3 seconds
         setSelectedManagers([]); // Clear selected managers
         setShowConfirmation(false); // Hide confirmation modal
         fetchManagers(); // Refresh the list of managers
       }
     } catch (err) {
       setError("An unexpected error occurred.");
+      setTimeout(() => setError(""), 3000); // Clear error after 3 seconds
       console.error(err);
     }
   };
@@ -98,31 +102,39 @@ const DeleteManager = () => {
   }, []);
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Delete Manager</h1>
+    <div className="p-6 max-w-4xl mx-auto">
+      <h1 className="text-3xl font-semibold text-gray-800 mb-6">Delete Manager</h1>
 
       {/* Error or Success Message */}
-      {error && <p className="text-red-500">{error}</p>}
-      {successMessage && <p className="text-green-500">{successMessage}</p>}
+      {error && (
+        <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-md shadow-md">
+          {error}
+        </div>
+      )}
+      {successMessage && (
+        <div className="mb-4 p-4 bg-green-100 text-green-700 rounded-md shadow-md">
+          {successMessage}
+        </div>
+      )}
 
       {/* Manager List */}
-      <ul className="space-y-2">
+      <ul className="space-y-4">
         {managers.map((manager) => (
           <li
             key={manager.id}
-            className="flex items-center justify-between p-2 bg-white border rounded-md shadow-md"
+            className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-md shadow-md hover:bg-gray-50"
           >
-            <div>
+            <div className="text-lg font-semibold">
               {manager.first_name} {manager.last_name} - {manager.role}
             </div>
-            <div>
+            <div className="flex items-center space-x-2">
               <input
                 type="checkbox"
                 checked={selectedManagers.includes(manager.id)}
                 onChange={() => handleSelectManager(manager.id)}
-                className="mr-2"
+                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
               />
-              Select
+              <span className="text-sm text-gray-500">Select</span>
             </div>
           </li>
         ))}
@@ -131,7 +143,7 @@ const DeleteManager = () => {
       {/* Delete Button */}
       <button
         onClick={() => setShowConfirmation(true)}
-        className="mt-4 bg-red-500 text-white px-4 py-2 rounded-md"
+        className="mt-6 bg-red-500 text-white px-6 py-3 rounded-md hover:bg-red-600 transition-colors"
       >
         Delete Selected Managers
       </button>
@@ -139,19 +151,19 @@ const DeleteManager = () => {
       {/* Confirmation Modal */}
       {showConfirmation && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-md shadow-md max-w-sm w-full">
+          <div className="bg-white p-8 rounded-md shadow-md max-w-sm w-full">
             <h3 className="text-xl font-semibold mb-4">Confirm Deletion</h3>
-            <p>Are you sure you want to delete the selected managers?</p>
-            <div className="mt-4 flex justify-end space-x-2">
+            <p className="text-gray-700 mb-4">Are you sure you want to delete the selected managers?</p>
+            <div className="mt-6 flex justify-end space-x-4">
               <button
                 onClick={() => setShowConfirmation(false)}
-                className="bg-gray-300 px-4 py-2 rounded-md"
+                className="bg-gray-300 px-6 py-2 rounded-md text-gray-700 hover:bg-gray-400 transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleDeleteConfirmation}
-                className="bg-red-500 text-white px-4 py-2 rounded-md"
+                className="bg-red-500 text-white px-6 py-2 rounded-md hover:bg-red-600 transition-colors"
               >
                 Yes, Delete
               </button>

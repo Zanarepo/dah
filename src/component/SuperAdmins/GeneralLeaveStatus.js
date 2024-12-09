@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../../supabaseClient";
 import { useNavigate } from "react-router-dom";
+import { FaEdit, FaTrash, FaEye, FaArrowLeft } from "react-icons/fa";
 
 const LeaveTracker = () => {
   const [leaveStats, setLeaveStats] = useState({
@@ -73,12 +74,13 @@ const LeaveTracker = () => {
 
   return (
     <div className="min-h-screen bg-gray-100">
-          <button
-        className="fixed top-4 left-4 bg-blue-500 text-white px-4 py-2 rounded-full shadow-lg"
-            onClick={() => navigate(-1)}
-          >
-            ← Back
-          </button>
+      <button
+        className="flex items-center text-blue-500 hover:text-blue-700 mb-4"
+        onClick={() => navigate(-1)}
+      >
+        <FaArrowLeft className="mr-2" /> Back
+      </button>
+
       <div className="max-w-6xl mx-auto py-6 px-4">
         <h1 className="text-center text-3xl font-bold text-gray-800 mb-8">
           Leave Tracker

@@ -8,7 +8,6 @@ const LoginForm = () => {
   const [message, setMessage] = useState({ text: "", type: "" }); // For pop-up messages
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate(); // Hook for navigation
-  
 
   const handleChange = (e) => {
     setFormData({
@@ -20,9 +19,9 @@ const LoginForm = () => {
     e.preventDefault();
     setMessage({ text: "", type: "" });
     setLoading(true);
-  
+
     const { employee_id, password } = formData;
-  
+
     try {
       // Fetch the user from the employee_profiles table
       const { data: user, error: fetchError } = await supabase
@@ -30,13 +29,13 @@ const LoginForm = () => {
         .select("employee_id, password, is_admin")
         .eq("employee_id", employee_id)
         .single();
-  
+
       if (fetchError || !user) {
         setMessage({ text: "Invalid Employee ID or password.", type: "error" });
         setLoading(false);
         return;
       }
-  
+
       // Verify password
       const isPasswordValid = await bcrypt.compare(password, user.password);
       if (!isPasswordValid) {
@@ -44,7 +43,7 @@ const LoginForm = () => {
         setLoading(false);
         return;
       }
-  
+
       // Save employee_id in localStorage for session persistence
       localStorage.setItem("employee_id", employee_id);
   
@@ -62,12 +61,12 @@ const LoginForm = () => {
           return;
         }
         // If user is only an admin
-        navigate("/admin-page");
+        navigate("/");
       } else {
         // If user is only an employee
-        navigate("/profile");
+        navigate("/profiles");
       }
-  
+
       setMessage({ text: "Login successful!", type: "success" });
       setLoading(false);
     } catch (err) {
@@ -76,7 +75,7 @@ const LoginForm = () => {
       setLoading(false);
     }
   };
-  
+
   // Navigate to Forgot Password Page
   const handleForgotPassword = () => {
     navigate("/forgot-password");

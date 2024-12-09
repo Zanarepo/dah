@@ -10,10 +10,10 @@ const Layout = ({ children }) => {
     <div className="flex">
       <Sidebar /> {/* Sidebar */} 
       
-      <div className="flex-1 p-6 ml-64"> {/* Content section */}
+      <div className="flex-1 md:ml-64 p-4 bg-gray-100"> {/* Content section */}
         
         {children} {/* Page content */}
-
+    
         
         
       </div>
