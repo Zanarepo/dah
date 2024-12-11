@@ -16,10 +16,10 @@ const SuperAdmin = () => {
   const sidebarRef = useRef(null); // Reference to the sidebar
 
   const menuItems = [
-    { name: "Notifications", icon: <BellIcon className="h-6 w-6" />, route: "/g-notifications" },
+    { name: "Notifications", icon: <BellIcon className="h-6 w-6" />, route: "/super-notification" },
     { name: "Departments", icon: <BuildingOffice2Icon className="h-6 w-6" />, route: "/g-departments" },
     { name: "Ministries", icon: <BuildingLibraryIcon className="h-6 w-6" />, route: "/g-ministries" },
-    { name: "Admins", icon: <UsersIcon className="h-6 w-6" />, route: "/super-admins" },
+    { name: "Admins", icon: <UsersIcon className="h-6 w-6" />, route: "/superadmins" },
     { name: "Dashboards", icon: <ChartPieIcon className="h-6 w-6" />, route: "/g-dashboards" },
     { name: "Settings", icon: <CogIcon className="h-6 w-6" />, route: "/super-settings" },
   ];

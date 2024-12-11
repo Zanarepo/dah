@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../../supabaseClient";
 import { FaEdit, FaTrash, FaEye, FaArrowLeft } from "react-icons/fa";
+import CreateNotice from "../GeneralNotifications/CreateNotice";
 
 import { useNavigate } from "react-router-dom";
 
@@ -270,6 +271,7 @@ const LeaveRequest = () => {
                   placeholder="Comment"
                   value={leaveDetails.comment}
                   onChange={(e) => setLeaveDetails({ ...leaveDetails, comment: e.target.value })}
+                  
                 ></textarea>
                 <button
                   className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600"

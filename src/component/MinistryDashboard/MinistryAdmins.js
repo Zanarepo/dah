@@ -22,18 +22,18 @@ const SettingsDashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
         {/* SuperAdmin Role Dashboard */}
         <div className="flex justify-center">
-          <Link to="/role-dashboard">
+          <Link to="/minrole-dashboard">
             <button className="w-full bg-blue-500 text-white py-3 px-6 rounded-lg shadow-md hover:bg-blue-700 transition duration-300 flex items-center justify-center">
               <FaUserShield className="mr-2 text-xl" />
               <span>Manage Admin Roles</span>
             </button>
           </Link>
         </div>
-
+        
 
         {/* Add Manager Dashboard */}
         <div className="flex justify-center">
-          <Link to="/addmanager-dashboard">
+          <Link to="/addmin-manager">
             <button className="w-full bg-green-500 text-white py-3 px-6 rounded-lg shadow-md hover:bg-green-700 transition duration-300 flex items-center justify-center">
               <FaUsersCog className="mr-2 text-xl" />
               <span>Add or Remove Managers</span>
@@ -43,10 +43,10 @@ const SettingsDashboard = () => {
 
         {/* Add Ministry Dashboard */}
         <div className="flex justify-center">
-          <Link to="/addministry-dashboard">
+          <Link to="/adremove-minidashboard">
             <button className="w-full bg-indigo-500 text-white py-3 px-6 rounded-lg shadow-md hover:bg-indigo-700 transition duration-300 flex items-center justify-center">
               <FaBuilding className="mr-2 text-xl" />
-              <span>Add or Remove Ministries</span>
+              <span>Add or Remove Department</span>
             </button>
           </Link>
         </div>
@@ -56,7 +56,7 @@ const SettingsDashboard = () => {
 
         {/* Assign Admin to Department & Ministry */}
         <div className="flex justify-center">
-          <Link to="/assigadmin-mindepart">
+          <Link to="/assignadmin-department">
             <button className="w-full bg-purple-500 text-white py-3 px-6 rounded-lg shadow-md hover:bg-purple-700 transition duration-300 flex items-center justify-center">
               <FaUserTie className="mr-2 text-xl" />
               <span>Assign Admin to Department & Ministry</span>
@@ -65,16 +65,11 @@ const SettingsDashboard = () => {
         </div>
 
         {/* Add Department Dashboard */}
-        <div className="flex justify-center">
-          <Link to="/adddept-dashboard">
-            <button className="w-full bg-red-500 text-white py-3 px-6 rounded-lg shadow-md hover:bg-red-700 transition duration-300 flex items-center justify-center">
-              <FaLayerGroup className="mr-2 text-xl" />
-              <span>Add or Remove Departments</span>
-            </button>
-          </Link>
-        </div>
-      </div>
-    </div>
+    </div>  
+          
+    </div>      
+        
+    
   );
 };
 

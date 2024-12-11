@@ -1,13 +1,13 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; // For redirection
+import { useNavigate } from "react-router-dom";
 import { supabase } from "../../supabaseClient";
 import bcrypt from "bcryptjs";
 
 const LoginForm = () => {
   const [formData, setFormData] = useState({ employee_id: "", password: "" });
-  const [message, setMessage] = useState({ text: "", type: "" }); // For pop-up messages
+  const [message, setMessage] = useState({ text: "", type: "" });
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate(); // Hook for navigation
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({
@@ -15,58 +15,49 @@ const LoginForm = () => {
       [e.target.name]: e.target.value,
     });
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage({ text: "", type: "" });
     setLoading(true);
-
+  
     const { employee_id, password } = formData;
-
+  
     try {
-      // Fetch the user from the employee_profiles table
-      const { data: user, error: fetchError } = await supabase
+      const { data: user, error } = await supabase
         .from("employee_profiles")
-        .select("employee_id, password, is_admin")
+        .select("employee_id, password, is_admin, admin_ministry, is_super_admin")
         .eq("employee_id", employee_id)
         .single();
-
-      if (fetchError || !user) {
+  
+      if (error || !user) {
         setMessage({ text: "Invalid Employee ID or password.", type: "error" });
         setLoading(false);
         return;
       }
-
-      // Verify password
+  
       const isPasswordValid = await bcrypt.compare(password, user.password);
       if (!isPasswordValid) {
         setMessage({ text: "Invalid Employee ID or password.", type: "error" });
         setLoading(false);
         return;
       }
-
-      // Save employee_id in localStorage for session persistence
+  
       localStorage.setItem("employee_id", employee_id);
   
-      // Dual-role check
-      if (user.is_admin) {
-        // Check if the user is both an admin and an employee
-        const { data: employeeCheck } = await supabase
-          .from("employee_profiles")
-          .select("*")
-          .eq("employee_id", employee_id)
-          .single();
+      // Determine roles and corresponding routes
+      const roles = [];
+      if (user.is_super_admin) roles.push({ name: "Super Admin", route: "/superadmins" });
+      if (user.admin_ministry) roles.push({ name: "Admin Ministry", route: "/adminministry" });
+      if (user.is_admin) roles.push({ name: "Admin", route: "/dashboard" });
+      roles.push({ name: "Employee", route: "/profiles" }); // Always include Employee role
   
-        if (employeeCheck && user.is_admin) {
-          navigate("/role-selection"); // Redirect to role selection page
-          return;
-        }
-        // If user is only an admin
-        navigate("/");
+      if (roles.length === 1) {
+        navigate(roles[0].route); // Redirect directly if only one role
       } else {
-        // If user is only an employee
-        navigate("/profiles");
+        navigate("/role-selection", { state: { roles } }); // Pass roles to RoleSelection
       }
-
+  
       setMessage({ text: "Login successful!", type: "success" });
       setLoading(false);
     } catch (err) {
@@ -75,8 +66,8 @@ const LoginForm = () => {
       setLoading(false);
     }
   };
-
-  // Navigate to Forgot Password Page
+  
+  
   const handleForgotPassword = () => {
     navigate("/forgot-password");
   };
@@ -85,7 +76,6 @@ const LoginForm = () => {
     <div className="max-w-sm mx-auto p-4 bg-white shadow-md rounded relative">
       <h2 className="text-2xl font-bold mb-4">Login</h2>
 
-      {/* Pop-up Message */}
       {message.text && (
         <div
           className={`absolute top-4 right-4 p-3 rounded ${
@@ -134,7 +124,6 @@ const LoginForm = () => {
         </button>
       </form>
 
-      {/* Forgot Password Link */}
       <div className="mt-4 text-center">
         <button
           onClick={handleForgotPassword}

@@ -1,6 +1,14 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { FaUserShield, FaUsersCog, FaBuilding, FaLayerGroup } from 'react-icons/fa'; // Icons for each section
+import React from "react";
+import { Link } from "react-router-dom";
+
+
+import {
+  FaUserShield,
+  FaUsersCog,
+  FaBuilding,
+  FaLayerGroup,
+  FaUserTie, // Icon for Assign Admin to Department & Ministry
+} from "react-icons/fa";
 
 const SettingsDashboard = () => {
   return (
@@ -12,7 +20,6 @@ const SettingsDashboard = () => {
 
       {/* Dashboard Buttons Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
-        
         {/* SuperAdmin Role Dashboard */}
         <div className="flex justify-center">
           <Link to="/role-dashboard">
@@ -22,6 +29,7 @@ const SettingsDashboard = () => {
             </button>
           </Link>
         </div>
+
 
         {/* Add Manager Dashboard */}
         <div className="flex justify-center">
@@ -39,6 +47,19 @@ const SettingsDashboard = () => {
             <button className="w-full bg-indigo-500 text-white py-3 px-6 rounded-lg shadow-md hover:bg-indigo-700 transition duration-300 flex items-center justify-center">
               <FaBuilding className="mr-2 text-xl" />
               <span>Add or Remove Ministries</span>
+            </button>
+          </Link>
+        </div>
+
+        
+     
+
+        {/* Assign Admin to Department & Ministry */}
+        <div className="flex justify-center">
+          <Link to="/assigadmin-mindepart">
+            <button className="w-full bg-purple-500 text-white py-3 px-6 rounded-lg shadow-md hover:bg-purple-700 transition duration-300 flex items-center justify-center">
+              <FaUserTie className="mr-2 text-xl" />
+              <span>Assign Admin to Department & Ministry</span>
             </button>
           </Link>
         </div>

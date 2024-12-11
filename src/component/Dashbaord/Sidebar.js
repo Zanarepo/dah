@@ -13,6 +13,7 @@ import {
   CogIcon,
   Bars3Icon,
   XMarkIcon,
+  BellIcon,
 } from "@heroicons/react/24/outline";
 
 const Sidebar = () => {
@@ -20,6 +21,7 @@ const Sidebar = () => {
   const sidebarRef = useRef(null); // Reference to the sidebar
 
   const menuItems = [
+    { name: "Notifications", icon: <BellIcon className="h-6 w-6" />, route: "/department-alert" },
     { name: "Employees", icon: <UserGroupIcon className="h-6 w-6" />, route: "/employee-portals" },
     { name: "Leave Dashboard", icon: <ClipboardDocumentListIcon className="h-6 w-6" />, route: "/leave-centre" },
     { name: "Promotions", icon: <ArrowTrendingUpIcon className="h-6 w-6" />, route: "/promotions" },
