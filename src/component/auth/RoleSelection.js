@@ -6,6 +6,8 @@ const RoleSelection = () => {
   const location = useLocation();
   const roles = location.state?.roles || []; // Get roles from state
 
+  console.log('Roles in RoleSelection:', roles); // Log roles to debug
+
   const handleRoleSelect = (route) => {
     navigate(route); // Navigate to the selected route
   };

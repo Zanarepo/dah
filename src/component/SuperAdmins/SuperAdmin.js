@@ -73,9 +73,22 @@ const SettingsDashboard = () => {
             </button>
           </Link>
         </div>
+
+        {/* Add Department Dashboard */}
+        <div className="flex justify-center">
+          <Link to="/access-roles">
+            <button className="w-full bg-red-500 text-white py-3 px-6 rounded-lg shadow-md hover:bg-red-700 transition duration-300 flex items-center justify-center">
+              <FaLayerGroup className="mr-2 text-xl" />
+              <span>Assign Admin Roles</span>
+            </button>
+          </Link>
+        </div>
       </div>
     </div>
+    
   );
+
+  
 };
 
 export default SettingsDashboard;

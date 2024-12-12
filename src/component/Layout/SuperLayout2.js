@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
 import { NavLink, Outlet } from "react-router-dom";
-import AdminLeaveNotification from "../Notifications/AdminLeaveNotification";
 import {
   BuildingOffice2Icon,
   BuildingLibraryIcon,
@@ -17,9 +16,9 @@ const SuperAdmin = () => {
   const sidebarRef = useRef(null); // Reference to the sidebar
 
   const menuItems = [
-    { name: "Notifications", icon: <BellIcon className="h-6 w-6" />, route: "/general-notification" },
-    //{ name: "Departments", icon: <BuildingOffice2Icon className="h-6 w-6" />, route: "/adminministry" },
-    { name: "Ministries", icon: <BuildingLibraryIcon className="h-6 w-6" />, route: "/activity" },
+    { name: "Notifications", icon: <BellIcon className="h-6 w-6" />, route: "/super-notification" },
+    { name: "Departments", icon: <BuildingOffice2Icon className="h-6 w-6" />, route: "/g-departments" },
+    { name: "Ministries", icon: <BuildingLibraryIcon className="h-6 w-6" />, route: "/g-ministries" },
     { name: "Admins", icon: <UsersIcon className="h-6 w-6" />, route: "/superadmins" },
     { name: "Dashboards", icon: <ChartPieIcon className="h-6 w-6" />, route: "/g-dashboards" },
     { name: "Settings", icon: <CogIcon className="h-6 w-6" />, route: "/super-settings" },
@@ -59,14 +58,7 @@ const SuperAdmin = () => {
         } transition-transform md:translate-x-0 md:w-64 w-64`}
       >
         <div className="flex items-center justify-between p-4">
-          <h4 className="text-xl font-bold">Super Admin</h4>
-
-          <div className="flex items-center justify-between p-4">
-        
-          <div className="p-2">
-            <AdminLeaveNotification />
-          </div>
-        </div>
+          <h4 className="text-xl font-bold">SuperAdmin</h4>
           {/* Close button for mobile */}
           <button onClick={toggleSidebar} className="md:hidden">
             <XMarkIcon className="h-6 w-6" />

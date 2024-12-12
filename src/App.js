@@ -136,6 +136,33 @@ import RemoveMinDepartmement from "./component/MinistryDashboard/RemoveMinDepart
 import AddRemMinDashboard from "./component/MinistryDashboard/AddRemMinDashboard"
 import AssignAdminsDepartment from "./component/MinistryDashboard/AssignAdminsDepartment"
 import MinistryAdmins from "./component/MinistryDashboard/MinistryAdmins"
+import SuperVacationTracker from "./component/SuperAdmins/SuperVacationTracker"
+import SuperActivities from "./component/SuperAdmins/SuperActivities"
+import SuperMinistryDashboard from "./component/SuperAdmins/SuperMinistryDashboard"
+import SuperVacaSuperAdminLeave from "./component/SuperAdmins/SuperAdminLeave"
+import Layout from "./component/Layout/Layout"
+import AdminNotification from "./component/AdminPanel/AdminNotification"
+import DepartmentActivities from "./component/AdminPanel/DepartmentActivities"
+import DepartmentVacationTracker from "./component/AdminPanel/DepartmentVacationTracker"
+import AllDepartmentDashboard from "./component/AdminPanel/AllDepartmentDashboard"
+import DepartmentLeave from "./component/AdminPanel/DepartmentLeave"
+import DepartmentLeaveRequest from "./component/AdminPanel/DepartmentLeaveRequest"
+
+import DepartmentLeaveDashboard from "./component/AdminPanel/DepartmentLeaveDashboard"
+import DeptLeaveRequests from "./component/AdminPanel/DeptLeaveRequests"
+import DeptLeaveTracker from "./component/AdminPanel/DeptLeaveTracker"
+import DeptLeaveApproval from "./component/AdminPanel/DeptLeaveApproval"
+import DeptLeaveHistory from "./component/AdminPanel/DeptLeaveHistory"
+import AccessLevelRoles from "./component/AdminPanel/AccessLevelRoles"
+
+
+
+
+
+
+
+
+
 
 
 function App() {
@@ -143,9 +170,37 @@ function App() {
     <Router>
       <div className="App">
 
-    {/* Route for the main profile form that includes all sections */}
-          
-          
+    {/* Route for ADMIN  */}
+
+    <Routes>    
+   
+
+    <Route path="/lay" element={<Layout />}>
+    
+    </Route>
+   
+
+    <Route path="/" element={<Layout />}>
+    <Route path="/admin-notification" element={<AdminNotification />}></Route>
+    <Route path="/departactvities" element={<DepartmentActivities/>}></Route>
+    <Route path="/department-vacation" element={<DepartmentVacationTracker/>}></Route>
+    <Route path="/admindashboard" element={<AllDepartmentDashboard/>}></Route>
+    <Route path="/department-leave" element={<DepartmentLeave/>}></Route>
+    <Route path="/department-leavereq" element={<DepartmentLeaveRequest/>}></Route>
+    <Route path="/dept-leavedashboard" element={<DepartmentLeaveDashboard/>}></Route>
+  
+
+    <Route path="/deptleave-requests/:departmentId" element={<DeptLeaveRequests />} />
+    <Route path="/deptleave-tracker/:departmentId" element={<DeptLeaveTracker />} />
+    <Route path="/deptleave-approval/:departmentId" element={<DeptLeaveApproval />} />
+    <Route path="/deptleave-history/:departmentId" element={<DeptLeaveHistory />} />
+
+    </Route>
+
+ </Routes>
+
+
+
         <Routes>
        
         <Route path="/" element={<SuperLayout />}>
@@ -158,6 +213,12 @@ function App() {
         <Route path="g-ministries" element={<GeneralMinistries />} />
         <Route path="g-notifications" element={<GeneralNotifications />} />
         <Route path="super-notification" element={<SuperNotifications />} />
+        <Route path="/activity" element={<SuperActivities/>} />
+        <Route path="/superVacation" element={<  SuperVacationTracker/>} />
+        <Route path="/superministry" element={<SuperMinistryDashboard /> } />
+        <Route path="/supervacation" element={<SuperVacationTracker/>} />
+        <Route path="/superleave" element={<SuperVacaSuperAdminLeave/>} />
+
         
 
         {/* Ministry Dashboard*/}
@@ -183,7 +244,8 @@ function App() {
                    <Route path="/assigadmin-mindepart" element={< AdminAssignment/>} />
 
                   <Route path="/GeneralUpcomingRetiremnt " element={<GeneralUpcomingRetiremnt  />} />
-
+                  <Route path="/access-roles" element={<AccessLevelRoles  />} />
+                 
 
                   <Route path="/GeneralRetirees" element={<GeneralRetirees />} />
                   <Route path="/GeneralPendingRetirement" element={<GeneralPendingRetirement />} />
@@ -213,13 +275,15 @@ function App() {
               <Route path="/department-dashboard" element={<DepartmentDashboard />} />
               <Route path="/department-list" element={<DepartmentList />} />
               <Route path="/" element={<MinistryLeave />} />
+
               <Route path="/minleave-requests/:departmentId" element={<MinLeaveRequests />} />
               <Route path="/minleave-tracker/:departmentId" element={<MinLeaveTracker />} />
               <Route path="/minleave-approval/:departmentId" element={<MinLeaveApproval />} />
               <Route path="/minleave-history/:departmentId" element={<MinLeaveHistory />} />
+
               <Route path="/minvacation" element={<VacationTracker/>} />
               <Route path="/activities" element={<MinistryActivities/>} />
-           
+
               <Route path="/general-notification" element={<GeneralNotificationCenter/>} />
               <Route path="/create-notice" element={<CreateNotice/>} />
         

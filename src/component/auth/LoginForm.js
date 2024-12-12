@@ -20,44 +20,45 @@ const LoginForm = () => {
     e.preventDefault();
     setMessage({ text: "", type: "" });
     setLoading(true);
-  
+
     const { employee_id, password } = formData;
-  
+
     try {
       const { data: user, error } = await supabase
         .from("employee_profiles")
         .select("employee_id, password, is_admin, admin_ministry, is_super_admin")
         .eq("employee_id", employee_id)
         .single();
-  
+
       if (error || !user) {
         setMessage({ text: "Invalid Employee ID or password.", type: "error" });
         setLoading(false);
         return;
       }
-  
+
       const isPasswordValid = await bcrypt.compare(password, user.password);
       if (!isPasswordValid) {
         setMessage({ text: "Invalid Employee ID or password.", type: "error" });
         setLoading(false);
         return;
       }
-  
+
       localStorage.setItem("employee_id", employee_id);
-  
-      // Determine roles and corresponding routes
+      // Storing user details and session in localStorage
+      localStorage.setItem("user", JSON.stringify(user));
+
       const roles = [];
       if (user.is_super_admin) roles.push({ name: "Super Admin", route: "/superadmins" });
       if (user.admin_ministry) roles.push({ name: "Admin Ministry", route: "/adminministry" });
-      if (user.is_admin) roles.push({ name: "Admin", route: "/dashboard" });
-      roles.push({ name: "Employee", route: "/profiles" }); // Always include Employee role
-  
+      if (user.is_admin) roles.push({ name: "Admin", route: "/admindashboard" });
+      roles.push({ name: "Employee", route: "/profiles" });
+
       if (roles.length === 1) {
-        navigate(roles[0].route); // Redirect directly if only one role
+        navigate(roles[0].route);
       } else {
-        navigate("/role-selection", { state: { roles } }); // Pass roles to RoleSelection
+        navigate("/role-selection", { state: { roles } });
       }
-  
+
       setMessage({ text: "Login successful!", type: "success" });
       setLoading(false);
     } catch (err) {
@@ -66,8 +67,7 @@ const LoginForm = () => {
       setLoading(false);
     }
   };
-  
-  
+
   const handleForgotPassword = () => {
     navigate("/forgot-password");
   };

@@ -46,11 +46,11 @@ const MinistryDashboard = () => {
       try {
         let query = supabase.from("ministries").select("id, name");
 
-        // If the user is a super admin (no ministry_id or department_id), they have access to all ministries
+        // Check if the user is a Super Admin (no ministry_id or department_id)
         if (!adminAccess?.ministry_id || !adminAccess?.department_id) {
-          // Grant full access to all ministries and departments
+          // Super admin logic - full access
         } else if (adminAccess?.ministry_id) {
-          // If the user has a ministry_id, filter ministries based on their access
+          // Ministry Admin - restrict to specific ministry
           query = query.eq("id", adminAccess.ministry_id);
         }
 
@@ -75,13 +75,10 @@ const MinistryDashboard = () => {
             .select("id, name, ministry_id")
             .eq("ministry_id", selectedMinistryId);
 
-          // Check if user is a ministry admin (access_id 3 for example)
-          if (!adminAccess?.ministry_id || !adminAccess?.department_id) {
-            // Full access, no filtering needed
-          } else if (adminAccess?.ministry_id) {
-            query = query.eq("ministry_id", selectedMinistryId); // Show all departments in the ministry
-          } else if (adminAccess?.department_id) {
-            query = query.eq("id", adminAccess.department_id); // If user has department-level access
+          // Department Admin logic
+          if (adminAccess?.department_id) {
+            // If the user has a department_id, only show that department
+            query = query.eq("id", adminAccess.department_id);
           }
 
           const { data, error } = await query;
