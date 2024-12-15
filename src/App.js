@@ -172,7 +172,8 @@ import ProfileNotification from "./component/profile/ProfileNotification"
 import Chatapp from "./component/profile/Chatapp"
 import EmpChatList from "./component/profile/EmpChatList"
 import EmpLeave from "./component/profile/EmpLeave"
-
+import WelcomeUser from "./component/profile/WelcomeUser"
+import AdminsChatApp from "./component/Chat/AdminsChatApp"
 
 
 function App() {
@@ -195,7 +196,7 @@ function App() {
     </Routes>
     
     <Routes>    
-    <Route path="/my-profile" element={<ProfileLayout />}>
+    <Route path="/" element={<ProfileLayout />}>
     </Route>
   
 
@@ -205,10 +206,13 @@ function App() {
     <Route path="/employment-details" element={<EmployeeEmploymentDetails />} />
   
     <Route path="/profile-notifications" element={<ProfileNotification />} />
-    <Route path="/chatapps" element={<EmployeeChatApp />} />
+    <Route path="/chatting" element={<EmployeeChatApp />} />
     <Route path="/empchatlist" element={<EmpChatList />} />
     <Route path="/leave" element={<Leave/>} />
-   
+    <Route path="/my-profile" element={< WelcomeUser/>} />
+    
+
+  
     
     
     
@@ -232,7 +236,7 @@ function App() {
     <Route path="/department-leave" element={<DepartmentLeave/>}></Route>
     <Route path="/department-leavereq" element={<DepartmentLeaveRequest/>}></Route>
     <Route path="/dept-leavedashboard" element={<DepartmentLeaveDashboard/>}></Route>
- 
+    <Route path="/hello" element={<EmployeeChatApp />} />
 
     <Route path="/deptleave-requests/:departmentId" element={<DeptLeaveRequests />} />
     <Route path="/deptleave-tracker/:departmentId" element={<DeptLeaveTracker />} />
@@ -272,10 +276,10 @@ function App() {
         <Route path="/department-dashboard" element={<DepartmentDashboard/>} />
         <Route path="/chatlist" element={<ChatList/>} />
         <Route path="/chatbox" element={<ChatBox/>} />
-        <Route path="/chatapps" element={<ChatApp/>} />
-        <Route path="/chatapp" element={<EmployeeChatApp />} />
         
-       
+        <Route path="/chats" element={<AdminsChatApp />} />
+        
+        
     
           
               
@@ -329,7 +333,8 @@ function App() {
         <Route path="/adminministry" element={<MinistryDashboard /> } 
         />
         <Route path="/ministry-leave" element={<MinistryLeave />} />
-        
+        <Route path="/buzz" element={<EmployeeChatApp />} />
+
         <Route path="/mini-departments" element={<MinistryDepartments />} />
         <Route path="/ministry-list" element={<MinistryList />} />
         <Route path="/department-dashboard" element={<DepartmentDashboard />} />

@@ -2,14 +2,14 @@ import React, { useState, useRef, useEffect } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import AdminLeaveNotification from "../Notifications/AdminLeaveNotification";
 import {
-  BuildingOffice2Icon,
+
   BuildingLibraryIcon,
-  UsersIcon,
   ChartPieIcon,
   CogIcon,
   BellIcon,
   Bars3Icon as MenuIcon,
   XMarkIcon,
+  ChatBubbleLeftIcon
 } from "@heroicons/react/24/outline";
 
 const Admin = () => {
@@ -22,6 +22,7 @@ const Admin = () => {
     { name: "Ministry", icon: <BuildingLibraryIcon className="h-6 w-6" />, route: "/departactvities" },
     { name: "Dashboards", icon: <ChartPieIcon className="h-6 w-6" />, route: "/admin-dashboard" },
     { name: "Settings", icon: <CogIcon className="h-6 w-6" />, route: "/admin-settings" },
+    { name: "BuzzMe", icon: <ChatBubbleLeftIcon className="h-6 w-6" />, route: "/hello" },
   ];
 
   const toggleSidebar = () => setIsOpen(!isOpen); // Toggle sidebar visibility

@@ -20,9 +20,9 @@ const LoginForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-
+  
     const { employee_id, password } = formData;
-
+  
     try {
       // Attempt to fetch user data from Supabase
       const { data: user, error } = await supabase
@@ -30,14 +30,27 @@ const LoginForm = () => {
         .select("employee_id, password, is_admin, admin_ministry, is_super_admin")
         .eq("employee_id", employee_id)
         .single();
-
-      if (error || !user) {
-        // Show error toast if user not found or error occurs in Supabase query
-        toast.error(error?.message || "Invalid Employee ID or password.");
+  
+      if (error) {
+        if (error.message.includes("multiple rows")) {
+          toast.error(
+            "Multiple users found with this Employee ID. Please contact support."
+          );
+        } else if (error.message.includes("no rows")) {
+          toast.error("Invalid Employee ID or password.");
+        } else {
+          toast.error("Invalid Employee ID");
+        }
         setLoading(false);
         return;
       }
-
+  
+      if (!user) {
+        toast.error("Invalid Employee ID or password.");
+        setLoading(false);
+        return;
+      }
+  
       // Check if password is correct using bcrypt
       const isPasswordValid = await bcrypt.compare(password, user.password);
       if (!isPasswordValid) {
@@ -45,35 +58,35 @@ const LoginForm = () => {
         setLoading(false);
         return;
       }
-
+  
       // Storing user details and session in localStorage
       localStorage.setItem("employee_id", employee_id);
       localStorage.setItem("user", JSON.stringify(user));
-
+  
       const roles = [];
-      if (user.is_super_admin) roles.push({ name: "Super Admin", route: "/superadmins" });
-      if (user.admin_ministry) roles.push({ name: "Admin Ministry", route: "/adminministry" });
+      if (user.is_super_admin)
+        roles.push({ name: "Super Admin", route: "/superadmins" });
+      if (user.admin_ministry)
+        roles.push({ name: "Admin Ministry", route: "/adminministry" });
       if (user.is_admin) roles.push({ name: "Admin", route: "/admindashboard" });
       roles.push({ name: "Employee", route: "/my-profile" });
-
+  
       // Navigate based on user roles
       if (roles.length === 1) {
         navigate(roles[0].route);
       } else {
         navigate("/role-selection", { state: { roles } });
       }
-
+  
       // Success message
       toast.success("Login successful!");
       setLoading(false);
     } catch (err) {
-      // Handle unexpected errors (network errors, etc.)
       console.error("Login error:", err.message);
       toast.error("An unexpected error occurred. Please try again.");
       setLoading(false);
     }
   };
-
   const handleForgotPassword = () => {
     navigate("/forgot-password");
   };

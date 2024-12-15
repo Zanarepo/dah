@@ -5,18 +5,17 @@ import EmployeePersonalDetails from "./EmployeePersonalDetails";
 import EmployeeEmploymentDetails from "./EmployeeEmploymentDetails";
 import Leave from "./Leave";
 import Notifications from "../admin/Notification";
-//import ChatApp from "../Chat/ChatApp";
-import EmployeeChatApp from "../Chat/EmployeeChatApp"
+import EmployeeChatApp from "../Chat/EmployeeChatApp";
+import WelcomeUser from "./WelcomeUser";
+
 import {
   BellIcon,
-  //BuildingLibraryIcon,
   UserIcon,
- // ChartPieIcon,
   ChatBubbleLeftIcon,
   Bars3Icon as MenuIcon,
   XMarkIcon,
   BriefcaseIcon,
-  CalendarIcon
+  CalendarIcon,
 } from "@heroicons/react/24/outline";
 
 const EmployeeDashboard = () => {
@@ -24,7 +23,6 @@ const EmployeeDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [isOpen, setIsOpen] = useState(false); // State to toggle sidebar visibility
   const sidebarRef = useRef(null);
-  //const navigate = useNavigate();
 
   // Fetch employee data
   useEffect(() => {
@@ -61,11 +59,11 @@ const EmployeeDashboard = () => {
   }
 
   const menuItems = [
-    { name: "Personal Details", icon: <UserIcon  className="h-6 w-6" />, route: "/personal-details" },
+    { name: "Personal Details", icon: <UserIcon className="h-6 w-6" />, route: "/personal-details" },
     { name: "Employment Details", icon: <BriefcaseIcon className="h-6 w-6" />, route: "/employment-details" },
-    { name: "Leave", icon: < CalendarIcon  className="h-6 w-6" />, route: "/leave" },
+    { name: "Leave", icon: <CalendarIcon className="h-6 w-6" />, route: "/leave" },
     { name: "Notifications", icon: <BellIcon className="h-6 w-6" />, route: "/profile-notifications" },
-    { name: "Chat", icon: <ChatBubbleLeftIcon className="h-6 w-6" />, route: "/chatapps" },
+    { name: "BuzzMe", icon: <ChatBubbleLeftIcon className="h-6 w-6" />, route: "/chatting" },
   ];
 
   const toggleSidebar = () => setIsOpen(!isOpen); // Toggle sidebar visibility
@@ -96,7 +94,7 @@ const EmployeeDashboard = () => {
             <XMarkIcon className="h-6 w-6" />
           </button>
         </div>
-
+       
         <ul>
           {menuItems.map((item, index) => (
             <li key={index} className="hover:bg-blue-700">
@@ -115,7 +113,9 @@ const EmployeeDashboard = () => {
       </div>
 
       {/* Main Content */}
+     
       <div
+      
         className={`flex-1 p-4 transition-all duration-300 ${isOpen ? "ml-64" : "ml-0"} md:ml-0`}
         style={{
           marginLeft: isOpen ? "256px" : "0px", // Ensure content starts right after the sidebar
@@ -123,6 +123,10 @@ const EmployeeDashboard = () => {
           overflowY: "auto", // Allow the main content to scroll
         }}
       >
+        {/* Welcome Message */}
+    
+ <WelcomeUser name={employeeData.first_name} />
+        {/* Routes */}
         <Routes>
           <Route
             path="/personal-details"
@@ -138,10 +142,11 @@ const EmployeeDashboard = () => {
             element={<Notifications employee_id={employeeData.employee_id} />}
           />
           <Route
-            path="/chatapps"
+            path="/chatting"
             element={<EmployeeChatApp employee_id={employeeData.employee_id} />}
           />
         </Routes>
+      
       </div>
     </div>
   );
