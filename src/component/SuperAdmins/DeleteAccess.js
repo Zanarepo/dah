@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../../supabaseClient";
+import { toast } from "react-toastify"; // Import toast
 
 const DeleteAdmin = () => {
   const [role, setRole] = useState(""); // Selected role
   const [admins, setAdmins] = useState([]); // List of admins for the selected role
   const [selectedAdminId, setSelectedAdminId] = useState(""); // ID of the admin selected for deletion
-  const [message, setMessage] = useState(""); // Feedback message
   const [loading, setLoading] = useState(false); // Loading state
 
   // Fetch admins for the selected role
@@ -16,7 +16,6 @@ const DeleteAdmin = () => {
     }
 
     setLoading(true);
-    setMessage(""); // Clear any existing message
 
     try {
       // Get all admins with the selected role
@@ -47,7 +46,7 @@ const DeleteAdmin = () => {
 
       setAdmins(adminDetails);
     } catch (error) {
-      setMessage("Error fetching admins. Please try again.");
+      toast.error("Error fetching admins. Please try again.");
       console.error(error.message);
     } finally {
       setLoading(false);
@@ -57,12 +56,11 @@ const DeleteAdmin = () => {
   // Delete the selected admin
   const handleDelete = async () => {
     if (!selectedAdminId) {
-      setMessage("Please select an admin to delete.");
+      toast.error("Please select an admin to delete.");
       return;
     }
 
     setLoading(true);
-    setMessage("");
 
     try {
       // Delete admin from `access_level`
@@ -89,9 +87,9 @@ const DeleteAdmin = () => {
       // Update local state
       setAdmins(admins.filter((admin) => admin.employee_id !== selectedAdminId));
       setSelectedAdminId("");
-      setMessage("Admin deleted successfully.");
+      toast.success("Admin deleted successfully.");
     } catch (error) {
-      setMessage("Error deleting admin. Please try again.");
+      toast.error("Error deleting admin. Please try again.");
       console.error(error.message);
     } finally {
       setLoading(false);
@@ -151,13 +149,6 @@ const DeleteAdmin = () => {
       >
         {loading ? "Deleting..." : "Delete Admin"}
       </button>
-
-      {/* Message */}
-      {message && (
-        <div className="mt-4 text-center bg-gray-100 text-gray-800 p-2 rounded">
-          {message}
-        </div>
-      )}
     </div>
   );
 };

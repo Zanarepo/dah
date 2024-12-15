@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { supabase } from "../../supabaseClient"; // Ensure you have Supabase client initialized
+import { supabase } from "../../supabaseClient";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const EmployeePersonalDetails = ({ employeeData, setEmployeeData }) => {
-  const [profilePicture, setProfilePicture] = useState(employeeData.profile_picture || null);
+  const [profilePicture, setProfilePicture] = useState(employeeData?.profile_picture || null);
   const [isEditable, setIsEditable] = useState(false);
-  const [error, setError] = useState(""); // Error message state
-  const [success, setSuccess] = useState(""); // Success message state
 
-  // Load data from localStorage if available
+  // Load employee data from localStorage on initial render
   useEffect(() => {
     const storedData = JSON.parse(localStorage.getItem("employeeData"));
     if (storedData) {
@@ -16,7 +16,7 @@ const EmployeePersonalDetails = ({ employeeData, setEmployeeData }) => {
     }
   }, [setEmployeeData]);
 
-  // Save data to localStorage
+  // Sync employee data to localStorage whenever it updates
   useEffect(() => {
     if (employeeData) {
       localStorage.setItem("employeeData", JSON.stringify(employeeData));
@@ -26,79 +26,58 @@ const EmployeePersonalDetails = ({ employeeData, setEmployeeData }) => {
   // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setEmployeeData((prevData) => ({
-      ...prevData,
+    setEmployeeData((prev) => ({
+      ...prev,
       [name]: value,
     }));
   };
 
+  // Handle profile picture upload
   const handleProfilePictureChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
       try {
-        // Upload the file to Supabase Storage
         const fileName = `${Date.now()}-${file.name}`;
-        const { data, error: uploadError } = await supabase.storage
-          .from("Images") // Ensure the bucket name matches
+        const { error: uploadError } = await supabase.storage
+          .from("Images")
           .upload(fileName, file);
 
-        if (uploadError) {
-          throw new Error("Failed to upload file: " + uploadError.message);
-        }
+        if (uploadError) throw new Error("Failed to upload image.");
 
-        // Get the public URL of the uploaded image
         const { data: publicURLData, error: urlError } = supabase.storage
           .from("Images")
           .getPublicUrl(fileName);
 
-        if (urlError) {
-          throw new Error("Failed to retrieve file URL: " + urlError.message);
-        }
+        if (urlError) throw new Error("Failed to fetch image URL.");
 
         const publicURL = publicURLData.publicUrl;
 
-        // Update profile picture in the database
-        const { data: updateData, error: updateError } = await supabase
-          .from("employee_profiles") // Correct table name
+        const { error: updateError } = await supabase
+          .from("employee_profiles")
           .update({ profile_picture: publicURL })
-          .eq("id", employeeData.id); // Ensure the correct user ID is used
+          .eq("id", employeeData.id);
 
-        if (updateError) {
-          throw new Error("Failed to update the database: " + updateError.message);
-        }
+        if (updateError) throw new Error("Failed to update profile picture.");
 
-        // Update the local state and display success message
         setProfilePicture(publicURL);
-        setEmployeeData((prevData) => ({
-          ...prevData,
-          profile_picture: publicURL,
-        }));
-        localStorage.setItem(
-          "employeeData",
-          JSON.stringify({ ...employeeData, profile_picture: publicURL })
-        );
-        setSuccess("Profile picture updated successfully!");
-        setError("");
+        setEmployeeData((prev) => ({ ...prev, profile_picture: publicURL }));
+        toast.success("Profile picture updated successfully."); // Success Pop-up
       } catch (error) {
-        setError(error.message);
-        setSuccess("");
+        toast.error(error.message); // Error Pop-up
       }
     }
   };
 
-  // Handle save changes and update data in Supabase
+  // Save changes to database
   const handleSaveChanges = async () => {
     try {
-      // Validate fields before saving
       if (!employeeData.first_name || !employeeData.last_name) {
-        setError("First Name and Last Name are required!");
-        setSuccess(""); // Clear success if validation fails
+        toast.error("First Name and Last Name are required!"); // Error Pop-up
         return;
       }
 
-      // Update employee profile in Supabase
-      const { data, error } = await supabase
-        .from("employee_profiles") // Ensure correct table name
+      const { error } = await supabase
+        .from("employee_profiles")
         .update({
           first_name: employeeData.first_name,
           last_name: employeeData.last_name,
@@ -113,137 +92,144 @@ const EmployeePersonalDetails = ({ employeeData, setEmployeeData }) => {
           sex: employeeData.sex,
           profile_picture: profilePicture,
         })
-        .eq("id", employeeData.id); // Ensure to use the correct employee ID
+        .eq("id", employeeData.id);
 
-      if (error) {
-        throw new Error("Failed to update the database: " + error.message);
-      }
+      if (error) throw new Error("Failed to update profile.");
 
-      // Update localStorage with the new data
-      localStorage.setItem("employeeData", JSON.stringify(employeeData));
-
-      // Set success message
-      setSuccess("Profile updated successfully!");
-      setError(""); // Clear error message if save is successful
+      toast.success("Profile updated successfully."); // Success Pop-up
     } catch (error) {
-      setError(error.message);
-      setSuccess(""); // Clear success if there is an error
+      toast.error(error.message); // Error Pop-up
     }
   };
 
-  // Toggle edit mode
-  const handleEditClick = () => {
+  // Toggle edit mode and save changes when exiting
+  const toggleEditMode = () => {
+    if (isEditable) handleSaveChanges();
     setIsEditable(!isEditable);
-    if (isEditable) {
-      // If exiting edit mode, save changes
-      handleSaveChanges();
-    }
   };
 
   return (
-    <div className="mb-6">
-      <h2 className="text-xl font-semibold">Personal Details</h2>
+    <div className="bg-gradient-to-br from-blue-400 to-indigo-600 min-h-screen flex items-center justify-center">
+      <div className="w-full max-w-7xl p-8 md:p-12 lg:p-16 bg-white rounded-2xl shadow-xl mt-6 overflow-hidden">
+        <div className="text-center mb-8">
+          <h2 className="text-4xl font-bold text-gray-900">
+            {employeeData.first_name} {employeeData.last_name}
+          </h2>
+        </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-        {/* Profile Picture Section */}
-        <div className="col-span-2">
-          <label htmlFor="profile_picture" className="block text-sm font-medium">
-            Profile Picture
-          </label>
-          <div className="flex items-center mt-2">
-            <div className="w-24 h-24 rounded-full border-2 border-gray-300 overflow-hidden">
-              {profilePicture ? (
-                <img src={profilePicture} alt="Profile" className="w-full h-full object-cover" />
-              ) : (
-                <span className="w-full h-full flex items-center justify-center text-gray-400">
-                  No Image
-                </span>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          {/* Profile Picture Card */}
+          <div className="bg-gradient-to-tl from-green-400 via-teal-500 to-blue-500 p-6 rounded-xl shadow-2xl hover:scale-105 transform transition-all duration-300">
+            <div className="text-center">
+              <h3 className="text-2xl text-white font-semibold mb-4">Profile Picture</h3>
+              <div className="w-24 h-24 rounded-full overflow-hidden mx-auto mb-4">
+                {profilePicture ? (
+                  <img src={profilePicture} alt="Profile" className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-400">
+                    No Image
+                  </div>
+                )}
+              </div>
+              {isEditable && (
+                <input
+                  type="file"
+                  onChange={handleProfilePictureChange}
+                  className="block w-full text-sm text-gray-500 file:py-2 file:px-4 file:bg-indigo-600 file:text-white file:rounded-md file:hover:bg-indigo-700 transition-all duration-200"
+                />
               )}
             </div>
-            {isEditable && (
-              <input
-                type="file"
-                id="profile_picture"
-                name="profile_picture"
-                onChange={handleProfilePictureChange}
-                className="ml-4 p-2 border border-gray-300 rounded"
-              />
-            )}
           </div>
-        </div>
 
-        {/* Other Input Fields */}
-        {["employee_id", "first_name", "last_name", "date_of_birth", "email", "phone_number", "address", "nationality", "state_of_origin", "lga_of_origin"].map((field) => (
-          <div key={field}>
-            <label htmlFor={field} className="block text-sm font-medium">
-              {field.replace(/_/g, " ").toUpperCase()}
-            </label>
+          {/* Name, Phone, Email, and Other Details */}
+          <div className="bg-white p-6 rounded-xl shadow-lg transition-all transform hover:scale-105">
+            <label className="text-lg font-semibold text-gray-800">Full Name</label>
             <input
-              type={field === "date_of_birth" ? "date" : "text"}
-              id={field}
-              name={field}
-              value={employeeData[field] || ""} // Controlled value
+              type="text"
+              name="first_name"
+              value={employeeData.first_name || ""}
               onChange={handleChange}
-              className="w-full mt-1 p-2 border border-gray-300 rounded"
-              disabled={!isEditable} // Disable input if not in edit mode
+              disabled={!isEditable}
+              className="mt-2 p-3 w-full border rounded-lg"
+              placeholder="First Name"
+            />
+            <input
+              type="text"
+              name="last_name"
+              value={employeeData.last_name || ""}
+              onChange={handleChange}
+              disabled={!isEditable}
+              className="mt-2 p-3 w-full border rounded-lg"
+              placeholder="Last Name"
             />
           </div>
-        ))}
 
-        {/* Marital Status Dropdown */}
-        <div>
-          <label htmlFor="marital_status" className="block text-sm font-medium">
-            Marital Status
-          </label>
-          <select
-            id="marital_status"
-            name="marital_status"
-            value={employeeData.marital_status || ""}
-            onChange={handleChange}
-            className="w-full mt-1 p-2 border border-gray-300 rounded"
-            disabled={!isEditable}
-          >
-            <option value="">Select</option>
-            <option value="Single">Single</option>
-            <option value="Married">Married</option>
-            <option value="Divorced">Divorced</option>
-          </select>
+          {/* Birthday and Position Card */}
+          <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
+            <div className="mb-4">
+              <label htmlFor="date_of_birth" className="text-lg font-semibold text-gray-800">Birthday</label>
+              <input
+                type="date"
+                id="date_of_birth"
+                name="date_of_birth"
+                value={employeeData.date_of_birth || ""}
+                onChange={handleChange}
+                className="mt-2 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none w-full"
+                disabled={!isEditable}
+              />
+            </div>
+
+            <div className="mb-4">
+              <label htmlFor="position" className="text-lg font-semibold text-gray-800">Position</label>
+              <input
+                type="text"
+                id="position"
+                name="position"
+                value={employeeData.position || ""}
+                onChange={handleChange}
+                className="mt-2 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none w-full"
+                disabled={!isEditable}
+              />
+            </div>
+          </div>
+
+          {/* Phone & Email */}
+          <div className="bg-white p-6 rounded-xl shadow-lg transition-all transform hover:scale-105">
+            <label className="text-lg font-semibold text-gray-800">Phone Number</label>
+            <input
+              type="text"
+              name="phone_number"
+              value={employeeData.phone_number || ""}
+              onChange={handleChange}
+              disabled={!isEditable}
+              className="mt-2 p-3 w-full border rounded-lg"
+              placeholder="Phone Number"
+            />
+            <label className="text-lg font-semibold text-gray-800 mt-4">Email</label>
+            <input
+              type="email"
+              name="email"
+              value={employeeData.email || ""}
+              onChange={handleChange}
+              disabled={!isEditable}
+              className="mt-2 p-3 w-full border rounded-lg"
+              placeholder="Email"
+            />
+          </div>
         </div>
 
-        {/* Sex Dropdown */}
-        <div>
-          <label htmlFor="sex" className="block text-sm font-medium">
-            Sex
-          </label>
-          <select
-            id="sex"
-            name="sex"
-            value={employeeData.sex || ""}
-            onChange={handleChange}
-            className="w-full mt-1 p-2 border border-gray-300 rounded"
-            disabled={!isEditable}
+        {/* Edit/Save Button */}
+        <div className="mt-6 text-center">
+          <button
+            onClick={toggleEditMode}
+            className="bg-blue-600 text-white py-2 px-4 rounded-lg shadow-lg hover:bg-blue-700 transition-all duration-300"
           >
-            <option value="">Select</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-            <option value="Other">Other</option>
-          </select>
+            {isEditable ? "Save Changes" : "Edit Details"}
+          </button>
         </div>
       </div>
-
-      {/* Error and Success Display */}
-      {error && <p className="text-red-500 mt-2">{error}</p>}
-      {success && <p className="text-green-500 mt-2">{success}</p>}
-
-      {/* Edit Button */}
-      <div className="mt-4">
-        <button
-          onClick={handleEditClick}
-          className="bg-blue-500 text-white px-4 py-2 rounded"
-        >
-          {isEditable ? "Save Changes" : "Edit"}
-        </button>
-      </div>
+      {/* Toast Container */}
+      <ToastContainer />
     </div>
   );
 };

@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../../supabaseClient";
+import { toast } from "react-toastify"; // Import toast from react-toastify
+import "react-toastify/dist/ReactToastify.css"; // Import styles for the toast notifications
 
 const AddManager = () => {
   const [searchQuery, setSearchQuery] = useState(""); // Search query for employee
   const [employees, setEmployees] = useState([]); // List of employees matching search query
   const [selectedEmployee, setSelectedEmployee] = useState(null); // Selected employee
   const [role, setRole] = useState(""); // Role for the selected employee
-  const [error, setError] = useState(""); // Error message
-  const [successMessage, setSuccessMessage] = useState(""); // Success message
 
   // Fetch employees based on the search query
   useEffect(() => {
@@ -31,7 +31,7 @@ const AddManager = () => {
           setEmployees(data || []);
         } catch (err) {
           console.error(err);
-          setError("An error occurred while searching for employees.");
+          toast.error("An error occurred while searching for employees.");
         }
       } else {
         setEmployees([]); // Clear results when search query is empty
@@ -43,26 +43,18 @@ const AddManager = () => {
 
   // Handle adding the selected employee to the managers table
   const handleAddManager = async () => {
-    setError("");
-    setSuccessMessage("");
-
     if (!selectedEmployee) {
-      setError("Please select an employee.");
-      setTimeout(() => setError(""), 3000); // Clear error after 3 seconds
+      toast.error("Please select an employee.");
       return;
     }
 
     if (!selectedEmployee.department_id || !selectedEmployee.ministry_id) {
-      setError(
-        "The selected employee does not have a valid department or ministry assigned."
-      );
-      setTimeout(() => setError(""), 3000); // Clear error after 3 seconds
+      toast.error("The selected employee does not have a valid department or ministry assigned.");
       return;
     }
 
     if (!role) {
-      setError("Please select a role for the manager.");
-      setTimeout(() => setError(""), 3000); // Clear error after 3 seconds
+      toast.error("Please select a role for the manager.");
       return;
     }
 
@@ -78,34 +70,20 @@ const AddManager = () => {
         throw error;
       }
 
-      setSuccessMessage("Manager added successfully!");
-      setTimeout(() => setSuccessMessage(""), 3000); // Clear success message after 3 seconds
+      toast.success("Manager added successfully!");
       setSelectedEmployee(null);
       setRole("");
       setSearchQuery(""); // Clear search query
       setEmployees([]);
     } catch (err) {
       console.error(err);
-      setError("Error adding manager: " + err.message);
-      setTimeout(() => setError(""), 3000); // Clear error after 3 seconds
+      toast.error("Error adding manager: " + err.message);
     }
   };
 
   return (
     <div className="p-6 max-w-4xl mx-auto bg-white rounded-lg shadow-md">
       <h1 className="text-2xl font-bold mb-6 text-gray-800">Add Manager</h1>
-
-      {/* Error or Success Message */}
-      {error && (
-        <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-md shadow-md">
-          {error}
-        </div>
-      )}
-      {successMessage && (
-        <div className="mb-4 p-4 bg-green-100 text-green-700 rounded-md shadow-md">
-          {successMessage}
-        </div>
-      )}
 
       {/* Employee Search */}
       <div className="mb-6">

@@ -1,11 +1,31 @@
-import React, { useEffect, useState } from "react";
-import { supabase } from "../../supabaseClient";
+import React, { useState, useEffect } from "react";
+import { supabase } from "../../supabaseClient"; // Assuming you're using supabase
 
 const MinistryList = ({ onSelectMinistry }) => {
   const [ministries, setMinistries] = useState([]);
   const [loading, setLoading] = useState(false);
   const [userAccessLevels, setUserAccessLevels] = useState([]);
   const employeeId = localStorage.getItem("employee_id"); // Assuming the employee_id is stored in local storage
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false); // State to track super_admin role
+
+  useEffect(() => {
+    const checkIfSuperAdmin = async () => {
+      const { data, error } = await supabase
+        .from("access_level")
+        .select("access_id")
+        .eq("employee_id", employeeId);
+
+      if (error) {
+        console.error("Error checking super admin", error);
+        return;
+      }
+
+      const superAdminAccess = data.some((level) => level.access_id === 3); // Assuming '3' is the access level for super_admin
+      setIsSuperAdmin(superAdminAccess);
+    };
+
+    checkIfSuperAdmin();
+  }, [employeeId]);
 
   useEffect(() => {
     const fetchUserAccessLevels = async () => {
@@ -23,8 +43,12 @@ const MinistryList = ({ onSelectMinistry }) => {
       setUserAccessLevels(data);
     };
 
-    fetchUserAccessLevels();
-  }, [employeeId]);
+    if (!isSuperAdmin) {
+      fetchUserAccessLevels();
+    } else {
+      setLoading(false);
+    }
+  }, [employeeId, isSuperAdmin]);
 
   useEffect(() => {
     const fetchMinistries = async () => {
@@ -37,21 +61,23 @@ const MinistryList = ({ onSelectMinistry }) => {
         return;
       }
 
-      // Filter ministries based on the user's access level
-      const filteredMinistries = data.filter((ministry) =>
-        userAccessLevels.some(
-          (accessLevel) => accessLevel.ministry_id === ministry.id
-        )
-      );
+      let filteredMinistries = data;
+
+      // If not super admin, filter ministries based on the user's access level
+      if (!isSuperAdmin) {
+        filteredMinistries = data.filter((ministry) =>
+          userAccessLevels.some(
+            (accessLevel) => accessLevel.ministry_id === ministry.id
+          )
+        );
+      }
 
       setMinistries(filteredMinistries);
       setLoading(false);
     };
 
-    if (userAccessLevels.length > 0) {
-      fetchMinistries();
-    }
-  }, [userAccessLevels]);
+    fetchMinistries();
+  }, [userAccessLevels, isSuperAdmin]);
 
   if (loading) return <p>Loading ministries...</p>;
 
@@ -62,7 +88,7 @@ const MinistryList = ({ onSelectMinistry }) => {
         {ministries.map((ministry) => (
           <button
             key={ministry.id}
-            onClick={() => onSelectMinistry(ministry)}
+            onClick={() => onSelectMinistry(ministry)} // Calling the onSelectMinistry function passed from the parent
             className="p-4 bg-blue-500 text-white rounded-md shadow hover:bg-blue-600"
           >
             {ministry.name}

@@ -5,6 +5,7 @@ import Leave from "./Leave";
 import Notifications from "../admin/Notification";
 
 import { supabase } from "../../supabaseClient"; // Ensure your supabase client is correctly imported
+import ChatApp from "../Chat/ChatApp";
 
 const ProfilePage = () => {
   const [activeSection, setActiveSection] = useState("personal");
@@ -158,7 +159,25 @@ const ProfilePage = () => {
             </button>
           </li>
         </ul>
+        
+        <li>
+            <button
+              onClick={() => handleSectionChange("chatapp")}  // Change to "notifications"
+              className={`w-full text-left p-2 rounded ${
+                activeSection === "chatapp" ? "bg-blue-500 text-white" : "bg-transparent"
+              }`}
+            >
+              Hello
+            </button>
+          </li>
+        
       </div>
+
+      
+      
+
+
+
 
       {/* Main Form Area */}
       <div className="w-3/4 p-8">
@@ -185,6 +204,11 @@ const ProfilePage = () => {
           {/* Profile Section */}
           {activeSection === "notifications" && (
             <Notifications employee_id={employeeData.employee_id} />  // Passing employee_id as prop
+          )}
+
+           {/* Profile Section */}
+           {activeSection === "chatapp" && (
+            <ChatApp employee_id={employeeData.employee_id} />  // Passing employee_id as prop
           )}
 
 </div>

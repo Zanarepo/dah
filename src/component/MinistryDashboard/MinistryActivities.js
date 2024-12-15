@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate hook
 import { SunIcon, BriefcaseIcon, ClipboardDocumentListIcon, ArrowLeftIcon } from '@heroicons/react/24/outline';
-
+import Backfunction from './Backfunction';
 
 
 const MinistryActivities = () => {
@@ -20,16 +20,9 @@ const MinistryActivities = () => {
       <h2 className="text-3xl font-bold text-center mb-8">Ministry Activities</h2>
      
       {/* Back Button */}
-      <div className="flex items-center space-x-2 mb-6">
-        <button
-          onClick={goBack}
-          className="flex items-center space-x-2 p-2 text-gray-700 bg-gray-200 rounded-lg shadow hover:bg-gray-300 transition"
-        >
-          <ArrowLeftIcon className="w-5 h-5 text-gray-700" />
-          <span>Back</span>
-        </button>
-      </div>
-
+      
+          <Backfunction />
+       
       {/* Dashboard Sections */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         

@@ -1,5 +1,7 @@
 import React, { useState } from "react";
-import { supabase } from "../../supabaseClient";// Adjust the import path based on your project structure
+import { supabase } from "../../supabaseClient"; // Adjust the import path based on your project structure
+import { toast } from "react-toastify"; // Import toast
+import 'react-toastify/dist/ReactToastify.css'; // Import the styles
 
 const AddMinistryForm = () => {
   const [formData, setFormData] = useState({
@@ -8,8 +10,6 @@ const AddMinistryForm = () => {
     contact_email: "",
     contact_phone: "",
   });
-  const [successMessage, setSuccessMessage] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -18,25 +18,22 @@ const AddMinistryForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setSuccessMessage("");
-    setErrorMessage("");
-
+    
     try {
       const { data, error } = await supabase.from("ministries").insert([formData]);
       if (error) throw error;
 
-      setSuccessMessage("Ministry added successfully!");
-      setFormData({ name: "", admin_id: "", contact_email: "", contact_phone: "" });
+      toast.success("Ministry added successfully!"); // Show success toast
+      setFormData({ name: "", admin_id: "", contact_email: "", contact_phone: "" }); // Reset form
     } catch (error) {
-      setErrorMessage("Error adding ministry: " + error.message);
+      toast.error("Error adding ministry: " + error.message); // Show error toast
     }
   };
 
   return (
     <div className="max-w-lg mx-auto mt-10 bg-white shadow-lg p-6 rounded-lg">
       <h2 className="text-2xl font-bold mb-4">Add New Ministry</h2>
-      {successMessage && <p className="text-green-500 mb-4">{successMessage}</p>}
-      {errorMessage && <p className="text-red-500 mb-4">{errorMessage}</p>}
+
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <label className="block text-gray-700">Ministry Name</label>

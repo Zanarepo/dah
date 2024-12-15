@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../../supabaseClient";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const DeleteManager = () => {
   const [managers, setManagers] = useState([]); // List of managers with employee details
   const [selectedManagers, setSelectedManagers] = useState([]); // List of selected managers for deletion
-  const [error, setError] = useState(""); // Error message
-  const [successMessage, setSuccessMessage] = useState(""); // Success message
   const [showConfirmation, setShowConfirmation] = useState(false); // Show confirmation modal
 
   // Fetch managers with employee details
@@ -17,7 +17,7 @@ const DeleteManager = () => {
         .select("id, employee_id, role");
 
       if (managersError) {
-        setError("Error fetching managers.");
+        toast.error("Error fetching managers.");
         console.error(managersError);
         return;
       }
@@ -30,7 +30,7 @@ const DeleteManager = () => {
         .in("employee_id", employeeIds);
 
       if (employeeError) {
-        setError("Error fetching employee profiles.");
+        toast.error("Error fetching employee profiles.");
         console.error(employeeError);
         return;
       }
@@ -49,7 +49,7 @@ const DeleteManager = () => {
 
       setManagers(managersWithDetails); // Set the combined list of managers with names
     } catch (error) {
-      setError("An error occurred while fetching the managers.");
+      toast.error("An error occurred while fetching the managers.");
       console.error(error);
     }
   };
@@ -66,8 +66,7 @@ const DeleteManager = () => {
   // Handle the confirmation for deletion
   const handleDeleteConfirmation = async () => {
     if (selectedManagers.length === 0) {
-      setError("Please select at least one manager to delete.");
-      setTimeout(() => setError(""), 3000); // Clear error after 3 seconds
+      toast.error("Please select at least one manager to delete.");
       return;
     }
 
@@ -79,19 +78,16 @@ const DeleteManager = () => {
         .in("id", selectedManagers);
 
       if (deleteError) {
-        setError("Error deleting managers.");
-        setTimeout(() => setError(""), 3000); // Clear error after 3 seconds
+        toast.error("Error deleting managers.");
         console.error(deleteError);
       } else {
-        setSuccessMessage("Managers deleted successfully!");
-        setTimeout(() => setSuccessMessage(""), 3000); // Clear success message after 3 seconds
+        toast.success("Managers deleted successfully!");
         setSelectedManagers([]); // Clear selected managers
         setShowConfirmation(false); // Hide confirmation modal
         fetchManagers(); // Refresh the list of managers
       }
     } catch (err) {
-      setError("An unexpected error occurred.");
-      setTimeout(() => setError(""), 3000); // Clear error after 3 seconds
+      toast.error("An unexpected error occurred.");
       console.error(err);
     }
   };
@@ -104,18 +100,6 @@ const DeleteManager = () => {
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <h1 className="text-3xl font-semibold text-gray-800 mb-6">Delete Manager</h1>
-
-      {/* Error or Success Message */}
-      {error && (
-        <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-md shadow-md">
-          {error}
-        </div>
-      )}
-      {successMessage && (
-        <div className="mb-4 p-4 bg-green-100 text-green-700 rounded-md shadow-md">
-          {successMessage}
-        </div>
-      )}
 
       {/* Manager List */}
       <ul className="space-y-4">

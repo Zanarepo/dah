@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
-import MinistryList from "../MinistryDashboard/MinistryList";
+import SuperAdminList from "../SuperAdmins/SuperAdminList";
 import DepartmentList from "../MinistryDashboard/DepartmentList";
-import DepartmentDashboard from "../MinistryDashboard/DepartmentDashboard";
+import SuperLeaveDashboard from "../SuperAdmins/SuperLeaveDashboard";
+//import DepartmentDashboard from "../SuperAdmins/DepartmentDashboard"
 
 const MinistryLeave = () => {
   const [selectedMinistry, setSelectedMinistry] = useState(null);
@@ -39,7 +40,7 @@ const MinistryLeave = () => {
 
       {/* Ministry List */}
       {!selectedMinistry && (
-        <MinistryList onSelectMinistry={(ministry) => setSelectedMinistry(ministry)} />
+        <SuperAdminList onSelectMinistry={(ministry) => setSelectedMinistry(ministry)} />
       )}
 
       {/* Department List */}
@@ -52,7 +53,7 @@ const MinistryLeave = () => {
 
       {/* Department Dashboard */}
       {selectedDepartment && (
-        <DepartmentDashboard department={selectedDepartment} />
+        <SuperLeaveDashboard department={selectedDepartment} />
       )}
     </div>
   );

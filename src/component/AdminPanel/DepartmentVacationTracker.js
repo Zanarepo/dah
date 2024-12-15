@@ -13,7 +13,37 @@ const VacationTracker = () => {
   const [employeesJustReturned, setEmployeesJustReturned] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // Fetch ministries data
+  // Role and access data
+  const employeeId = localStorage.getItem('employee_id'); // Retrieve employee ID from local storage
+  const [role, setRole] = useState(null); // User's role (`is_admin`, `admin_ministry`, or `super_admin`)
+  const [accessibleMinistry, setAccessibleMinistry] = useState(null);
+  const [accessibleDepartment, setAccessibleDepartment] = useState(null);
+
+  // Fetch user role and access
+  useEffect(() => {
+    const fetchUserAccess = async () => {
+      const { data, error } = await supabase
+        .from('access_level')
+        .select('access_id, ministry_id, department_id')
+        .eq('employee_id', employeeId)
+        .single(); // Assuming one role per employee
+
+      if (error) {
+        console.error("Error fetching user access:", error.message);
+      } else {
+        const { access_id, ministry_id, department_id } = data;
+
+        // Set role and accessible ministries/departments
+        setRole(access_id === 3 ? 'super_admin' : access_id === 2 ? 'admin_ministry' : 'is_admin');
+        setAccessibleMinistry(ministry_id);
+        setAccessibleDepartment(department_id);
+      }
+    };
+
+    fetchUserAccess();
+  }, [employeeId]);
+
+  // Fetch ministries based on the `is_admin` role
   useEffect(() => {
     const fetchMinistries = async () => {
       const { data, error } = await supabase
@@ -23,12 +53,20 @@ const VacationTracker = () => {
       if (error) {
         console.error("Error fetching ministries:", error.message);
       } else {
-        setMinistries(data);
+        if (role === 'super_admin') {
+          setMinistries(data); // No restrictions for super_admin
+        } else if (role === 'admin_ministry') {
+          // Restrict to the ministry where the user is assigned
+          setMinistries(data.filter(ministry => ministry.id === accessibleMinistry));
+        } else if (role === 'is_admin') {
+          // Restrict to the ministry assigned to the user (access_id 1)
+          setMinistries(data.filter(ministry => ministry.id === accessibleMinistry));
+        }
       }
     };
 
-    fetchMinistries();
-  }, []);
+    if (role) fetchMinistries();
+  }, [role, accessibleMinistry]);
 
   // Fetch departments based on selected ministry
   useEffect(() => {
@@ -42,22 +80,31 @@ const VacationTracker = () => {
         if (error) {
           console.error("Error fetching departments:", error.message);
         } else {
-          setDepartments(data);
+          if (role === 'is_admin') {
+            // Restrict to the department where the user is assigned
+            setDepartments(data.filter(department => department.id === accessibleDepartment));
+          } else if (role === 'admin_ministry') {
+            // Admin Ministry has access to all departments in the selected ministry
+            setDepartments(data);
+          } else {
+            // Super Admin can access all departments
+            setDepartments(data);
+          }
         }
       };
 
       fetchDepartments();
     }
-  }, [selectedMinistry]);
+  }, [selectedMinistry, role, accessibleDepartment]);
 
-  // Fetch vacation data for selected department
+  // Fetch vacation data based on selected department
   useEffect(() => {
     if (selectedDepartment) {
       const fetchVacationData = async () => {
         setLoading(true);
 
         const { data, error } = await supabase
-          .from('employee_leave')
+          .from("employee_leave")
           .select(`
             id,
             leave_type,
@@ -65,33 +112,14 @@ const VacationTracker = () => {
             end_date,
             employee_profiles (id, first_name, last_name, profile_picture)
           `)
-          .eq('department_id', selectedDepartment);
+          .eq("department_id", selectedDepartment);
 
         if (error) {
           console.error("Error fetching vacation data:", error.message);
         } else {
-          const currentDate = new Date();
-          const onVacation = [];
-          const nextVacation = [];
-          const justReturned = [];
+          console.log("Fetched Vacation Data:", data);
 
-          data.forEach(leave => {
-            const startDate = new Date(leave.start_date);
-            const endDate = new Date(leave.end_date);
-
-            // On vacation
-            if (startDate <= currentDate && currentDate <= endDate) {
-              onVacation.push(leave);
-            }
-            // Going on vacation soon (within the next week)
-            else if (startDate > currentDate && startDate <= new Date(currentDate.setDate(currentDate.getDate() + 7))) {
-              nextVacation.push(leave);
-            }
-            // Just returned (within the past 48 hours)
-            else if (endDate < currentDate && currentDate - endDate <= 48 * 60 * 60 * 1000) {
-              justReturned.push(leave);
-            }
-          });
+          const { onVacation, nextVacation, justReturned } = categorizeVacationData(data);
 
           setEmployeesOnVacation(onVacation);
           setEmployeesNextVacation(nextVacation);
@@ -104,6 +132,34 @@ const VacationTracker = () => {
       fetchVacationData();
     }
   }, [selectedDepartment]);
+
+  const categorizeVacationData = (data) => {
+    const currentDate = new Date();
+    const onVacation = [];
+    const nextVacation = [];
+    const justReturned = [];
+
+    data.forEach((leave) => {
+      const startDate = new Date(leave.start_date);
+      const endDate = new Date(leave.end_date);
+
+      if (startDate <= currentDate && currentDate <= endDate) {
+        // Employee is currently on vacation
+        onVacation.push(leave);
+      } else if (
+        startDate > currentDate &&
+        startDate <= new Date(currentDate.setDate(currentDate.getDate() + 7))
+      ) {
+        // Employee's vacation starts within the next 7 days
+        nextVacation.push(leave);
+      } else if (endDate < currentDate && currentDate - endDate <= 48 * 60 * 60 * 1000) {
+        // Employee returned from vacation within the last 48 hours
+        justReturned.push(leave);
+      }
+    });
+
+    return { onVacation, nextVacation, justReturned };
+  };
 
   const handleMinistryChange = (e) => {
     setSelectedMinistry(e.target.value);
@@ -118,51 +174,59 @@ const VacationTracker = () => {
     setSelectedDepartment(e.target.value);
   };
 
-  if (loading) return <p>Loading vacation data...</p>;
+  const renderEmployeeCard = (employee) => {
+    const profile = employee.employee_profiles;
+    if (!profile) {
+      return <p>No employee data available</p>;
+    }
 
-  const renderEmployeeCard = (employee) => (
-    <div className="flex flex-col items-center space-y-4 p-6 bg-white rounded-lg shadow-md hover:shadow-xl transition cursor-pointer">
-      <div className="relative">
-        <img
-          src={employee.employee_profiles.profile_picture || "/default-avatar.jpg"}
-          alt={`${employee.employee_profiles.first_name} ${employee.employee_profiles.last_name}`}
-          className="w-24 h-24 rounded-full border-2 border-gray-300"
-        />
-        <div className="absolute inset-0 flex justify-center items-center">
-          <SunIcon className="w-6 h-6 text-yellow-500" />
+    return (
+      <div className="flex flex-col items-center space-y-4 p-6 bg-white rounded-lg shadow-md hover:shadow-xl transition cursor-pointer">
+        <div className="relative">
+          <img
+            src={profile.profile_picture || "/default-avatar.jpg"}
+            alt={`${profile.first_name} ${profile.last_name}`}
+            className="w-24 h-24 rounded-full border-2 border-gray-300"
+          />
+          <div className="absolute inset-0 flex justify-center items-center">
+            <SunIcon className="w-6 h-6 text-yellow-500" />
+          </div>
         </div>
+        <h3 className="font-semibold text-lg">{`${profile.first_name} ${profile.last_name}`}</h3>
+        <p className="text-gray-500">{employee.leave_type}</p>
       </div>
-      <h3 className="font-semibold text-lg">{`${employee.employee_profiles.first_name} ${employee.employee_profiles.last_name}`}</h3>
-      <p className="text-gray-500">{employee.leave_type}</p>
-    </div>
-  );
- 
-  
+    );
+  };
+
   return (
     <div className="max-w-7xl mx-auto p-4">
       <h2 className="text-2xl font-bold mb-6 text-center">Employee Vacation Tracker</h2>
-      <BackFunction/>
-      <div className="mb-6">
-        {/* Ministry Selection */}
+      <BackFunction />
+      
+      {/* Ministry and Department Selectors */}
+      <div className="flex justify-between mb-6">
         <select
           value={selectedMinistry}
           onChange={handleMinistryChange}
-          className="mb-4 p-2 border rounded-lg"
+          className="p-2 border rounded-lg flex-1 mr-2"
         >
           <option value="">Select Ministry</option>
-          {ministries.map(ministry => (
-            <option key={ministry.id} value={ministry.id}>
-              {ministry.name}
-            </option>
-          ))}
+          {ministries.length > 0 ? (
+            ministries.map(ministry => (
+              <option key={ministry.id} value={ministry.id}>
+                {ministry.name}
+              </option>
+            ))
+          ) : (
+            <option value="">No Ministries Available</option>
+          )}
         </select>
 
-        {/* Department Selection */}
         {selectedMinistry && (
           <select
             value={selectedDepartment}
             onChange={handleDepartmentChange}
-            className="p-2 border rounded-lg"
+            className="p-2 border rounded-lg flex-1"
           >
             <option value="">Select Department</option>
             {departments.map(department => (
@@ -173,45 +237,59 @@ const VacationTracker = () => {
           </select>
         )}
       </div>
+ {/* "Next Vacation" employees - Row at the top */}
+{employeesNextVacation.length > 0 && (
+  <div className="mb-4 p-2 bg-gradient-to-r from-green-400 via-blue-500 to-indigo-600 rounded-lg shadow-md">
+    <h3 className="text-lg font-semibold text-white text-center mb-2">
+      Next Vacation
+    </h3>
 
-      {/* Main Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-        {/* Left Section: Next Vacation */}
-        <section className={`bg-yellow-100 p-6 rounded-lg shadow-md lg:col-span-1 ${employeesOnVacation.length === 0 ? 'lg:col-span-3' : ''}`}>
-          <h3 className="text-xl font-semibold mb-4 text-yellow-700">Next Vacation</h3>
-          <div className="space-y-4">
-            {employeesNextVacation.length > 0 ? (
-              employeesNextVacation.map(employee => renderEmployeeCard(employee))
-            ) : (
-              <p>No employees are going on vacation soon.</p>
-            )}
-          </div>
-        </section>
+    <div className="flex overflow-x-auto space-x-4 py-2 items-center">
+      {employeesNextVacation.map(renderEmployeeCard)}
+    </div>
+  </div>
+)}
 
-        {/* Center Section: On Vacation (Larger Section) */}
-        <section className={`col-span-1 lg:col-span-3 bg-blue-100 p-6 rounded-lg shadow-md ${employeesNextVacation.length === 0 ? 'lg:col-span-3' : ''}`}>
-          <h3 className="text-xl font-semibold mb-4 text-blue-700">On Vacation</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
-            {employeesOnVacation.length > 0 ? (
-              employeesOnVacation.map(employee => renderEmployeeCard(employee))
-            ) : (
-              <p>No employees currently on vacation.</p>
-            )}
-          </div>
-        </section>
 
-        {/* Right Section: Just Returned */}
-        <section className="bg-green-100 p-6 rounded-lg shadow-md lg:col-span-1">
-          <h3 className="text-xl font-semibold mb-4 text-green-700">Just Returned</h3>
-          <div className="space-y-4">
-            {employeesJustReturned.length > 0 ? (
-              employeesJustReturned.map(employee => renderEmployeeCard(employee))
-            ) : (
-              <p>No employees have recently returned from vacation.</p>
-            )}
-          </div>
-        </section>
-      </div>
+
+      {employeesOnVacation.length > 0 && (
+  <div className="mb-6 border p-6 rounded-lg bg-blue-100">
+    <h3 className="text-xl font-semibold text-center">On Vacation</h3>
+    <div className="flex flex-wrap justify-center gap-4">
+      {employeesOnVacation.map((employee, index) => (
+        <div
+          key={index}
+          className="flex-1 min-w-[250px] max-w-[400px] p-2"
+        >
+          {renderEmployeeCard(employee)}
+        </div>
+      ))}
+    </div>
+  </div>
+)}
+{/* "Just Returned" employees - On the right side with separation */}
+{employeesJustReturned.length > 0 && (
+  <div className="border-l-2 border-gray-300 pl-6 ml-6">
+    <h3 className="text-xl font-semibold text-center mb-4">Just Returned</h3>
+    <div className="flex flex-wrap justify-center gap-4">
+      {employeesJustReturned.map((employeeCard, index) => (
+        <div
+          key={index}
+          className="flex-shrink-1 flex-grow-1 basis-32 sm:basis-40 md:basis-48 lg:basis-56 xl:basis-64" // Dynamic sizing for cards
+        >
+          {renderEmployeeCard(employeeCard)}
+        </div>
+      ))}
+    </div>
+  </div>
+)}
+
+      {/* Loading Spinner */}
+      {loading && (
+        <div className="text-center">
+          <p>Loading...</p>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../../supabaseClient"; // Ensure the import is correct
+import { toast } from "react-toastify"; // Import toast
+import 'react-toastify/dist/ReactToastify.css'; // Import toast styles
 
 const EmployeeNotificationCenter = () => {
   const [notifications, setNotifications] = useState([]);
   const [newNotificationMessage, setNewNotificationMessage] = useState("");
   const [error, setError] = useState("");
-  const [userId, setUserId] = useState(null); // Store the userId dynamically
-  const [userRole, setUserRole] = useState(""); // Track the user role (admin, admin_ministry, super_admin)
+  const [ setUserId] = useState(null); // Store the userId dynamically
+  const [ setUserRole] = useState(""); // Track the user role (admin, admin_ministry, super_admin)
   const [departmentId, setDepartmentId] = useState(null); // Track the departmentId
   const [ministryId, setMinistryId] = useState(null); // Track the ministryId
 
@@ -16,6 +18,7 @@ const EmployeeNotificationCenter = () => {
 
     if (!storedUserId) {
       setError("User is not authenticated");
+      toast.error("User is not authenticated"); // Toast notification for error
       return;
     }
 
@@ -28,6 +31,7 @@ const EmployeeNotificationCenter = () => {
 
       if (profileError || !profileData) {
         setError("User profile not found or error fetching profile");
+        toast.error("User profile not found or error fetching profile"); // Toast notification for error
         return;
       }
 
@@ -48,6 +52,7 @@ const EmployeeNotificationCenter = () => {
     } catch (error) {
       console.error("Error fetching user profile:", error);
       setError("Error fetching user profile");
+      toast.error("Error fetching user profile"); // Toast notification for error
     }
   };
 
@@ -79,18 +84,22 @@ const EmployeeNotificationCenter = () => {
       if (fetchError) {
         console.error("Error fetching notifications:", fetchError);
         setError("Error fetching notifications");
+        toast.error("Error fetching notifications"); // Toast notification for error
         return;
       }
 
       if (!data || data.length === 0) {
         setError("No notifications found");
+        toast.info("No notifications found"); // Toast notification for info
         return;
       }
 
       setNotifications(data);
+      toast.success("Notifications fetched successfully"); // Toast notification for success
     } catch (error) {
       console.error("Error fetching notifications:", error);
       setError("Error fetching notifications");
+      toast.error("Error fetching notifications"); // Toast notification for error
     }
   };
 
@@ -98,6 +107,7 @@ const EmployeeNotificationCenter = () => {
   const createReminderNotification = async () => {
     if (!newNotificationMessage) {
       setError("Notification message cannot be empty");
+      toast.error("Notification message cannot be empty"); // Toast notification for error
       return;
     }
 
@@ -105,6 +115,7 @@ const EmployeeNotificationCenter = () => {
 
     if (!storedUserId) {
       setError("User is not authenticated");
+      toast.error("User is not authenticated"); // Toast notification for error
       return;
     }
 
@@ -126,14 +137,17 @@ const EmployeeNotificationCenter = () => {
       if (insertError) {
         console.error("Error creating notification:", insertError);
         setError("Error creating notification");
+        toast.error("Error creating notification"); // Toast notification for error
         return;
       }
 
       setNewNotificationMessage(""); // Clear input
       fetchNotifications({ employee_id: storedUserId, department_id: departmentId, ministry_id: ministryId });
+      toast.success("Reminder notification created successfully"); // Toast notification for success
     } catch (error) {
       console.error("Error creating notification:", error);
       setError("Error creating notification");
+      toast.error("Error creating notification"); // Toast notification for error
     }
   };
 
@@ -182,6 +196,9 @@ const EmployeeNotificationCenter = () => {
           Create Reminder Notification
         </button>
       </div>
+
+      {/* Toast Container */}
+      <toast.Container />
     </div>
   );
 };

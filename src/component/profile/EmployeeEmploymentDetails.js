@@ -1,17 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../../supabaseClient";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const EmployeeEmploymentDetails = ({ employeeData, setEmployeeData }) => {
   const [ministries, setMinistries] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [managers, setManagers] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);  // To toggle between edit and view mode
 
-  // Fetch ministries on component mount
   useEffect(() => {
     const fetchMinistries = async () => {
       const { data, error } = await supabase.from("ministries").select("id, name");
       if (error) {
-        console.error("Error fetching ministries:", error.message);
+        toast.error("Error fetching ministries.");
       } else {
         setMinistries(data);
       }
@@ -20,9 +23,9 @@ const EmployeeEmploymentDetails = ({ employeeData, setEmployeeData }) => {
     fetchMinistries();
   }, []);
 
-  // Fetch departments when ministry is selected
   useEffect(() => {
     if (employeeData.ministry_id) {
+      setDepartments([]); // Reset departments when ministry changes
       const fetchDepartments = async () => {
         const { data, error } = await supabase
           .from("departments")
@@ -30,7 +33,7 @@ const EmployeeEmploymentDetails = ({ employeeData, setEmployeeData }) => {
           .eq("ministry_id", employeeData.ministry_id);
 
         if (error) {
-          console.error("Error fetching departments:", error.message);
+          toast.error("Error fetching departments.");
         } else {
           setDepartments(data);
         }
@@ -40,19 +43,19 @@ const EmployeeEmploymentDetails = ({ employeeData, setEmployeeData }) => {
     }
   }, [employeeData.ministry_id]);
 
-  // Fetch managers when department is selected
   useEffect(() => {
     if (employeeData.department_id) {
+      setManagers([]); // Reset managers when department changes
       const fetchManagers = async () => {
         const { data, error } = await supabase
-          .from("employee_profiles") // Assuming employee_profiles table contains manager data
-          .select("id, first_name, last_name") // Selecting first_name, last_name for managers
-          .eq("department_id", employeeData.department_id); // Filtering by department_id
+          .from("employee_profiles")
+          .select("id, first_name, last_name")
+          .eq("department_id", employeeData.department_id);
 
         if (error) {
-          console.error("Error fetching managers:", error.message);
+          toast.error("Error fetching managers.");
         } else {
-          setManagers(data); // Storing managers data
+          setManagers(data);
         }
       };
 
@@ -60,7 +63,6 @@ const EmployeeEmploymentDetails = ({ employeeData, setEmployeeData }) => {
     }
   }, [employeeData.department_id]);
 
-  // Handle form field change
   const handleChange = (e) => {
     const { name, value } = e.target;
     setEmployeeData((prevData) => ({
@@ -69,38 +71,78 @@ const EmployeeEmploymentDetails = ({ employeeData, setEmployeeData }) => {
     }));
   };
 
-  // Save employee data to Supabase
+  const validateForm = () => {
+    if (
+      !employeeData.employment_date ||
+      !employeeData.employment_type ||
+      !employeeData.ministry_id ||
+      !employeeData.department_id ||
+      !employeeData.manager ||
+      !employeeData.position ||
+      !employeeData.qualification
+    ) {
+      toast.error("Please fill in all fields.");
+      return false;
+    }
+    return true;
+  };
+
   const saveEmployeeData = async () => {
+    if (!validateForm()) return;
+
+    setLoading(true);
     const { error } = await supabase
-      .from("employee_details") // Assuming the table where employment details are stored
+      .from("employee_details")
       .upsert([
         {
-          employee_id: employeeData.employee_id, // Assuming employee_id is in employeeData
+          employee_id: employeeData.employee_id,
           employment_date: employeeData.employment_date,
           employment_type: employeeData.employment_type,
           ministry_id: employeeData.ministry_id,
           department_id: employeeData.department_id,
-          //manager: employeeData.manager,
           position: employeeData.position,
-          //grade_level: employeeData.grade_level,
-          //step: employeeData.step,
           qualification: employeeData.qualification,
         },
       ]);
+
+    setLoading(false);
+
     if (error) {
-      console.error("Error saving employee data:", error.message);
+      toast.success("Employee details saved successfully!");
     } else {
-      alert("Employee details saved successfully!");
+      toast.success("Employee details saved successfully!");
+      setIsEditMode(false); // Exit edit mode on successful save
     }
+  };
+  
+  
+  const enableEditMode = () => {
+    setIsEditMode(true); // Enable edit mode to allow changes
+  };
+
+  const cancelEditMode = () => {
+    setIsEditMode(false); // Cancel edit mode and revert changes
+    // Optionally reset form to original data
+    setEmployeeData({
+      ...employeeData, // This will restore initial data if needed
+    });
   };
 
   return (
-    <div className="mb-6">
-      <h2 className="text-xl font-semibold">Employment Details</h2>
+    <div className="max-w-4xl mx-auto p-6 bg-white shadow-sm rounded-xl border border-gray-200">
+      <ToastContainer />
+      <h2 className="text-2xl font-semibold text-gray-800 mb-6 flex items-center space-x-3">
+        <span className="material-icons-outlined text-blue-500">Work</span>
+        <span>Employment Details</span>
+      </h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-        <div>
-          <label htmlFor="employment_date" className="block text-sm font-medium">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Employment Date */}
+        <div className="bg-gray-50 p-4 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 ease-in-out">
+          <label
+            htmlFor="employment_date"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
             Employment Date
           </label>
           <input
@@ -109,13 +151,14 @@ const EmployeeEmploymentDetails = ({ employeeData, setEmployeeData }) => {
             name="employment_date"
             value={employeeData.employment_date}
             onChange={handleChange}
-            className="w-full mt-1 p-2 border border-gray-300 rounded"
-            required
+            className="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 ease-in-out"
+            disabled={!isEditMode}
           />
         </div>
 
-        <div>
-          <label htmlFor="employment_type" className="block text-sm font-medium">
+        {/* Employment Type */}
+        <div className="bg-gray-50 p-4 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 ease-in-out">
+          <label htmlFor="employment_type" className="block text-sm font-medium text-gray-700 mb-2">
             Employment Type
           </label>
           <select
@@ -123,8 +166,8 @@ const EmployeeEmploymentDetails = ({ employeeData, setEmployeeData }) => {
             name="employment_type"
             value={employeeData.employment_type}
             onChange={handleChange}
-            className="w-full mt-1 p-2 border border-gray-300 rounded"
-          
+            className="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 ease-in-out"
+            disabled={!isEditMode}
           >
             <option value="">Select</option>
             <option value="Contract">Contract</option>
@@ -132,9 +175,9 @@ const EmployeeEmploymentDetails = ({ employeeData, setEmployeeData }) => {
           </select>
         </div>
 
-        {/* Ministry Dropdown */}
-        <div>
-          <label htmlFor="ministry_id" className="block text-sm font-medium">
+        {/* Ministry */}
+        <div className="bg-gray-50 p-4 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 ease-in-out">
+          <label htmlFor="ministry_id" className="block text-sm font-medium text-gray-700 mb-2">
             Ministry
           </label>
           <select
@@ -142,8 +185,8 @@ const EmployeeEmploymentDetails = ({ employeeData, setEmployeeData }) => {
             name="ministry_id"
             value={employeeData.ministry_id || ""}
             onChange={handleChange}
-            className="w-full mt-1 p-2 border border-gray-300 rounded"
-            required
+            className="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 ease-in-out"
+            disabled={!isEditMode}
           >
             <option value="">Select Ministry</option>
             {ministries.map((ministry) => (
@@ -154,9 +197,9 @@ const EmployeeEmploymentDetails = ({ employeeData, setEmployeeData }) => {
           </select>
         </div>
 
-        {/* Department Dropdown */}
-        <div>
-          <label htmlFor="department_id" className="block text-sm font-medium">
+        {/* Department */}
+        <div className="bg-gray-50 p-4 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 ease-in-out">
+          <label htmlFor="department_id" className="block text-sm font-medium text-gray-700 mb-2">
             Department
           </label>
           <select
@@ -164,8 +207,8 @@ const EmployeeEmploymentDetails = ({ employeeData, setEmployeeData }) => {
             name="department_id"
             value={employeeData.department_id || ""}
             onChange={handleChange}
-            className="w-full mt-1 p-2 border border-gray-300 rounded"
-            required
+            className="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 ease-in-out"
+            disabled={!isEditMode}
           >
             <option value="">Select Department</option>
             {departments.map((department) => (
@@ -176,9 +219,9 @@ const EmployeeEmploymentDetails = ({ employeeData, setEmployeeData }) => {
           </select>
         </div>
 
-        {/* Manager Dropdown */}
-        <div>
-          <label htmlFor="manager" className="block text-sm font-medium">
+        {/* Manager */}
+        <div className="bg-gray-50 p-4 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 ease-in-out">
+          <label htmlFor="manager" className="block text-sm font-medium text-gray-700 mb-2">
             Manager
           </label>
           <select
@@ -186,86 +229,77 @@ const EmployeeEmploymentDetails = ({ employeeData, setEmployeeData }) => {
             name="manager"
             value={employeeData.manager || ""}
             onChange={handleChange}
-            className="w-full mt-1 p-2 border border-gray-300 rounded"
+            className="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 ease-in-out"
+            disabled={!isEditMode}
           >
             <option value="">Select Manager</option>
             {managers.map((manager) => (
               <option key={manager.id} value={manager.id}>
-                {manager.first_name} {manager.last_name} {/* Showing manager's first and last name*/}
+                {manager.first_name} {manager.last_name}
               </option>
             ))}
           </select>
         </div>
- 
-        {/* Other input fields */}
-        <div>
-          <label htmlFor="position" className="block text-sm font-medium">
+
+        {/* Position */}
+        <div className="bg-gray-50 p-4 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 ease-in-out">
+          <label htmlFor="position" className="block text-sm font-medium text-gray-700 mb-2">
             Position
           </label>
           <input
             type="text"
             id="position"
             name="position"
-            value={employeeData.position}
+            value={employeeData.position || ""}
             onChange={handleChange}
-            className="w-full mt-1 p-2 border border-gray-300 rounded"
-            
-          />
-        </div>
- {/* Other input fields 
-        <div>
-          <label htmlFor="grade_level" className="block text-sm font-medium">
-            Grade Level
-          </label>
-          <input
-            type="text"
-            id="grade_level"
-            name="grade_level"
-            value={employeeData.grade_level}
-            onChange={handleChange}
-            className="w-full mt-1 p-2 border border-gray-300 rounded"
-            required
-          />
-        </div>
-*/}
-        <div>
-          <label htmlFor="step" className="block text-sm font-medium">
-            Step
-          </label>
-          <input
-            type="text"
-            id="step"
-            name="step"
-            value={employeeData.step}
-            onChange={handleChange}
-            className="w-full mt-1 p-2 border border-gray-300 rounded"
-            
+            disabled={!isEditMode}
+            className="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 ease-in-out"
           />
         </div>
 
-        <div>
-          <label htmlFor="qualification" className="block text-sm font-medium">
+        {/* Qualification */}
+        <div className="bg-gray-50 p-4 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 ease-in-out">
+          <label htmlFor="qualification" className="block text-sm font-medium text-gray-700 mb-2">
             Qualification
           </label>
           <input
             type="text"
             id="qualification"
             name="qualification"
-            value={employeeData.qualification}
+            value={employeeData.qualification || ""}
             onChange={handleChange}
-            className="w-full mt-1 p-2 border border-gray-300 rounded"
-            required
+            disabled={!isEditMode}
+            className="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 ease-in-out"
           />
         </div>
-      </div>
 
-      <div className="mt-4">
-        <button
-          onClick={saveEmployeeData}
-          className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-        >
-          Save
-        </button>
+        {/* Save / Edit Button */}
+        <div className="col-span-2 mt-6 flex justify-between">
+          {isEditMode ? (
+            <>
+              <button
+                onClick={saveEmployeeData}
+                className="w-1/2 p-4 bg-blue-600 text-white font-semibold text-lg rounded-lg hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 ease-in-out"
+                disabled={loading}
+              >
+                {loading ? "Saving..." : "Save"}
+              </button>
+              <button
+                onClick={cancelEditMode}
+                className="w-1/2 p-4 bg-red-600 text-white font-semibold text-lg rounded-lg hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 transition-all duration-300 ease-in-out"
+              >
+                Cancel
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={enableEditMode}
+              className="w-full p-4 bg-yellow-600 text-white font-semibold text-lg rounded-lg hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all duration-300 ease-in-out"
+            >
+              Edit
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

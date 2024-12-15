@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../../supabaseClient";
+import { toast } from "react-toastify"; // Import toast
+import "react-toastify/dist/ReactToastify.css"; // Import toast styles
 
 const RoleAssignment = () => {
   const [roles, setRoles] = useState(["is_admin", "admin_ministry", "super_admin"]);
@@ -10,7 +12,6 @@ const RoleAssignment = () => {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [selectedDepartment, setSelectedDepartment] = useState(null);
   const [selectedMinistry, setSelectedMinistry] = useState(null);
-  const [message, setMessage] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [adminToReplace, setAdminToReplace] = useState(null);
 
@@ -33,42 +34,41 @@ const RoleAssignment = () => {
       .from("access_level")
       .select("employee_id")
       .eq("role_name", selectedRole);
-  
+
     if (selectedRole === "is_admin") query.eq("department_id", selectedDepartment);
     if (selectedRole === "admin_ministry") query.eq("ministry_id", selectedMinistry);
-  
+
     const { data: existingAdmin } = await query;
-  
+
     if (existingAdmin && existingAdmin.length > 0) {
       const adminId = existingAdmin[0].employee_id;
       const admin = employees.find((e) => e.employee_id === adminId);
       return admin ? `${admin.first_name} ${admin.last_name}` : "Unknown Admin";
     }
-  
+
     return null;
   };
-  
+
   const handleRoleAssignment = async () => {
     if (!selectedRole || !selectedEmployee) {
-      setMessage("Please select a role and an employee.");
-      setTimeout(() => setMessage(""), 3000);
+      toast.error("Please select a role and an employee."); // Show error toast
       return;
     }
-  
+
     const existingAdminName = await checkExistingAdmin();
     if (existingAdminName) {
       setAdminToReplace(existingAdminName);
       setShowModal(true);
       return;
     }
-  
+
     assignRole();
   };
-  
+
   const assignRole = async () => {
     try {
       const accessId = selectedRole === "is_admin" ? 1 : selectedRole === "admin_ministry" ? 2 : 3;
-  
+
       // Replace the existing admin if necessary
       if (adminToReplace) {
         const admin = employees.find((e) => `${e.first_name} ${e.last_name}` === adminToReplace);
@@ -82,7 +82,7 @@ const RoleAssignment = () => {
               ministry_id: null,   // Same for ministry_id
             })
             .eq("employee_id", admin.employee_id);
-  
+
           // Reset only role flags in `employee_profiles` for the replaced admin
           await supabase
             .from("employee_profiles")
@@ -90,7 +90,7 @@ const RoleAssignment = () => {
             .eq("employee_id", admin.employee_id);
         }
       }
-  
+
       // Upsert the new admin in `access_level` with their department and ministry info
       await supabase.from("access_level").upsert({
         employee_id: selectedEmployee,
@@ -99,24 +99,24 @@ const RoleAssignment = () => {
         access_id: accessId,
         role_name: selectedRole,
       });
-  
+
       // Update the new admin's role flags in `employee_profiles`
       const updates = {
         is_admin: selectedRole === "is_admin" || selectedRole === "admin_ministry" || selectedRole === "super_admin",
         admin_ministry: selectedRole === "admin_ministry" || selectedRole === "super_admin",
         is_super_admin: selectedRole === "super_admin",
       };
-  
+
       await supabase.from("employee_profiles").update(updates).eq("employee_id", selectedEmployee);
-  
-      setMessage("Role assigned successfully!");
+
+      toast.success("Role assigned successfully!"); // Show success toast
       setShowModal(false);
     } catch (error) {
       console.error("Error assigning role:", error.message);
-      setMessage("Error assigning role. Please try again.");
+      toast.error("Error assigning role. Please try again."); // Show error toast
     }
   };
-  
+
   return (
     <div className="p-6 max-w-4xl mx-auto bg-white rounded shadow">
       <h2 className="text-2xl font-bold mb-4">Role Assignment</h2>
@@ -200,9 +200,6 @@ const RoleAssignment = () => {
         Assign Role
       </button>
 
-      {/* Message */}
-      {message && <div className="mt-4 text-center bg-gray-100 text-gray-800 p-2 rounded">{message}</div>}
-
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex items-center justify-center">
@@ -221,7 +218,7 @@ const RoleAssignment = () => {
                 onClick={() => setShowModal(false)}
                 className="bg-gray-300 text-gray-800 py-2 px-4 rounded"
               >
-                No, Cancel
+                Cancel
               </button>
             </div>
           </div>

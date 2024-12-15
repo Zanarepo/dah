@@ -1,272 +1,271 @@
 import React, { useState, useEffect } from "react";
-import { supabase } from "../../supabaseClient";
+import { supabase } from "../../supabaseClient"; // Import supabase client
+import { toast } from "react-toastify"; // Import toast from react-toastify
+import "react-toastify/dist/ReactToastify.css"; // Import toast styles
 
 const RoleAssignment = () => {
-  const [roles, setRoles] = useState(["is_admin", "admin_ministry", "super_admin"]);
-  const [selectedRole, setSelectedRole] = useState("");
-  const [managers, setManagers] = useState([]);
-  const [departments, setDepartments] = useState([]);
+  const [employees, setEmployees] = useState([]);
   const [ministries, setMinistries] = useState([]);
-  const [selectedManager, setSelectedManager] = useState(null);
-  const [selectedDepartment, setSelectedDepartment] = useState(null);
+  const [departments, setDepartments] = useState([]);
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [selectedRole, setSelectedRole] = useState(""); // Role selection (is_admin, admin_ministry, super_admin)
   const [selectedMinistry, setSelectedMinistry] = useState(null);
-  const [message, setMessage] = useState("");
-  const [showModal, setShowModal] = useState(false);
-  const [adminToReplace, setAdminToReplace] = useState(null);
-  const [selectedManagerName, setSelectedManagerName] = useState("");
+  const [selectedDepartment, setSelectedDepartment] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  // Fetch initial data
+  // Fetch employees, ministries, and departments
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch departments
-        const { data: departmentData } = await supabase.from("departments").select("*");
+        // Fetch Employees
+        const { data: employeesData, error: employeeError } = await supabase
+          .from("employee_profiles")
+          .select("employee_id, first_name, last_name");
+        if (employeeError) throw employeeError;
+        setEmployees(employeesData);
 
-        // Fetch ministries
-        const { data: ministryData } = await supabase.from("ministries").select("*");
+        // Fetch Ministries
+        const { data: ministriesData, error: ministriesError } = await supabase
+          .from("ministries")
+          .select("id, name");
+        if (ministriesError) throw ministriesError;
+        setMinistries(ministriesData);
 
-        // Fetch managers and their profiles
-        const { data: managerData, error: managerError } = await supabase
-          .from("managers")
-          .select("*, employee_profiles!managers_employee_id_fkey(*)");
-
-        if (managerError) {
-          console.error("Error fetching managers:", managerError.message);
-        }
-
-        setDepartments(departmentData || []);
-        setMinistries(ministryData || []);
-        setManagers(managerData || []);
+        // Fetch Departments
+        const { data: departmentsData, error: departmentsError } = await supabase
+          .from("departments")
+          .select("id, name");
+        if (departmentsError) throw departmentsError;
+        setDepartments(departmentsData);
+        
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching data:", error.message);
       }
     };
 
     fetchData();
   }, []);
 
-  const checkExistingAdmin = async () => {
-    const query = supabase
-      .from("access_level")
-      .select("employee_id")
-      .eq("role_name", selectedRole);
-
-    if (selectedRole === "is_admin") query.eq("department_id", selectedDepartment);
-    if (selectedRole === "admin_ministry") query.eq("ministry_id", selectedMinistry);
-
-    const { data: existingAdmin } = await query;
-
-    if (existingAdmin && existingAdmin.length > 0) {
-      const adminId = existingAdmin[0].employee_id;
-      const admin = managers.find((m) => m.employee_profiles.employee_id === adminId);
-      return admin
-        ? `${admin.employee_profiles.first_name} ${admin.employee_profiles.last_name}`
-        : "Unknown Admin";
+  // Helper function to map role name to access_id
+  const getAccessIdFromRole = (roleName) => {
+    switch (roleName) {
+      case "is_admin":
+        return 1; // access_id 1 for is_admin
+      case "admin_ministry":
+        return 2; // access_id 2 for admin_ministry
+      case "super_admin":
+        return 3; // access_id 3 for super_admin
+      default:
+        return null; // Default case in case of an invalid role
     }
-
-    return null;
   };
 
-  const handleRoleAssignment = async () => {
-    if (!selectedRole || !selectedManager) {
-      setMessage("Please select a role and a manager.");
-      setTimeout(() => setMessage(""), 3000);
+  // Function to update employee profile based on role
+  const updateEmployeeProfile = async (employeeId, roleName) => {
+    let updateData = {};
+
+    // Set the employee profile fields based on the selected role
+    if (roleName === "is_admin") {
+      updateData = { is_admin: true, admin_ministry: false, is_super_admin: false };
+    } else if (roleName === "admin_ministry") {
+      updateData = { is_admin: false, admin_ministry: true, is_super_admin: false };
+    } else if (roleName === "super_admin") {
+      updateData = { is_admin: true, admin_ministry: true, is_super_admin: true };
+    } else {
+      updateData = { is_admin: false, admin_ministry: false, is_super_admin: false };
+    }
+
+    // Update employee profile
+    const { data, error } = await supabase
+      .from("employee_profiles")
+      .update(updateData)
+      .eq("employee_id", employeeId);
+
+    if (error) {
+      console.error("Error updating employee profile:", error.message);
+      toast.error("Error updating employee profile."); // Show error toast
+    } else {
+      console.log("Employee profile updated successfully:", data);
+      toast.success("Employee profile updated successfully!"); // Show success toast
+    }
+  };
+
+  // Function to assign a role to an employee
+  const assignRoleToEmployee = async (employeeId, roleName, ministryId, departmentId) => {
+    const accessId = getAccessIdFromRole(roleName);
+    if (accessId === null) {
+      toast.error("Invalid role selected."); // Show error toast
       return;
     }
 
-    const existingAdminName = await checkExistingAdmin();
-    if (existingAdminName) {
-      setAdminToReplace(existingAdminName);
-      const selectedManagerData = managers.find(
-        (manager) => manager.employee_profiles.employee_id === selectedManager
-      );
-      if (selectedManagerData) {
-        setSelectedManagerName(
-          `${selectedManagerData.employee_profiles.first_name} ${selectedManagerData.employee_profiles.last_name}`
-        );
-      }
-      setShowModal(true);
-      return;
-    }
-
-    assignRole();
-  };
-
-  const assignRole = async () => {
     try {
-      const accessId = selectedRole === "is_admin" ? 1 : selectedRole === "admin_ministry" ? 2 : 3;
+      // Ensure employee_id exists in employee_profiles
+      const { data: employeeData, error: employeeError } = await supabase
+        .from("employee_profiles")
+        .select("employee_id")
+        .eq("employee_id", employeeId)
+        .single();
 
-      if (adminToReplace) {
-        const admin = managers.find(
-          (m) => `${m.employee_profiles.first_name} ${m.employee_profiles.last_name}` === adminToReplace
-        );
-
-        if (admin) {
-          const adminId = admin.employee_profiles.employee_id;
-
-          await supabase
-            .from("access_level")
-            .update({
-              employee_id: selectedManager,
-              role_name: selectedRole,
-              department_id: selectedDepartment || null,
-              ministry_id: selectedMinistry || null,
-              access_id: accessId,
-            })
-            .eq("employee_id", adminId);
-
-          await supabase
-            .from("employee_profiles")
-            .update({
-              is_admin: false,
-              admin_ministry: false,
-              is_super_admin: false,
-            })
-            .eq("employee_id", adminId);
-        }
+      if (employeeError || !employeeData) {
+        toast.error("Selected employee not found."); // Show error toast
+        return;
       }
 
-      await supabase.from("access_level").upsert({
-        employee_id: selectedManager,
-        department_id: selectedDepartment || null,
-        ministry_id: selectedMinistry || null,
-        access_id: accessId,
-        role_name: selectedRole,
-      });
+      // Ensure ministry_id exists in ministries table
+      const { data: ministryData, error: ministryError } = await supabase
+        .from("ministries")
+        .select("id")
+        .eq("id", ministryId)
+        .single();
 
-      const updates = {
-        is_admin: selectedRole === "is_admin" || selectedRole === "admin_ministry" || selectedRole === "super_admin",
-        admin_ministry: selectedRole === "admin_ministry" || selectedRole === "super_admin",
-        is_super_admin: selectedRole === "super_admin",
-      };
+      if (ministryError || !ministryData) {
+        toast.error("Selected ministry not found."); // Show error toast
+        return;
+      }
 
-      await supabase
-        .from("employee_profiles")
-        .update({
-          ...updates,
-          department_id: selectedDepartment || null,
-          ministry_id: selectedMinistry || null,
-        })
-        .eq("employee_id", selectedManager);
+      // Ensure department_id exists in departments table
+      const { data: departmentData, error: departmentError } = await supabase
+        .from("departments")
+        .select("id")
+        .eq("id", departmentId)
+        .single();
 
-      setMessage("Role assigned successfully!");
-      setTimeout(() => setMessage(""), 3000);
-      setShowModal(false);
+      if (departmentError || !departmentData) {
+        toast.error("Selected department not found."); // Show error toast
+        return;
+      }
+
+      // Perform upsert to assign the role using role_name
+      const { data, error } = await supabase
+        .from("access_level")
+        .upsert([
+          {
+            employee_id: employeeId, // Correctly reference employee_id
+            role_name: roleName,
+            access_id: accessId, // Set the access_id based on the role
+            ministry_id: ministryId,
+            department_id: departmentId,
+          },
+        ], { onConflict: ["employee_id"] }); // Handle conflicts using employee_id
+
+      if (error) throw error;
+
+      console.log("Role assigned successfully:", data);
+      toast.success("Role assigned successfully!"); // Show success toast
+
+      // After assigning the role, update the employee profile
+      updateEmployeeProfile(employeeId, roleName);
+
     } catch (error) {
       console.error("Error assigning role:", error.message);
-      setMessage("Error assigning role. Please try again.");
-      setTimeout(() => setMessage(""), 3000);
+      toast.error("Error assigning role."); // Show error toast
     }
+  };
+
+  const handleRoleAssignment = () => {
+    if (!selectedEmployee || !selectedRole || !selectedMinistry || !selectedDepartment) {
+      toast.error("Please select all fields."); // Show error toast
+      return;
+    }
+
+    setLoading(true);
+
+    // Assign role based on selectedRole
+    assignRoleToEmployee(
+      selectedEmployee.employee_id, // Use employee_id instead of id
+      selectedRole, 
+      selectedMinistry, 
+      selectedDepartment
+    );
+
+    setLoading(false);
   };
 
   return (
-    <div className="p-6 max-w-4xl mx-auto bg-white rounded shadow">
-      <h2 className="text-2xl font-bold mb-4">Role Assignment</h2>
+    <div className="role-assignment p-6">
+      <h2 className="text-xl font-bold mb-4">Role Assignment</h2>
 
+      {/* Employee Selection */}
       <div className="mb-4">
-        <label className="block text-sm font-medium mb-1">Select Role:</label>
+        <label htmlFor="employee" className="block text-sm font-semibold">Select Employee</label>
         <select
+          id="employee"
+          value={selectedEmployee ? selectedEmployee.employee_id : ""}
+          onChange={(e) => {
+            const employee = employees.find(emp => emp.employee_id === parseInt(e.target.value));
+            setSelectedEmployee(employee);
+          }}
+          className="border p-2 rounded w-full"
+        >
+          <option value="">Select Employee</option>
+          {employees.map((employee) => (
+            <option key={employee.employee_id} value={employee.employee_id}>
+              {employee.first_name} {employee.last_name}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Role Selection */}
+      <div className="mb-4">
+        <label htmlFor="role" className="block text-sm font-semibold">Select Role</label>
+        <select
+          id="role"
           value={selectedRole}
           onChange={(e) => setSelectedRole(e.target.value)}
-          className="block w-full px-3 py-2 border rounded"
+          className="border p-2 rounded w-full"
         >
-          <option value="">-- Choose a Role --</option>
-          {roles.map((role, index) => (
-            <option key={index} value={role}>
-              {role}
-            </option>
-          ))}
+          <option value="">Select Role</option>
+          <option value="is_admin">is_admin</option>
+          <option value="admin_ministry">admin_ministry</option>
+          <option value="super_admin">super_admin</option>
         </select>
       </div>
 
+      {/* Ministry Selection */}
       <div className="mb-4">
-        <label className="block text-sm font-medium mb-1">Select Manager:</label>
+        <label htmlFor="ministry" className="block text-sm font-semibold">Select Ministry</label>
         <select
-          value={selectedManager}
-          onChange={(e) => setSelectedManager(e.target.value)}
-          className="block w-full px-3 py-2 border rounded"
+          id="ministry"
+          value={selectedMinistry}
+          onChange={(e) => setSelectedMinistry(parseInt(e.target.value))}
+          className="border p-2 rounded w-full"
         >
-          <option value="">-- Choose a Manager --</option>
-          {managers.map((manager) => (
-            <option
-              key={manager.employee_profiles.employee_id}
-              value={manager.employee_profiles.employee_id}
-            >
-              {manager.employee_profiles.first_name} {manager.employee_profiles.last_name}
+          <option value="">Select Ministry</option>
+          {ministries.map((ministry) => (
+            <option key={ministry.id} value={ministry.id}>
+              {ministry.name}
             </option>
           ))}
         </select>
       </div>
 
-      {selectedRole === "is_admin" && (
-        <div className="mb-4">
-          <label className="block text-sm font-medium mb-1">Select Department:</label>
-          <select
-            value={selectedDepartment}
-            onChange={(e) => setSelectedDepartment(e.target.value)}
-            className="block w-full px-3 py-2 border rounded"
-          >
-            <option value="">-- Choose a Department --</option>
-            {departments.map((department) => (
-              <option key={department.id} value={department.id}>
-                {department.name}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
+      {/* Department Selection */}
+      <div className="mb-4">
+        <label htmlFor="department" className="block text-sm font-semibold">Select Department</label>
+        <select
+          id="department"
+          value={selectedDepartment}
+          onChange={(e) => setSelectedDepartment(parseInt(e.target.value))}
+          className="border p-2 rounded w-full"
+        >
+          <option value="">Select Department</option>
+          {departments.map((department) => (
+            <option key={department.id} value={department.id}>
+              {department.name}
+            </option>
+          ))}
+        </select>
+      </div>
 
-      {selectedRole === "admin_ministry" && (
-        <div className="mb-4">
-          <label className="block text-sm font-medium mb-1">Select Ministry:</label>
-          <select
-            value={selectedMinistry}
-            onChange={(e) => setSelectedMinistry(e.target.value)}
-            className="block w-full px-3 py-2 border rounded"
-          >
-            <option value="">-- Choose a Ministry --</option>
-            {ministries.map((ministry) => (
-              <option key={ministry.id} value={ministry.id}>
-                {ministry.name}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
-
+      {/* Assign Role Button */}
       <button
         onClick={handleRoleAssignment}
-        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        disabled={loading}
+        className="bg-blue-500 text-white px-4 py-2 rounded mt-4"
       >
-        Assign Role
+        {loading ? "Assigning..." : "Assign Role"}
       </button>
-
-      {message && <p className="mt-4 text-center text-green-600">{message}</p>}
-
-      {showModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded shadow max-w-md w-full">
-            <h3 className="text-lg font-semibold mb-4">Confirm Role Replacement</h3>
-            <p>
-              {adminToReplace} is already assigned the {selectedRole} role. Do you want to replace this admin with {selectedManagerName}?
-            </p>
-            <div className="mt-4 flex justify-end space-x-2">
-              <button
-                onClick={() => setShowModal(false)}
-                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={assignRole}
-                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-              >
-                Confirm
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

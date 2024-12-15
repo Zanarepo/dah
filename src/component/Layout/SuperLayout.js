@@ -10,6 +10,7 @@ import {
   BellIcon,
   Bars3Icon as MenuIcon,
   XMarkIcon,
+  ChatBubbleLeftIcon,
 } from "@heroicons/react/24/outline";
 
 const SuperAdmin = () => {
@@ -17,12 +18,14 @@ const SuperAdmin = () => {
   const sidebarRef = useRef(null); // Reference to the sidebar
 
   const menuItems = [
-    { name: "Notifications", icon: <BellIcon className="h-6 w-6" />, route: "/general-notification" },
+    { name: "Notifications", icon: <BellIcon className="h-6 w-6" />, route: "/super-notification" },
     //{ name: "Departments", icon: <BuildingOffice2Icon className="h-6 w-6" />, route: "/adminministry" },
     { name: "Ministries", icon: <BuildingLibraryIcon className="h-6 w-6" />, route: "/activity" },
     { name: "Admins", icon: <UsersIcon className="h-6 w-6" />, route: "/superadmins" },
     { name: "Dashboards", icon: <ChartPieIcon className="h-6 w-6" />, route: "/g-dashboards" },
     { name: "Settings", icon: <CogIcon className="h-6 w-6" />, route: "/super-settings" },
+    { name: "Hello", icon: <ChatBubbleLeftIcon className="h-6 w-6" />, route: "/chatapp" },
+  
   ];
 
   const toggleSidebar = () => setIsOpen(!isOpen); // Toggle sidebar visibility

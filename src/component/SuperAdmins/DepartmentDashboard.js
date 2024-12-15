@@ -6,10 +6,10 @@ const DepartmentDashboard = ({ department }) => {
   const navigate = useNavigate();
 
   const dashboards = [
-    { name: "Leave Requests", route: `/minleave-requests/${department.id}` },
-    { name: "Leave Tracker", route: `/minleave-tracker/${department.id}` },
-    { name: "Leave Approval", route: `/minleave-approval/${department.id}` },
-    { name: "Leave History", route: `/minleave-history/${department.id}` },
+    { name: "Leave Requests", route: `/superleave-requests/${department.id}` },
+    { name: "Leave Tracker", route: `/superleave-tracker/${department.id}` },
+    { name: "Leave Approval", route: `/superleave-approval/${department.id}` },
+    { name: "Leave History", route: `/superleave-history/${department.id}` },
   
   ];
 

@@ -2,9 +2,8 @@ import React, { useState, useEffect } from "react";
 import { supabase } from "../../supabaseClient";
 import { FaEdit, FaTrash, FaEye, FaArrowLeft } from "react-icons/fa";
 //import CreateNotice from "../GeneralNotifications/CreateNotice";
+
 import { useNavigate } from "react-router-dom";
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 const LeaveRequest = () => {
   const [leaveRecords, setLeaveRecords] = useState([]);
@@ -19,6 +18,7 @@ const LeaveRequest = () => {
   const [modalType, setModalType] = useState(""); // "add", "edit", or "view"
   const [selectedLeave, setSelectedLeave] = useState(null);
   const [employeeId, setEmployeeId] = useState(null);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -26,7 +26,7 @@ const LeaveRequest = () => {
     if (storedEmployeeId) {
       setEmployeeId(storedEmployeeId);
     } else {
-      toast.error("Employee ID is missing. Please log in again.");
+      setError("Employee ID is missing. Please log in again.");
     }
   }, []);
 
@@ -53,7 +53,7 @@ const LeaveRequest = () => {
       setLeaveRecords(activeRecords);
     } catch (err) {
       console.error(err);
-      toast.error("Failed to fetch leave records.");
+      setError("Failed to fetch leave records.");
     }
   };
 
@@ -83,17 +83,18 @@ const LeaveRequest = () => {
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
+    setError(null);
     setSelectedLeave(null);
   };
 
   const handleSaveLeave = async () => {
     if (!leaveDetails.leaveType || !leaveDetails.startDate || !leaveDetails.endDate) {
-      toast.error("All fields are required.");
+      setError("All fields are required.");
       return;
     }
 
     if (new Date(leaveDetails.startDate) > new Date(leaveDetails.endDate)) {
-      toast.error("Start date cannot be later than end date.");
+      setError("Start date cannot be later than end date.");
       return;
     }
 
@@ -107,7 +108,7 @@ const LeaveRequest = () => {
       if (profileError) throw profileError;
 
       if (!profileData) {
-        toast.error("Employee profile not found.");
+        setError("Employee profile not found.");
         return;
       }
 
@@ -133,20 +134,18 @@ const LeaveRequest = () => {
         if (error) throw error;
 
         fetchLeaveRecords();
-        toast.success("Leave request updated successfully.");
       } else {
         const { error } = await supabase.from("employee_leave").insert([payload]);
 
         if (error) throw error;
 
         fetchLeaveRecords();
-        toast.success("Leave request added successfully.");
       }
 
       handleCloseModal();
     } catch (err) {
       console.error(err);
-      toast.error("Failed to save leave request.");
+      setError("Failed to save leave request.");
     }
   };
 
@@ -156,17 +155,14 @@ const LeaveRequest = () => {
       if (error) throw error;
 
       setLeaveRecords((prev) => prev.filter((record) => record.id !== leaveId));
-      toast.success("Leave record deleted successfully.");
     } catch (err) {
       console.error(err);
-      toast.error("Failed to delete leave record.");
+      setError("Failed to delete leave record.");
     }
   };
 
   return (
     <div className="p-6 bg-gray-100 rounded-lg shadow-md">
-      <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
-
       {/* Back Button */}
       <button
         className="flex items-center text-blue-500 hover:text-blue-700 mb-4"
@@ -177,6 +173,8 @@ const LeaveRequest = () => {
 
       {/* Header */}
       <h2 className="text-2xl font-semibold mb-6">Leave Management</h2>
+
+      {error && <p className="text-red-500 mb-4">{error}</p>}
 
       {/* Add Leave Button */}
       <button
@@ -270,30 +268,30 @@ const LeaveRequest = () => {
                 />
                 <textarea
                   className="w-full border p-2 rounded"
-                  rows="4"
-                  placeholder="Leave Comments (Optional)"
+                  placeholder="Comment"
                   value={leaveDetails.comment}
                   onChange={(e) => setLeaveDetails({ ...leaveDetails, comment: e.target.value })}
-                />
+                  
+                ></textarea>
                 <button
                   className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600"
                   onClick={handleSaveLeave}
                 >
-                  Save Leave Request
+                  Save
                 </button>
               </div>
             ) : (
-              <div className="space-y-4">
-                <p><strong>Leave Type:</strong> {selectedLeave.leave_type}</p>
-                <p><strong>Start Date:</strong> {selectedLeave.start_date}</p>
-                <p><strong>End Date:</strong> {selectedLeave.end_date}</p>
-                <p><strong>Status:</strong> {selectedLeave.status}</p>
-                <p><strong>Comment:</strong> {selectedLeave.comment}</p>
+              <div>
+                <p><strong>Leave Type:</strong> {selectedLeave?.leave_type}</p>
+                <p><strong>Start Date:</strong> {selectedLeave?.start_date}</p>
+                <p><strong>End Date:</strong> {selectedLeave?.end_date}</p>
+                <p><strong>Status:</strong> {selectedLeave?.status}</p>
+                <p><strong>Comments:</strong> {selectedLeave?.comment || "No comments provided."}</p>
               </div>
             )}
 
             <button
-              className="mt-4 bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600"
+              className="bg-gray-500 text-white py-2 px-4 rounded-lg mt-4 hover:bg-gray-600"
               onClick={handleCloseModal}
             >
               Close

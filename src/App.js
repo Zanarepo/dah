@@ -139,7 +139,7 @@ import MinistryAdmins from "./component/MinistryDashboard/MinistryAdmins"
 import SuperVacationTracker from "./component/SuperAdmins/SuperVacationTracker"
 import SuperActivities from "./component/SuperAdmins/SuperActivities"
 import SuperMinistryDashboard from "./component/SuperAdmins/SuperMinistryDashboard"
-import SuperVacaSuperAdminLeave from "./component/SuperAdmins/SuperAdminLeave"
+import SuperAdminLeave from "./component/SuperAdmins/SuperAdminLeave"
 import Layout from "./component/Layout/Layout"
 import AdminNotification from "./component/AdminPanel/AdminNotification"
 import DepartmentActivities from "./component/AdminPanel/DepartmentActivities"
@@ -154,14 +154,24 @@ import DeptLeaveTracker from "./component/AdminPanel/DeptLeaveTracker"
 import DeptLeaveApproval from "./component/AdminPanel/DeptLeaveApproval"
 import DeptLeaveHistory from "./component/AdminPanel/DeptLeaveHistory"
 import AccessLevelRoles from "./component/AdminPanel/AccessLevelRoles"
-
-
-
-
-
-
-
-
+import SuperAdminList from "./component/SuperAdmins/SuperAdminList"
+import SuperLeaveDashboard from "./component/SuperAdmins/SuperLeaveDashboard"
+import SuperLeaveApproval from "./component/SuperAdmins/SuperLeaveApproval"
+import SuperLeaveTracker from "./component/SuperAdmins/SuperLeaveTracker"
+import SuperLeaveRequests from "./component/SuperAdmins/SuperLeaveRequests"
+import SuperLeaveHistory from "./component/SuperAdmins/SuperLeaveHistory"
+import MinistryNotification from "./component/GeneralNotifications/MinistryNotification"
+import ChatList from "./component/Chat/ChatList"
+import ChatBox from "./component/Chat/ChatBox"
+import ChatApp from "./component/Chat/ChatApp"
+import EmployeeChatBox from "./component/Chat/EmployeeChatBox"
+import EmployeeChatApp from "./component/Chat/EmployeeChatApp"
+import FileUpload from "./component/Chat/FileUpload"
+import ProfileLayout from "./component/profile/ProfileLayout"
+import ProfileNotification from "./component/profile/ProfileNotification"
+import Chatapp from "./component/profile/Chatapp"
+import EmpChatList from "./component/profile/EmpChatList"
+import EmpLeave from "./component/profile/EmpLeave"
 
 
 
@@ -172,13 +182,47 @@ function App() {
 
     {/* Route for ADMIN  */}
 
+
     <Routes>    
    
 
-    <Route path="/lay" element={<Layout />}>
+    <Route path="/profiles" element={<ProfileLayout />}>
+
+    
     
     </Route>
+
+    </Routes>
+    
+    <Routes>    
+    <Route path="/my-profile" element={<ProfileLayout />}>
+    </Route>
+  
+
+    <Route path="/" element={<ProfileLayout />}>
+    
+    <Route path="/personal-details" element={<EmployeePersonalDetails />} />
+    <Route path="/employment-details" element={<EmployeeEmploymentDetails />} />
+  
+    <Route path="/profile-notifications" element={<ProfileNotification />} />
+    <Route path="/chatapps" element={<EmployeeChatApp />} />
+    <Route path="/empchatlist" element={<EmpChatList />} />
+    <Route path="/leave" element={<Leave/>} />
    
+    
+    
+    
+    
+    </Route>
+
+ </Routes>
+
+
+ 
+    <Routes>    
+    <Route path="/lay" element={<Layout />}>
+    </Route>
+  
 
     <Route path="/" element={<Layout />}>
     <Route path="/admin-notification" element={<AdminNotification />}></Route>
@@ -188,7 +232,7 @@ function App() {
     <Route path="/department-leave" element={<DepartmentLeave/>}></Route>
     <Route path="/department-leavereq" element={<DepartmentLeaveRequest/>}></Route>
     <Route path="/dept-leavedashboard" element={<DepartmentLeaveDashboard/>}></Route>
-  
+ 
 
     <Route path="/deptleave-requests/:departmentId" element={<DeptLeaveRequests />} />
     <Route path="/deptleave-tracker/:departmentId" element={<DeptLeaveTracker />} />
@@ -217,94 +261,112 @@ function App() {
         <Route path="/superVacation" element={<  SuperVacationTracker/>} />
         <Route path="/superministry" element={<SuperMinistryDashboard /> } />
         <Route path="/supervacation" element={<SuperVacationTracker/>} />
-        <Route path="/superleave" element={<SuperVacaSuperAdminLeave/>} />
+        <Route path="/superleave" element={<SuperAdminLeave/>} />
+        <Route path="/superlist" element={<SuperAdminList/>} />
 
+        <Route path="/superleave-dashboard" element={<SuperLeaveDashboard/>} />
+        <Route path="/superleave-approval" element={<SuperLeaveApproval/>} />
+        <Route path="/superleave-tracker" element={<SuperLeaveTracker/>} />
+        <Route path="/superleave-requests" element={<SuperLeaveRequests/>} />
+        <Route path="/superleave-history" element={<SuperLeaveHistory/>} />
+        <Route path="/department-dashboard" element={<DepartmentDashboard/>} />
+        <Route path="/chatlist" element={<ChatList/>} />
+        <Route path="/chatbox" element={<ChatBox/>} />
+        <Route path="/chatapps" element={<ChatApp/>} />
+        <Route path="/chatapp" element={<EmployeeChatApp />} />
         
+       
+    
+          
+              
+           
 
         {/* Ministry Dashboard*/}
         
 
 
 
+  
+
+    {/* SuperAdmins children*/}
+
+          <Route path="/GeneralEmployeesSearch" element={<GeneralEmployeesSearch />} />
+          <Route path="/GeneralVacation" element={< GeneralVacation/>} />
+          <Route path="/GeneralEmployeeTable" element={<GeneralEmployeeTable />} />
+            <Route path="/GeneralLeaveApproval" element={<GeneralLeaveApproval />} />
+          <Route path="/GeneralLeaveStatus" element={<GeneralLeaveStatus />} />
+          <Route path="/general-roles" element={< AssignRole />} />
+            <Route path="/delete-access" element={< DeleteAccess />} />
+          <Route path="/GeneralLeaveHistory" element={<GeneralLeaveHistory />} />
+          <Route path="/manager-admin" element={<RoleAssignmentManagers />} />
+
+          <Route path="/GeneralVacation" element={< GeneralVacation/>} />
+            <Route path="/assigadmin-mindepart" element={< AdminAssignment/>} />
+
+          <Route path="/GeneralUpcomingRetiremnt " element={<GeneralUpcomingRetiremnt  />} />
+          <Route path="/access-roles" element={<AccessLevelRoles  />} />
+          
+
+          <Route path="/GeneralRetirees" element={<GeneralRetirees />} />
+          <Route path="/GeneralPendingRetirement" element={<GeneralPendingRetirement />} />
+          <Route path="/GeneralGratuityClearance" element={<GeneralGratuityClearance />} />
+          <Route path="/GeneralLeaveRequests" element={<GeneralLeaveRequests />} />
+          <Route path="/GeneralEmployeePortal" element={<GeneralEmployeePortal />} />
+          <Route path="/GeneralLeaveCentre" element={<GeneralLeaveCentre />} />
+          <Route path="/super-admins" element={<SuperAdminSettings />} />
+          <Route path="/role-dashboard" element={<SuperAdminRoleDashboard />} />
+          <Route path="/addmanager-dashboard" element={<AddManagerDashboard />} />
+          <Route path="/addministry-dashboard" element={< AddMinistryDashboard />} />
+          <Route path="/adddept-dashboard" element={< AddDepartmentDashboard />} /> 
+
+        </Route>
+
+
+    {/*---------------------------- Ministry Routes ------------------------------------------------------------------------*/}
+        <Route path="/" element={<MinistryLayout />}>
+        <Route path="/Back" element={<Backfunction />}></Route> 
+        <Route path="/ministry-admins" element={< MinistryAdmin/>}></Route> 
+        <Route path="/adminministry" element={<MinistryDashboard /> } 
+        />
+        <Route path="/ministry-leave" element={<MinistryLeave />} />
+        
+        <Route path="/mini-departments" element={<MinistryDepartments />} />
+        <Route path="/ministry-list" element={<MinistryList />} />
+        <Route path="/department-dashboard" element={<DepartmentDashboard />} />
+        <Route path="/department-list" element={<DepartmentList />} />
+        <Route path="/" element={<MinistryLeave />} />
+
+        <Route path="/minleave-requests/:departmentId" element={<MinLeaveRequests />} />
+        <Route path="/minleave-tracker/:departmentId" element={<MinLeaveTracker />} />
+        <Route path="/minleave-approval/:departmentId" element={<MinLeaveApproval />} />
+        <Route path="/minleave-history/:departmentId" element={<MinLeaveHistory />} />
+
+        <Route path="/minvacation" element={<VacationTracker/>} />
+        <Route path="/activities" element={<MinistryActivities/>} />
+
+        <Route path="/general-notification" element={<GeneralNotificationCenter/>} />
+        <Route path="/ministy-notification" element={<MinistryNotification/>} />
+        
+        <Route path="/create-notice" element={<CreateNotice/>} />
+
+        <Route path="/fetch-notification" element={<Fetch/>} />
+        <Route path="/mark-notification" element={<MarkNotice/>} />
+        <Route path="/minrole-dashboard" element={<MinistryRoleDashboard/>} />
       
+        <Route path="/minassign-role" element={<MinAssignRole/>} />
+        <Route path="/deleteaccess" element={<   MinDeleteAccess/>} />
+        <Route path="/minrole-assign" element={<   MinRoleAssign/>} />
+        <Route path="/addmin-manager" element={<   MinManagerDashboard/>} />
+        <Route path="/addmanager" element={<   AddMinManager/>} />
+        <Route path="/addminidept" element={<   AddMinistryDepartment/>} />
+        <Route path="/remove-minidept" element={<   RemoveMinDepartmement/>} /> 
+        <Route path="/adremove-minidashboard" element={<   AddRemMinDashboard/>} />
+        <Route path="/assignadmin-department" element={<   AssignAdminsDepartment/>} />
+        <Route path="/ministryadmins" element={<   MinistryAdmins/>} />
 
-           {/* SuperAdmins children*/}
         
-                  <Route path="/GeneralEmployeesSearch" element={<GeneralEmployeesSearch />} />
-                  <Route path="/GeneralVacation" element={< GeneralVacation/>} />
-                  <Route path="/GeneralEmployeeTable" element={<GeneralEmployeeTable />} />
-                   <Route path="/GeneralLeaveApproval" element={<GeneralLeaveApproval />} />
-                  <Route path="/GeneralLeaveStatus" element={<GeneralLeaveStatus />} />
-                  <Route path="/general-roles" element={< AssignRole />} />
-                   <Route path="/delete-access" element={< DeleteAccess />} />
-                  <Route path="/GeneralLeaveHistory" element={<GeneralLeaveHistory />} />
-                  <Route path="/manager-admin" element={<RoleAssignmentManagers />} />
 
-                  <Route path="/GeneralVacation" element={< GeneralVacation/>} />
-                   <Route path="/assigadmin-mindepart" element={< AdminAssignment/>} />
-
-                  <Route path="/GeneralUpcomingRetiremnt " element={<GeneralUpcomingRetiremnt  />} />
-                  <Route path="/access-roles" element={<AccessLevelRoles  />} />
-                 
-
-                  <Route path="/GeneralRetirees" element={<GeneralRetirees />} />
-                  <Route path="/GeneralPendingRetirement" element={<GeneralPendingRetirement />} />
-                  <Route path="/GeneralGratuityClearance" element={<GeneralGratuityClearance />} />
-                  <Route path="/GeneralLeaveRequests" element={<GeneralLeaveRequests />} />
-                  <Route path="/GeneralEmployeePortal" element={<GeneralEmployeePortal />} />
-                  <Route path="/GeneralLeaveCentre" element={<GeneralLeaveCentre />} />
-                  <Route path="/super-admins" element={<SuperAdminSettings />} />
-                  <Route path="/role-dashboard" element={<SuperAdminRoleDashboard />} />
-                  <Route path="/addmanager-dashboard" element={<AddManagerDashboard />} />
-                  <Route path="/addministry-dashboard" element={< AddMinistryDashboard />} />
-                  <Route path="/adddept-dashboard" element={< AddDepartmentDashboard />} /> 
-
-                </Route>
-
-
-   {/*---------------------------- Ministry Routes ------------------------------------------------------------------------*/}
-              <Route path="/" element={<MinistryLayout />}>
-              <Route path="/Back" element={<Backfunction />}></Route> 
-              <Route path="/ministry-admins" element={< MinistryAdmin/>}></Route> 
-              <Route path="/adminministry" element={<MinistryDashboard /> } 
-              />
-              <Route path="/ministry-leave" element={<MinistryLeave />} />
-              
-              <Route path="/mini-departments" element={<MinistryDepartments />} />
-              <Route path="/ministry-list" element={<MinistryList />} />
-              <Route path="/department-dashboard" element={<DepartmentDashboard />} />
-              <Route path="/department-list" element={<DepartmentList />} />
-              <Route path="/" element={<MinistryLeave />} />
-
-              <Route path="/minleave-requests/:departmentId" element={<MinLeaveRequests />} />
-              <Route path="/minleave-tracker/:departmentId" element={<MinLeaveTracker />} />
-              <Route path="/minleave-approval/:departmentId" element={<MinLeaveApproval />} />
-              <Route path="/minleave-history/:departmentId" element={<MinLeaveHistory />} />
-
-              <Route path="/minvacation" element={<VacationTracker/>} />
-              <Route path="/activities" element={<MinistryActivities/>} />
-
-              <Route path="/general-notification" element={<GeneralNotificationCenter/>} />
-              <Route path="/create-notice" element={<CreateNotice/>} />
-        
-              <Route path="/fetch-notification" element={<Fetch/>} />
-              <Route path="/mark-notification" element={<MarkNotice/>} />
-              <Route path="/minrole-dashboard" element={<MinistryRoleDashboard/>} />
-           
-              <Route path="/minassign-role" element={<MinAssignRole/>} />
-              <Route path="/deleteaccess" element={<   MinDeleteAccess/>} />
-              <Route path="/minrole-assign" element={<   MinRoleAssign/>} />
-              <Route path="/addmin-manager" element={<   MinManagerDashboard/>} />
-              <Route path="/addmanager" element={<   AddMinManager/>} />
-              <Route path="/addminidept" element={<   AddMinistryDepartment/>} />
-              <Route path="/remove-minidept" element={<   RemoveMinDepartmement/>} /> 
-              <Route path="/adremove-minidashboard" element={<   AddRemMinDashboard/>} />
-              <Route path="/assignadmin-department" element={<   AssignAdminsDepartment/>} />
-              <Route path="/ministryadmins" element={<   MinistryAdmins/>} />
-       
-              
-
-              </Route>
+        </Route>
 
 
 {/*---------------------------- Ministry Routes ------------------------------------------------------------------------*/}
@@ -317,7 +379,10 @@ function App() {
           <Route path="/leave-centres" element={<LeaveCentre />}/> 
           <Route path="/create-superadmin" element={<AssignSuperAdmin />}/> 
           <Route path="/profile-notification" element={<EmployeeNotificationCenter />}/> 
-
+          <Route path="/employeechatbox" element={<EmployeeChatBox />}/> 
+          <Route path="/employeechatapp" element={<EmployeeChatApp />}/> 
+          <Route path="/file" element={<FileUpload />}/> 
+          
           
 
           {/* Routes for MinistreisFunctions*/}
@@ -384,7 +449,7 @@ function App() {
         <Route path="/leave-centre" element={<LeaveCentre />}/>
         <Route path="/leave-notification" element={<LeaveApprovalNotification/>}/>
 
-          <Route path="/leave" element={<Leave />} />
+      
           <Route path="/History" element={<LeaveHistory />} />
           <Route path="/leave-approval" element={<LeaveApproval />} /> 
           <Route path="/leave-track" element={<LeaveTracking />} />
@@ -393,15 +458,14 @@ function App() {
           <Route path="/details" element={<LeaveApprovalDetail />} />
 
           {/* Routes for each specific section of the profile form */}
-          <Route path="/personal-details" element={<EmployeePersonalDetails />} />
-          <Route path="/employment-details" element={<EmployeeEmploymentDetails />} />
-        
+         
+          
  
           <Route path="/register" element={<EmployeeForm />} />
           <Route path="/login" element={<LoginForm />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/super-admin" element={<AssignAdminRoles />} />
-  
+          <Route path="/empleave" element={<EmpLeave />} />
        
           <Route path="/reg" element={<RegistrationForm />} />
           <Route path="/activate" element={<ActivateAccount />} />

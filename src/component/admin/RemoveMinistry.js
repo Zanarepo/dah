@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../../supabaseClient"; // Adjust the import path based on your project structure
+import { toast } from "react-toastify"; // Importing the toast notification library
 
 const RemoveMinistry = () => {
   const [ministries, setMinistries] = useState([]);
   const [selectedMinistry, setSelectedMinistry] = useState(null);
   const [confirmationVisible, setConfirmationVisible] = useState(false);
-  const [successMessage, setSuccessMessage] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
 
   // Fetch ministries from the database
   useEffect(() => {
@@ -16,8 +15,7 @@ const RemoveMinistry = () => {
         if (error) throw error;
         setMinistries(data);
       } catch (error) {
-        setErrorMessage("Error fetching ministries: " + error.message);
-        setTimeout(() => setErrorMessage(""), 3000); // Auto-clear error after 3 seconds
+        toast.error("Error fetching ministries: " + error.message); // Display error toast
       }
     };
 
@@ -27,8 +25,7 @@ const RemoveMinistry = () => {
   // Handle confirmation of deletion
   const handleDeleteMinistry = async () => {
     if (!selectedMinistry) {
-      setErrorMessage("Please select a ministry to delete.");
-      setTimeout(() => setErrorMessage(""), 3000); // Auto-clear error after 3 seconds
+      toast.error("Please select a ministry to delete."); // Error toast when no ministry is selected
       return;
     }
 
@@ -41,36 +38,21 @@ const RemoveMinistry = () => {
 
       if (error) throw error;
 
-      setSuccessMessage("Ministry deleted successfully!");
-      setTimeout(() => setSuccessMessage(""), 3000); // Auto-clear success message after 3 seconds
+      toast.success("Ministry deleted successfully!"); // Success toast after deletion
       setConfirmationVisible(false); // Hide confirmation dialog
       setSelectedMinistry(null); // Reset selected ministry
-      setErrorMessage(""); // Reset error message
 
       // Re-fetch ministries to update the list
       const { data } = await supabase.from("ministries").select("*");
       setMinistries(data);
     } catch (error) {
-      setErrorMessage("Error deleting ministry: " + error.message);
-      setTimeout(() => setErrorMessage(""), 3000); // Auto-clear error after 3 seconds
+      toast.error("Error deleting ministry: " + error.message); // Error toast on failure
     }
   };
 
   return (
     <div className="max-w-lg mx-auto mt-10 bg-white shadow-lg p-6 rounded-lg">
       <h2 className="text-2xl font-bold mb-4 text-gray-800">Remove Ministry</h2>
-
-      {/* Success or Error Messages */}
-      {successMessage && (
-        <div className="p-4 bg-green-100 text-green-700 rounded-md shadow-md mb-4">
-          {successMessage}
-        </div>
-      )}
-      {errorMessage && (
-        <div className="p-4 bg-red-100 text-red-700 rounded-md shadow-md mb-4">
-          {errorMessage}
-        </div>
-      )}
 
       {/* Ministry Selection */}
       <div className="mb-4">

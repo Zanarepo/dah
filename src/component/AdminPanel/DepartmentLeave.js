@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import MinistryList from "../MinistryDashboard/MinistryList";
 import DepartmentList from "../MinistryDashboard/DepartmentList";
-import DepartmentLeaveDashboard from "./DepartmentLeaveDashboard";
+import DepartmentLeaveDashboard from "../AdminPanel/DepartmentLeaveDashboard";
 
 const MinistryLeave = () => {
   const [selectedMinistry, setSelectedMinistry] = useState(null);
@@ -39,7 +39,9 @@ const MinistryLeave = () => {
 
       {/* Ministry List */}
       {!selectedMinistry && (
-        <MinistryList onSelectMinistry={(ministry) => setSelectedMinistry(ministry)} />
+        <MinistryList
+          onSelectMinistry={(ministry) => setSelectedMinistry(ministry)}
+        />
       )}
 
       {/* Department List */}
@@ -47,6 +49,7 @@ const MinistryLeave = () => {
         <DepartmentList
           ministry={selectedMinistry}
           onSelectDepartment={(department) => setSelectedDepartment(department)}
+          restrictToAdmin // Restrict to admin-access departments
         />
       )}
 

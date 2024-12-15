@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../../supabaseClient"; // Adjust the import path based on your project structure
+import { toast } from "react-toastify"; // Import toastify
+import "react-toastify/dist/ReactToastify.css"; // Import toastify styles
 
 const RemoveDepartment = () => {
   const [departments, setDepartments] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState(null);
   const [confirmationVisible, setConfirmationVisible] = useState(false);
-  const [successMessage, setSuccessMessage] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
 
   // Fetch departments from the database
   useEffect(() => {
@@ -16,8 +16,7 @@ const RemoveDepartment = () => {
         if (error) throw error;
         setDepartments(data);
       } catch (error) {
-        setErrorMessage("Error fetching departments: " + error.message);
-        setTimeout(() => setErrorMessage(""), 3000); // Auto-clear error after 3 seconds
+        toast.error("Error fetching departments: " + error.message); // Use toast.error for error messages
       }
     };
 
@@ -27,8 +26,7 @@ const RemoveDepartment = () => {
   // Handle confirmation of deletion
   const handleDeleteDepartment = async () => {
     if (!selectedDepartment) {
-      setErrorMessage("Please select a department to delete.");
-      setTimeout(() => setErrorMessage(""), 3000); // Auto-clear error after 3 seconds
+      toast.error("Please select a department to delete."); // Use toast.error for error messages
       return;
     }
 
@@ -41,36 +39,21 @@ const RemoveDepartment = () => {
 
       if (error) throw error;
 
-      setSuccessMessage("Department deleted successfully!");
-      setTimeout(() => setSuccessMessage(""), 3000); // Auto-clear success message after 3 seconds
+      toast.success("Department deleted successfully!"); // Use toast.success for success messages
       setConfirmationVisible(false); // Hide confirmation dialog
       setSelectedDepartment(null); // Reset selected department
-      setErrorMessage(""); // Reset error message
 
       // Re-fetch departments to update the list
       const { data } = await supabase.from("departments").select("*");
       setDepartments(data);
     } catch (error) {
-      setErrorMessage("Error deleting department: " + error.message);
-      setTimeout(() => setErrorMessage(""), 3000); // Auto-clear error after 3 seconds
+      toast.error("Error deleting department: " + error.message); // Use toast.error for error messages
     }
   };
 
   return (
     <div className="max-w-lg mx-auto mt-10 bg-white shadow-lg p-6 rounded-lg">
       <h2 className="text-2xl font-semibold mb-6 text-gray-800">Remove Department</h2>
-
-      {/* Success or Error Messages */}
-      {successMessage && (
-        <div className="p-4 bg-green-100 text-green-700 rounded-md shadow-md mb-4">
-          {successMessage}
-        </div>
-      )}
-      {errorMessage && (
-        <div className="p-4 bg-red-100 text-red-700 rounded-md shadow-md mb-4">
-          {errorMessage}
-        </div>
-      )}
 
       {/* Department Selection */}
       <div className="mb-6">
