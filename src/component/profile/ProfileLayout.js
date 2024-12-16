@@ -7,6 +7,9 @@ import Leave from "./Leave";
 import Notifications from "../admin/Notification";
 import EmployeeChatApp from "../Chat/EmployeeChatApp";
 import WelcomeUser from "./WelcomeUser";
+import Notify from "../GeneralNotifications/Notify";
+import QuickActionPopup from "../profile/QuickActionPopup"
+
 
 import {
   BellIcon,
@@ -57,6 +60,7 @@ const EmployeeDashboard = () => {
   if (!employeeData) {
     return <div>Error: Employee data not found.</div>;
   }
+  
 
   const menuItems = [
     { name: "Personal Details", icon: <UserIcon className="h-6 w-6" />, route: "/personal-details" },
@@ -111,11 +115,9 @@ const EmployeeDashboard = () => {
           ))}
         </ul>
       </div>
-
-      {/* Main Content */}
      
+      {/* Main Content */}
       <div
-      
         className={`flex-1 p-4 transition-all duration-300 ${isOpen ? "ml-64" : "ml-0"} md:ml-0`}
         style={{
           marginLeft: isOpen ? "256px" : "0px", // Ensure content starts right after the sidebar
@@ -124,8 +126,7 @@ const EmployeeDashboard = () => {
         }}
       >
         {/* Welcome Message */}
-    
- <WelcomeUser name={employeeData.first_name} />
+        <WelcomeUser name={employeeData.first_name} />
         {/* Routes */}
         <Routes>
           <Route
@@ -146,6 +147,11 @@ const EmployeeDashboard = () => {
             element={<EmployeeChatApp employee_id={employeeData.employee_id} />}
           />
         </Routes>
+      </div>
+      <Notify/>
+      {/* Notify Component with fixed padding issue */}
+      <div style={{ position: "absolute", right: 0, top: 0, bottom: 0 }}>
+      <QuickActionPopup />
       
       </div>
     </div>

@@ -1,187 +1,204 @@
 import React, { useState, useEffect } from "react";
-import { supabase } from "../../supabaseClient"; // Ensure the import is correct
-
+import { supabase } from "../../supabaseClient"; // Ensure this is correct
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { FaTrash } from "react-icons/fa";
 
 const EmployeeNotificationCenter = () => {
   const [notifications, setNotifications] = useState([]);
   const [newNotificationMessage, setNewNotificationMessage] = useState("");
-  const [error, setError] = useState("");
-  const [userId, setUserId] = useState(null); // Store the userId dynamically
-  const [isAdmin, setIsAdmin] = useState(null); // Track the admin status
+  const [error, setError] = useState(null);
 
-  // Fetch employee notifications
+  // Fetch notifications
   const fetchNotifications = async () => {
-    const storedUserId = localStorage.getItem("employee_id");
-
-    if (!storedUserId) {
-      setError("User is not authenticated");
-      return;
-    }
-
     try {
-      // Fetch employee profile to check if the user is an admin
-      const { data: profileData, error: profileError } = await supabase
-        .from("employee_profiles")
-        .select("employee_id, is_admin")
-        .eq("employee_id", storedUserId)  // Use employee_id to query
-        .single(); // Get single row (one employee)
+      const storedUserId = localStorage.getItem("employee_id");
 
-      if (profileError || !profileData) {
-        setError("User profile not found or error fetching profile");
+      if (!storedUserId) {
+        setError("User is not authenticated");
         return;
       }
 
-      setIsAdmin(profileData.is_admin);
-
-      // Fetch notifications for the logged-in employee
-      const { data, error: fetchError } = await supabase
+      const { data, error } = await supabase
         .from("general_notifications")
         .select("id, message, is_read, created_at")
-        .eq("employee_id", storedUserId) // Use employee_id from localStorage
-        .order("created_at", { ascending: false }); // Sort by creation date
+        .eq("employee_id", storedUserId)
+        .order("created_at", { ascending: false });
 
-      if (fetchError) {
-        console.error("Error fetching notifications:", fetchError);
+      if (error) {
+        console.error("Error fetching notifications:", error);
         setError("Error fetching notifications");
         return;
       }
 
-      if (!data || data.length === 0) {
-        setError("No notifications found for this employee");
-        return;
-      }
-
-      setNotifications(data);
+      setNotifications(data || []);
     } catch (error) {
       console.error("Error fetching notifications:", error);
       setError("Error fetching notifications");
     }
   };
 
-  // Create a reminder notification
-  const createReminderNotification = async () => {
-    if (!newNotificationMessage) {
-      setError("Notification message cannot be empty");
-      return;
-    }
-
-    const storedUserId = localStorage.getItem("employee_id");
-
-    if (!storedUserId) {
-      setError("User is not authenticated");
+  // Add new notification
+  const createNotification = async () => {
+    if (!newNotificationMessage.trim()) {
+      toast.error("Notification message cannot be empty");
       return;
     }
 
     try {
-      const { error: insertError } = await supabase
+      const storedUserId = localStorage.getItem("employee_id");
+
+      if (!storedUserId) {
+        toast.error("User is not authenticated");
+        return;
+      }
+
+      const { error } = await supabase
         .from("general_notifications")
         .insert([
           {
             employee_id: storedUserId,
             message: newNotificationMessage,
-            type: "Reminder",
+            type: "General",
             is_read: false,
             created_at: new Date().toISOString(),
           },
         ]);
 
-      if (insertError) {
-        console.error("Error creating notification:", insertError);
-        setError("Error creating notification");
+      if (error) {
+        console.error("Error creating notification:", error);
+        toast.error("Failed to create notification");
         return;
       }
 
-      // Clear input and update notification list
+      toast.success("Notification created successfully!");
       setNewNotificationMessage("");
-      fetchNotifications(); // Refresh notifications
+      fetchNotifications();
     } catch (error) {
       console.error("Error creating notification:", error);
-      setError("Error creating notification");
+      toast.error("Failed to create notification");
     }
   };
 
-  // Mark a notification as read
-  const markAsRead = async (notificationId) => {
-    const storedUserId = localStorage.getItem("employee_id");
-
-    if (!storedUserId) {
-      setError("User is not authenticated");
-      return;
-    }
-
+  // Mark as read
+  const markAsRead = async (id) => {
     try {
       const { error } = await supabase
         .from("general_notifications")
         .update({ is_read: true })
-        .eq("id", notificationId);
+        .eq("id", id);
 
       if (error) {
         console.error("Error marking notification as read:", error);
-        setError("Error marking notification as read");
+        toast.error("Failed to mark notification as read");
         return;
       }
 
-      // Refresh notifications after marking as read
       fetchNotifications();
     } catch (error) {
       console.error("Error marking notification as read:", error);
-      setError("Error marking notification as read");
+      toast.error("Failed to mark notification as read");
+    }
+  };
+
+  // Clear all notifications
+  const clearNotifications = async () => {
+    try {
+      const storedUserId = localStorage.getItem("employee_id");
+
+      if (!storedUserId) {
+        toast.error("User is not authenticated");
+        return;
+      }
+
+      const { error } = await supabase
+        .from("general_notifications")
+        .delete()
+        .eq("employee_id", storedUserId);
+
+      if (error) {
+        console.error("Error clearing notifications:", error);
+        toast.error("Failed to clear notifications");
+        return;
+      }
+
+      toast.success("All notifications cleared!");
+      setNotifications([]);
+    } catch (error) {
+      console.error("Error clearing notifications:", error);
+      toast.error("Failed to clear notifications");
     }
   };
 
   useEffect(() => {
-    fetchNotifications(); // Fetch notifications on component mount
+    fetchNotifications();
   }, []);
 
   return (
-    <div className="min-h-screen bg-white p-6">
+    <div className="min-h-screen bg-gray-50 p-6">
+      <ToastContainer />
+
+      {/* Header and Clear Notifications */}
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-xl font-bold">Your Notifications</h1>
+        <button
+          onClick={clearNotifications}
+          className="bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 transition"
+        >
+          <FaTrash className="inline-block mr-2" />
+          Clear Notifications
+        </button>
+      </div>
+
       {error && <div className="text-red-500">{error}</div>}
 
-      <h1 className="text-xl font-bold mb-4">Your Notifications</h1>
-
-      {isAdmin !== null && (
-        <div className="space-y-4">
-          {notifications.length === 0 ? (
-            <div className="text-gray-500">No notifications available</div>
-          ) : (
-            notifications.map((notification) => (
-              <div
-                key={notification.id}
-                className={`p-4 border rounded-lg ${
-                  notification.is_read ? "bg-gray-100" : "bg-white"
-                }`}
-              >
-                <p>{notification.message}</p>
-                <div className="text-sm text-gray-500">
-                  {new Date(notification.created_at).toLocaleString()}
-                </div>
-                <button
-                  onClick={() => markAsRead(notification.id)}
-                  className="mt-2 text-blue-500 hover:underline"
-                >
-                  {notification.is_read ? "Already read" : "Mark as read"}
-                </button>
-              </div>
-            ))
-          )}
-        </div>
-      )}
-
-      <div className="mt-6">
+      {/* New Notification Input */}
+      <div className="flex items-center space-x-4 mb-6">
         <input
           type="text"
           value={newNotificationMessage}
           onChange={(e) => setNewNotificationMessage(e.target.value)}
-          placeholder="Enter a reminder message"
-          className="w-full p-2 border border-gray-300 rounded-md"
+          placeholder="Enter notification message"
+          className="flex-grow p-2 border rounded-md"
         />
         <button
-          onClick={createReminderNotification}
-          className="mt-2 w-full bg-blue-500 text-white p-2 rounded-md"
+          onClick={createNotification}
+          className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition"
         >
-          Create Reminder Notification
+          Add Notification
         </button>
       </div>
+
+      {notifications.length === 0 ? (
+        <div className="text-gray-500">No notifications available</div>
+      ) : (
+        <div className="space-y-4">
+          {/* Separate unread and read notifications */}
+          {notifications
+            .sort((a, b) => a.is_read - b.is_read) // Unread notifications come first
+            .map((notification) => (
+              <div
+                key={notification.id}
+                className={`p-4 border rounded-lg ${
+                  notification.is_read ? "bg-gray-100" : "bg-blue-100"
+                }`}
+              >
+                <p className="font-medium">{notification.message}</p>
+                <div className="text-sm text-gray-500">
+                  {new Date(notification.created_at).toLocaleString()}
+                </div>
+                {!notification.is_read && (
+                  <button
+                    onClick={() => markAsRead(notification.id)}
+                    className="mt-2 text-blue-500 hover:underline"
+                  >
+                    Mark as read
+                  </button>
+                )}
+              </div>
+            ))}
+        </div>
+      )}
     </div>
   );
 };

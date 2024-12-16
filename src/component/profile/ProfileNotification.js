@@ -1,79 +1,59 @@
-import React, { useState, useEffect } from "react";
-import { supabase } from "../../supabaseClient"; // Ensure the import is correct
 
+import React, { useState, useEffect } from "react";
+import { supabase } from "../../supabaseClient";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const EmployeeNotificationCenter = () => {
   const [notifications, setNotifications] = useState([]);
+  const [showModal, setShowModal] = useState(false);
   const [newNotificationMessage, setNewNotificationMessage] = useState("");
-  const [error, setError] = useState("");
-  const [userId, setUserId] = useState(null); // Store the userId dynamically
-  const [isAdmin, setIsAdmin] = useState(null); // Track the admin status
 
-  // Fetch employee notifications
+  // Fetch notifications
   const fetchNotifications = async () => {
     const storedUserId = localStorage.getItem("employee_id");
 
     if (!storedUserId) {
-      setError("User is not authenticated");
+      toast.error("User is not authenticated");
       return;
     }
 
     try {
-      // Fetch employee profile to check if the user is an admin
-      const { data: profileData, error: profileError } = await supabase
-        .from("employee_profiles")
-        .select("employee_id, is_admin")
-        .eq("employee_id", storedUserId)  // Use employee_id to query
-        .single(); // Get single row (one employee)
-
-      if (profileError || !profileData) {
-        setError("User profile not found or error fetching profile");
-        return;
-      }
-
-      setIsAdmin(profileData.is_admin);
-
-      // Fetch notifications for the logged-in employee
-      const { data, error: fetchError } = await supabase
+      const { data, error } = await supabase
         .from("general_notifications")
         .select("id, message, is_read, created_at")
-        .eq("employee_id", storedUserId) // Use employee_id from localStorage
-        .order("created_at", { ascending: false }); // Sort by creation date
+        .eq("employee_id", storedUserId)
+        .order("created_at", { ascending: false });
 
-      if (fetchError) {
-        console.error("Error fetching notifications:", fetchError);
-        setError("Error fetching notifications");
+      if (error) {
+        console.error("Error fetching notifications:", error);
+        toast.error("Error fetching notifications");
         return;
       }
 
-      if (!data || data.length === 0) {
-        setError("No notifications found for this employee");
-        return;
-      }
-
-      setNotifications(data);
+      setNotifications(data || []);
     } catch (error) {
       console.error("Error fetching notifications:", error);
-      setError("Error fetching notifications");
+      toast.error("Error fetching notifications");
     }
   };
 
-  // Create a reminder notification
-  const createReminderNotification = async () => {
-    if (!newNotificationMessage) {
-      setError("Notification message cannot be empty");
+  // Create a new notification
+  const createNotification = async () => {
+    if (!newNotificationMessage.trim()) {
+      toast.error("Notification message cannot be empty");
       return;
     }
 
     const storedUserId = localStorage.getItem("employee_id");
 
     if (!storedUserId) {
-      setError("User is not authenticated");
+      toast.error("User is not authenticated");
       return;
     }
 
     try {
-      const { error: insertError } = await supabase
+      const { error } = await supabase
         .from("general_notifications")
         .insert([
           {
@@ -85,30 +65,24 @@ const EmployeeNotificationCenter = () => {
           },
         ]);
 
-      if (insertError) {
-        console.error("Error creating notification:", insertError);
-        setError("Error creating notification");
+      if (error) {
+        console.error("Error creating notification:", error);
+        toast.error("Error creating notification");
         return;
       }
 
-      // Clear input and update notification list
+      toast.success("Notification created successfully!");
       setNewNotificationMessage("");
-      fetchNotifications(); // Refresh notifications
+      setShowModal(false);
+      fetchNotifications(); // Refresh the notifications
     } catch (error) {
       console.error("Error creating notification:", error);
-      setError("Error creating notification");
+      toast.error("Error creating notification");
     }
   };
 
   // Mark a notification as read
   const markAsRead = async (notificationId) => {
-    const storedUserId = localStorage.getItem("employee_id");
-
-    if (!storedUserId) {
-      setError("User is not authenticated");
-      return;
-    }
-
     try {
       const { error } = await supabase
         .from("general_notifications")
@@ -117,71 +91,88 @@ const EmployeeNotificationCenter = () => {
 
       if (error) {
         console.error("Error marking notification as read:", error);
-        setError("Error marking notification as read");
+        toast.error("Error marking notification as read");
         return;
       }
 
-      // Refresh notifications after marking as read
       fetchNotifications();
     } catch (error) {
       console.error("Error marking notification as read:", error);
-      setError("Error marking notification as read");
+      toast.error("Error marking notification as read");
     }
   };
 
   useEffect(() => {
-    fetchNotifications(); // Fetch notifications on component mount
+    fetchNotifications();
   }, []);
 
   return (
-    <div className="min-h-screen bg-white p-6">
-      {error && <div className="text-red-500">{error}</div>}
-
+    <div className="min-h-screen bg-white p-6 relative">
       <h1 className="text-xl font-bold mb-4">Your Notifications</h1>
 
-      {isAdmin !== null && (
+      {notifications.length === 0 ? (
+        <div className="text-gray-500">No notifications available</div>
+      ) : (
         <div className="space-y-4">
-          {notifications.length === 0 ? (
-            <div className="text-gray-500">No notifications available</div>
-          ) : (
-            notifications.map((notification) => (
-              <div
-                key={notification.id}
-                className={`p-4 border rounded-lg ${
-                  notification.is_read ? "bg-gray-100" : "bg-white"
-                }`}
-              >
-                <p>{notification.message}</p>
-                <div className="text-sm text-gray-500">
-                  {new Date(notification.created_at).toLocaleString()}
-                </div>
-                <button
-                  onClick={() => markAsRead(notification.id)}
-                  className="mt-2 text-blue-500 hover:underline"
-                >
-                  {notification.is_read ? "Already read" : "Mark as read"}
-                </button>
+          {notifications.map((notification) => (
+            <div
+              key={notification.id}
+              className={`p-4 border rounded-lg ${
+                notification.is_read ? "bg-gray-100" : "bg-white"
+              }`}
+            >
+              <p>{notification.message}</p>
+              <div className="text-sm text-gray-500">
+                {new Date(notification.created_at).toLocaleString()}
               </div>
-            ))
-          )}
+              <button
+                onClick={() => markAsRead(notification.id)}
+                className="mt-2 text-blue-500 hover:underline"
+              >
+                {notification.is_read ? "Already read" : "Mark as read"}
+              </button>
+            </div>
+          ))}
         </div>
       )}
 
-      <div className="mt-6">
-        <input
-          type="text"
-          value={newNotificationMessage}
-          onChange={(e) => setNewNotificationMessage(e.target.value)}
-          placeholder="Enter a reminder message"
-          className="w-full p-2 border border-gray-300 rounded-md"
-        />
-        <button
-          onClick={createReminderNotification}
-          className="mt-2 w-full bg-blue-500 text-white p-2 rounded-md"
-        >
-          Create Reminder Notification
-        </button>
-      </div>
+      {/* Floating Action Button */}
+      <button
+        onClick={() => setShowModal(true)}
+        className="fixed bottom-6 right-6 bg-blue-500 text-white p-4 rounded-full shadow-lg hover:bg-blue-600 focus:outline-none"
+      >
+        +
+      </button>
+
+      {/* Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+            <h2 className="text-lg font-bold mb-4">Create Notification</h2>
+            <textarea
+              className="w-full p-2 border border-gray-300 rounded-md mb-4"
+              rows="4"
+              placeholder="Enter your notification message"
+              value={newNotificationMessage}
+              onChange={(e) => setNewNotificationMessage(e.target.value)}
+            ></textarea>
+            <div className="flex justify-end space-x-4">
+              <button
+                onClick={() => setShowModal(false)}
+                className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={createNotification}
+                className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+              >
+                Send
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

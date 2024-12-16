@@ -8,7 +8,6 @@ const EmployeeEmploymentDetails = ({ employeeData, setEmployeeData }) => {
   const [departments, setDepartments] = useState([]);
   const [managers, setManagers] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [isEditMode, setIsEditMode] = useState(false);  // To toggle between edit and view mode
 
   useEffect(() => {
     const fetchMinistries = async () => {
@@ -25,7 +24,6 @@ const EmployeeEmploymentDetails = ({ employeeData, setEmployeeData }) => {
 
   useEffect(() => {
     if (employeeData.ministry_id) {
-      setDepartments([]); // Reset departments when ministry changes
       const fetchDepartments = async () => {
         const { data, error } = await supabase
           .from("departments")
@@ -45,7 +43,6 @@ const EmployeeEmploymentDetails = ({ employeeData, setEmployeeData }) => {
 
   useEffect(() => {
     if (employeeData.department_id) {
-      setManagers([]); // Reset managers when department changes
       const fetchManagers = async () => {
         const { data, error } = await supabase
           .from("employee_profiles")
@@ -71,63 +68,35 @@ const EmployeeEmploymentDetails = ({ employeeData, setEmployeeData }) => {
     }));
   };
 
-  const validateForm = () => {
-    if (
-      !employeeData.employment_date ||
-      !employeeData.employment_type ||
-      !employeeData.ministry_id ||
-      !employeeData.department_id ||
-      !employeeData.manager ||
-      !employeeData.position ||
-      !employeeData.qualification
-    ) {
-      toast.error("Please fill in all fields.");
-      return false;
-    }
-    return true;
-  };
-
   const saveEmployeeData = async () => {
-    if (!validateForm()) return;
-
     setLoading(true);
-    const { error } = await supabase
-      .from("employee_details")
-      .upsert([
-        {
-          employee_id: employeeData.employee_id,
-          employment_date: employeeData.employment_date,
-          employment_type: employeeData.employment_type,
-          ministry_id: employeeData.ministry_id,
-          department_id: employeeData.department_id,
-          position: employeeData.position,
-          qualification: employeeData.qualification,
-        },
-      ]);
-
+  
+    const { data, error } = await supabase
+      .from("employee_profiles")
+      .upsert(
+        [
+          {
+            employee_id: employeeData.employee_id, // Ensures the record with the employee_id is updated
+            employment_date: employeeData.employment_date,
+            employment_type: employeeData.employment_type,
+            ministry_id: employeeData.ministry_id,
+            department_id: employeeData.department_id,
+            position: employeeData.position,
+            qualification: employeeData.qualification,
+          },
+        ],
+        { onConflict: ['employee_id'] } // This makes sure the existing employee record is updated
+      );
+  
     setLoading(false);
-
+  
     if (error) {
-      toast.success("Employee details saved successfully!");
+      toast.error("Error saving employee details.");
     } else {
       toast.success("Employee details saved successfully!");
-      setIsEditMode(false); // Exit edit mode on successful save
     }
   };
   
-  
-  const enableEditMode = () => {
-    setIsEditMode(true); // Enable edit mode to allow changes
-  };
-
-  const cancelEditMode = () => {
-    setIsEditMode(false); // Cancel edit mode and revert changes
-    // Optionally reset form to original data
-    setEmployeeData({
-      ...employeeData, // This will restore initial data if needed
-    });
-  };
-
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white shadow-sm rounded-xl border border-gray-200">
       <ToastContainer />
@@ -152,7 +121,6 @@ const EmployeeEmploymentDetails = ({ employeeData, setEmployeeData }) => {
             value={employeeData.employment_date}
             onChange={handleChange}
             className="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 ease-in-out"
-            disabled={!isEditMode}
           />
         </div>
 
@@ -167,7 +135,6 @@ const EmployeeEmploymentDetails = ({ employeeData, setEmployeeData }) => {
             value={employeeData.employment_type}
             onChange={handleChange}
             className="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 ease-in-out"
-            disabled={!isEditMode}
           >
             <option value="">Select</option>
             <option value="Contract">Contract</option>
@@ -186,7 +153,6 @@ const EmployeeEmploymentDetails = ({ employeeData, setEmployeeData }) => {
             value={employeeData.ministry_id || ""}
             onChange={handleChange}
             className="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 ease-in-out"
-            disabled={!isEditMode}
           >
             <option value="">Select Ministry</option>
             {ministries.map((ministry) => (
@@ -208,7 +174,6 @@ const EmployeeEmploymentDetails = ({ employeeData, setEmployeeData }) => {
             value={employeeData.department_id || ""}
             onChange={handleChange}
             className="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 ease-in-out"
-            disabled={!isEditMode}
           >
             <option value="">Select Department</option>
             {departments.map((department) => (
@@ -230,7 +195,6 @@ const EmployeeEmploymentDetails = ({ employeeData, setEmployeeData }) => {
             value={employeeData.manager || ""}
             onChange={handleChange}
             className="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 ease-in-out"
-            disabled={!isEditMode}
           >
             <option value="">Select Manager</option>
             {managers.map((manager) => (
@@ -250,9 +214,9 @@ const EmployeeEmploymentDetails = ({ employeeData, setEmployeeData }) => {
             type="text"
             id="position"
             name="position"
-            value={employeeData.position || ""}
+            value={employeeData.position}
             onChange={handleChange}
-            disabled={!isEditMode}
+            placeholder="Enter position"
             className="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 ease-in-out"
           />
         </div>
@@ -266,40 +230,22 @@ const EmployeeEmploymentDetails = ({ employeeData, setEmployeeData }) => {
             type="text"
             id="qualification"
             name="qualification"
-            value={employeeData.qualification || ""}
+            value={employeeData.qualification}
             onChange={handleChange}
-            disabled={!isEditMode}
+            placeholder="Enter qualification"
             className="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 ease-in-out"
           />
         </div>
+      </div>
 
-        {/* Save / Edit Button */}
-        <div className="col-span-2 mt-6 flex justify-between">
-          {isEditMode ? (
-            <>
-              <button
-                onClick={saveEmployeeData}
-                className="w-1/2 p-4 bg-blue-600 text-white font-semibold text-lg rounded-lg hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 ease-in-out"
-                disabled={loading}
-              >
-                {loading ? "Saving..." : "Save"}
-              </button>
-              <button
-                onClick={cancelEditMode}
-                className="w-1/2 p-4 bg-red-600 text-white font-semibold text-lg rounded-lg hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 transition-all duration-300 ease-in-out"
-              >
-                Cancel
-              </button>
-            </>
-          ) : (
-            <button
-              onClick={enableEditMode}
-              className="w-full p-4 bg-yellow-600 text-white font-semibold text-lg rounded-lg hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all duration-300 ease-in-out"
-            >
-              Edit
-            </button>
-          )}
-        </div>
+      <div className="mt-4 flex flex-col items-center justify-center">
+        <button
+          onClick={saveEmployeeData}
+          disabled={loading}
+          className={`w-1/2 py-3 px-6 rounded-md text-white ${loading ? "bg-blue-300 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600"}`}
+        >
+          {loading ? "Saving..." : "Save"}
+        </button>
       </div>
     </div>
   );

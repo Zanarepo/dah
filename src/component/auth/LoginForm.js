@@ -2,12 +2,14 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../../supabaseClient";
 import bcrypt from "bcryptjs";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css"; // Import Toastify CSS styles
+import NotificationModal from "../profile/NotificationModal"; // Import the NotificationModal
 
 const LoginForm = () => {
   const [formData, setFormData] = useState({ employee_id: "", password: "" });
   const [loading, setLoading] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false); // Modal visibility state
+  const [modalMessage, setModalMessage] = useState(""); // Message for modal
+  const [modalType, setModalType] = useState("error"); // Modal type (success/error)
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -20,9 +22,9 @@ const LoginForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-  
+
     const { employee_id, password } = formData;
-  
+
     try {
       // Attempt to fetch user data from Supabase
       const { data: user, error } = await supabase
@@ -30,63 +32,59 @@ const LoginForm = () => {
         .select("employee_id, password, is_admin, admin_ministry, is_super_admin")
         .eq("employee_id", employee_id)
         .single();
-  
-      if (error) {
-        if (error.message.includes("multiple rows")) {
-          toast.error(
-            "Multiple users found with this Employee ID. Please contact support."
-          );
-        } else if (error.message.includes("no rows")) {
-          toast.error("Invalid Employee ID or password.");
-        } else {
-          toast.error("Invalid Employee ID");
-        }
+
+      if (error || !user) {
+        setModalMessage("Invalid Employee ID or password.");
+        setModalType("error");
+        setModalOpen(true); // Open error modal
         setLoading(false);
+        setTimeout(() => setModalOpen(false), 3000); // Close modal after 3 seconds
         return;
       }
-  
-      if (!user) {
-        toast.error("Invalid Employee ID or password.");
-        setLoading(false);
-        return;
-      }
-  
+
       // Check if password is correct using bcrypt
       const isPasswordValid = await bcrypt.compare(password, user.password);
       if (!isPasswordValid) {
-        toast.error("Invalid Employee ID or password.");
+        setModalMessage("Invalid Employee ID or password.");
+        setModalType("error");
+        setModalOpen(true); // Open error modal
         setLoading(false);
+        setTimeout(() => setModalOpen(false), 3000); // Close modal after 3 seconds
         return;
       }
-  
-      // Storing user details and session in localStorage
+
+      // Store user details and session in localStorage
       localStorage.setItem("employee_id", employee_id);
       localStorage.setItem("user", JSON.stringify(user));
-  
+
       const roles = [];
-      if (user.is_super_admin)
-        roles.push({ name: "Super Admin", route: "/superadmins" });
-      if (user.admin_ministry)
-        roles.push({ name: "Admin Ministry", route: "/adminministry" });
+      if (user.is_super_admin) roles.push({ name: "Super Admin", route: "/superadmins" });
+      if (user.admin_ministry) roles.push({ name: "Admin Ministry", route: "/adminministry" });
       if (user.is_admin) roles.push({ name: "Admin", route: "/admindashboard" });
       roles.push({ name: "Employee", route: "/my-profile" });
-  
+
       // Navigate based on user roles
       if (roles.length === 1) {
         navigate(roles[0].route);
       } else {
         navigate("/role-selection", { state: { roles } });
       }
-  
-      // Success message
-      toast.success("Login successful!");
+
       setLoading(false);
+      setModalMessage("Login Successful!");
+      setModalType("success");
+      setModalOpen(true); // Open success modal
+      setTimeout(() => setModalOpen(false), 3000); // Close modal after 3 seconds
     } catch (err) {
       console.error("Login error:", err.message);
-      toast.error("An unexpected error occurred. Please try again.");
+      setModalMessage("An unexpected error occurred. Please try again.");
+      setModalType("error");
+      setModalOpen(true); // Open error modal
       setLoading(false);
+      setTimeout(() => setModalOpen(false), 3000); // Close modal after 3 seconds
     }
   };
+
   const handleForgotPassword = () => {
     navigate("/forgot-password");
   };
@@ -165,6 +163,15 @@ const LoginForm = () => {
           </button>
         </div>
       </div>
+
+      {/* Notification Modal */}
+      {modalOpen && (
+        <NotificationModal 
+          message={modalMessage}
+          type={modalType} // Pass the type (success/error)
+          onClose={() => setModalOpen(false)} 
+        />
+      )}
     </div>
   );
 };

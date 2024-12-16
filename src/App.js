@@ -174,7 +174,9 @@ import EmpChatList from "./component/profile/EmpChatList"
 import EmpLeave from "./component/profile/EmpLeave"
 import WelcomeUser from "./component/profile/WelcomeUser"
 import AdminsChatApp from "./component/Chat/AdminsChatApp"
-
+import Notify from "./component/GeneralNotifications/Notify"
+import AdminSosNotification from "./component/GeneralNotifications/AdminSosNotification"
+import UsersNotification from "./component/profile/UsersNotification"
 
 function App() {
   return (
@@ -183,23 +185,8 @@ function App() {
 
     {/* Route for ADMIN  */}
 
-
     <Routes>    
-   
-
-    <Route path="/profiles" element={<ProfileLayout />}>
-
-    
-    
-    </Route>
-
-    </Routes>
-    
-    <Routes>    
-    <Route path="/" element={<ProfileLayout />}>
-    </Route>
   
-
     <Route path="/" element={<ProfileLayout />}>
     
     <Route path="/personal-details" element={<EmployeePersonalDetails />} />
@@ -210,24 +197,18 @@ function App() {
     <Route path="/empchatlist" element={<EmpChatList />} />
     <Route path="/leave" element={<Leave/>} />
     <Route path="/my-profile" element={< WelcomeUser/>} />
+    <Route path="/sos-alert" element={<  AdminSosNotification />} />
+    <Route path="/Notify" element={<   Notify />} />
     
 
-  
-    
-    
-    
-    
     </Route>
-
+  
  </Routes>
 
-
- 
     <Routes>    
     <Route path="/lay" element={<Layout />}>
     </Route>
   
-
     <Route path="/" element={<Layout />}>
     <Route path="/admin-notification" element={<AdminNotification />}></Route>
     <Route path="/departactvities" element={<DepartmentActivities/>}></Route>
@@ -237,16 +218,18 @@ function App() {
     <Route path="/department-leavereq" element={<DepartmentLeaveRequest/>}></Route>
     <Route path="/dept-leavedashboard" element={<DepartmentLeaveDashboard/>}></Route>
     <Route path="/hello" element={<EmployeeChatApp />} />
-
+  
     <Route path="/deptleave-requests/:departmentId" element={<DeptLeaveRequests />} />
     <Route path="/deptleave-tracker/:departmentId" element={<DeptLeaveTracker />} />
     <Route path="/deptleave-approval/:departmentId" element={<DeptLeaveApproval />} />
     <Route path="/deptleave-history/:departmentId" element={<DeptLeaveHistory />} />
+    
 
     </Route>
 
  </Routes>
 
+Notification
 
 
         <Routes>
@@ -278,20 +261,9 @@ function App() {
         <Route path="/chatbox" element={<ChatBox/>} />
         
         <Route path="/chats" element={<AdminsChatApp />} />
-        
-        
-    
-          
-              
-           
-
+      
         {/* Ministry Dashboard*/}
-        
-
-
-
-  
-
+      
     {/* SuperAdmins children*/}
 
           <Route path="/GeneralEmployeesSearch" element={<GeneralEmployeesSearch />} />
@@ -352,7 +324,7 @@ function App() {
         <Route path="/general-notification" element={<GeneralNotificationCenter/>} />
         <Route path="/ministy-notification" element={<MinistryNotification/>} />
         
-        <Route path="/create-notice" element={<CreateNotice/>} />
+      
 
         <Route path="/fetch-notification" element={<Fetch/>} />
         <Route path="/mark-notification" element={<MarkNotice/>} />
@@ -423,9 +395,9 @@ function App() {
           <Route path="/settings" element={<AdminLayout> <Settings /></AdminLayout>} />
           <Route path="/tracks" element={<AdminLayout> <LeaveTrackerEducation /></AdminLayout>} />
           
+          
 
-          <Route path="/Admin-page" element={<AdminLayout> <AdminPage /></AdminLayout>} />
-
+         
 
           {/* SUPERADMIN ROUTES */}
           <Route path="/analytics" element={<Analytics />} />

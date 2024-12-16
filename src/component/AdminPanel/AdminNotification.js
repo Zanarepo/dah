@@ -14,7 +14,7 @@ const GeneralNotificationCentre = () => {
   return (
     <div className="p-6 bg-white shadow-md rounded-md">
       <h2 className="text-2xl font-semibold text-gray-700 mb-4">Notification Centre</h2>
-      
+
       <div className="mt-6">
         {notifications.length > 0 ? (
           <ul className="space-y-4">
@@ -28,6 +28,9 @@ const GeneralNotificationCentre = () => {
                 <div>
                   <p className="text-lg font-medium">{notice.type}</p>
                   <p className="text-gray-600">{notice.message}</p>
+                  <p className="text-sm text-gray-500">
+                    <strong>Sender:</strong> {notice.sender} ({notice.senderDepartment})
+                  </p>
                   <p className="text-sm text-gray-400">{new Date(notice.created_at).toLocaleString()}</p>
                 </div>
                 <MarkNotice

@@ -27,7 +27,26 @@ const Fetch = async (setNotifications) => {
     // Build query based on user's role
     let query = supabase
       .from("general_notifications")
-      .select("*")
+      .select(`
+        id,
+        type,
+        message,
+        is_read,
+        created_at,
+        sender_id,
+        employee_profiles:sender_id (
+          first_name,
+          last_name,
+          department_id,
+          ministry_id
+        ),
+        departments (
+          name
+        ),
+        ministries (
+          name
+        )
+      `)
       .order("created_at", { ascending: false });
 
     if (access_id === 1) {
@@ -46,7 +65,22 @@ const Fetch = async (setNotifications) => {
       console.error("Error fetching notifications:", error.message);
       setNotifications([]);
     } else {
-      setNotifications(data);
+      // Map notifications to include sender details
+      const notificationsWithDetails = data.map((notification) => ({
+        id: notification.id,
+        type: notification.type,
+        message: notification.message,
+        is_read: notification.is_read,
+        created_at: notification.created_at,
+        sender: `${notification.employee_profiles?.first_name || "Unknown"} ${
+          notification.employee_profiles?.last_name || ""
+        }`,
+        senderDepartment:
+          notification.employee_profiles?.department_id
+            ? notification.departments?.name || "Unknown Department"
+            : "Unknown Department", // Ensure proper department assignment
+      }));
+      setNotifications(notificationsWithDetails);
     }
   } catch (err) {
     console.error("Unexpected error:", err.message);
