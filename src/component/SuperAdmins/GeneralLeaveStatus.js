@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../../supabaseClient";
 import { useNavigate } from "react-router-dom";
-import { FaEdit, FaTrash, FaEye, FaArrowLeft } from "react-icons/fa";
+import {  FaArrowLeft } from "react-icons/fa";
 
 const LeaveTracker = () => {
   const [leaveStats, setLeaveStats] = useState({

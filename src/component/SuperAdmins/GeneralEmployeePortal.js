@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 //import AdminLeaveNotification from "../Notifications/AdminLeaveNotification";  // Notification Component
 
-import { FaEdit, FaTrash, FaEye, FaArrowLeft } from "react-icons/fa";
+import { FaArrowLeft } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 

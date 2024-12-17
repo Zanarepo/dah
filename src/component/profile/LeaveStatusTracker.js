@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 const LeaveStatusTracker = () => {
   const [leaveRecords, setLeaveRecords] = useState([]);
   const [error, setError] = useState(null);
-  const [departmentAdminId, setDepartmentAdminId] = useState(null);
+  const [setDepartmentAdminId] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {

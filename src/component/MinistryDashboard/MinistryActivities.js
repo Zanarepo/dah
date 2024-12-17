@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate hook
-import { SunIcon, BriefcaseIcon, ClipboardDocumentListIcon, ArrowLeftIcon } from '@heroicons/react/24/outline';
+import { SunIcon, BriefcaseIcon, ClipboardDocumentListIcon } from '@heroicons/react/24/outline';
 import Backfunction from './Backfunction';
 
 

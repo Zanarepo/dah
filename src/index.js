@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
+import ReactDOM from 'react-dom/client'; // Ensure you're using 'react-dom/client' for React 18+
 import './index.css';
 import App from './App';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
@@ -9,10 +9,10 @@ import 'react-toastify/dist/ReactToastify.css'; // Import toastify styles
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
+  <>
     <App />
     <ToastContainer /> {/* Include ToastContainer here */}
-  </React.StrictMode>
+  </>
 );
 
 // Optional: Service worker and web vitals

@@ -11,7 +11,7 @@ const DepartmentAdmin = () => {
   const [loading, setLoading] = useState(true);
   const [searchLoading, setSearchLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [noProfilesFound, setNoProfilesFound] = useState(false);
+  const [ setNoProfilesFound] = useState(false);
   const navigate = useNavigate();
   
   const adminEmployeeId = localStorage.getItem('employee_id');

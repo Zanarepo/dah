@@ -71,7 +71,7 @@ const EmployeeEmploymentDetails = ({ employeeData, setEmployeeData }) => {
   const saveEmployeeData = async () => {
     setLoading(true);
   
-    const { data, error } = await supabase
+    const {  error } = await supabase
       .from("employee_profiles")
       .upsert(
         [

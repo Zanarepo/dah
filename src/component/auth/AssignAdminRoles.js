@@ -55,7 +55,7 @@ const AssignAdminRoles = () => {
   
     try {
       // Insert the selected employee as admin for the selected ministry
-      const { data, error } = await supabase
+      const {  error } = await supabase
         .from('admin_ministry')
         .insert([
           {
@@ -70,7 +70,7 @@ const AssignAdminRoles = () => {
       }
   
       // Update the employee's profile to set is_admin to true
-      const { updateData, updateError } = await supabase
+      const {  updateError } = await supabase
         .from('employee_profiles')
         .update({ is_admin: true }) // Set is_admin to true
         .eq('employee_id', selectedEmployee); // Update the employee's profile based on employee_id

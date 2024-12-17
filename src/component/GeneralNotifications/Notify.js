@@ -55,7 +55,7 @@ const EmployeeNotificationCenter = () => {
   
     try {
       // 1. Create the notification for the employee
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from("general_notifications")
         .insert([ 
           {

@@ -20,7 +20,7 @@ const AddMinistryForm = () => {
     e.preventDefault();
     
     try {
-      const { data, error } = await supabase.from("ministries").insert([formData]);
+      const {  error } = await supabase.from("ministries").insert([formData]);
       if (error) throw error;
 
       toast.success("Ministry added successfully!"); // Show success toast

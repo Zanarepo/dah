@@ -7,7 +7,7 @@ const MinistryDashboard = () => {
   const [selectedMinistryId, setSelectedMinistryId] = useState(null);
   const [selectedDepartmentId, setSelectedDepartmentId] = useState(null);
   const [employeeId, setEmployeeId] = useState(null); // Store employee_id from local storage
-  const [userRole, setUserRole] = useState(null); // Role of the user, to control access
+  const [] = useState(null); // Role of the user, to control access
   const [adminAccess, setAdminAccess] = useState(null); // Admin access details
   const [employees, setEmployees] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState(null); // Store selected employee for viewing

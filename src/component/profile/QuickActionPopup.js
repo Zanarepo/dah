@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaComments, FaCalendarAlt } from "react-icons/fa"; // Icons
+import { FaCalendarAlt } from "react-icons/fa"; // Icons
 import { MdAdd } from "react-icons/md"; // Plus icon for the floating action button
 import { HiChatAlt } from "react-icons/hi"; // Chat icon from react-icons/hi
 import { MdAddAlert } from "react-icons/md";; // Mail icon for a different option, like notifications

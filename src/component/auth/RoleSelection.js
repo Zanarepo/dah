@@ -7,7 +7,7 @@ const RoleSelection = () => {
   const location = useLocation();
 
   // Retrieve roles from location state or set default empty array
-  const [roles, setRoles] = useState(location.state?.roles || []);
+  const [roles] = useState(location.state?.roles || []);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
