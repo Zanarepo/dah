@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { supabase } from "../../supabaseClient";
 
 const RoleAssignment = () => {
-  const [roles, setRoles] = useState(["is_admin", "admin_ministry", "super_admin"]);
+  const [roles] = useState(["is_admin", "admin_ministry", "super_admin"]);
   const [selectedRole, setSelectedRole] = useState("");
   const [managers, setManagers] = useState([]);
   const [departments, setDepartments] = useState([]);

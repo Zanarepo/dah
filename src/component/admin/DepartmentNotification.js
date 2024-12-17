@@ -40,7 +40,7 @@ const Notifications = ({ employee_id }) => {
 
   const handleMarkAsRead = async (notification_id) => {
     try {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from("notifications")
         .update({ status: "read", updated_at: new Date() })
         .eq("id", notification_id);

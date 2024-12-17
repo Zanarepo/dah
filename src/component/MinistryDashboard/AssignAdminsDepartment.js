@@ -63,7 +63,7 @@ const AdminAssignment = () => {
     }
 
     try {
-      const { data, error } = await supabase
+      const {  error } = await supabase
         .from("access_level")
         .update(payload)
         .eq("id", selectedAdmin.id);

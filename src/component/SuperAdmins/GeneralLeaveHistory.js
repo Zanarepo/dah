@@ -1,19 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { supabase } from "../../supabaseClient";
 import { useNavigate } from "react-router-dom";
 
 const LeaveStatusTracker = () => {
   const [leaveRecords, setLeaveRecords] = useState([]);
   const [error, setError] = useState(null);
-  const [departmentAdminId, setDepartmentAdminId] = useState(null);
+  const [setDepartmentAdminId] = useState(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchDepartmentAdminId();
-  }, []);
-
-  // Fetch the department_id for the logged-in user from department_admins table
-  const fetchDepartmentAdminId = async () => {
+  // Wrap the fetchDepartmentAdminId function with useCallback
+  const fetchDepartmentAdminId = useCallback(async () => {
     const adminEmployeeId = localStorage.getItem("employee_id"); // Assuming employee_id is stored in localStorage for logged-in user
 
     if (!adminEmployeeId) {
@@ -44,7 +40,7 @@ const LeaveStatusTracker = () => {
       console.error(err);
       setError("Failed to fetch department information.");
     }
-  };
+  }, [setDepartmentAdminId]); // Add setDepartmentAdminId as a dependency
 
   // Fetch leave records only for the specific department the admin has access to
   const fetchLeaveRecords = async (departmentId) => {
@@ -62,6 +58,10 @@ const LeaveStatusTracker = () => {
       setError("Failed to fetch leave records.");
     }
   };
+
+  useEffect(() => {
+    fetchDepartmentAdminId();
+  }, [fetchDepartmentAdminId]); // Include fetchDepartmentAdminId as a dependency
 
   // Function to determine the leave status
   const determineStatus = (leave) => {
@@ -84,12 +84,11 @@ const LeaveStatusTracker = () => {
     <div className="leave-status-tracker p-6 bg-gray-100 rounded-lg shadow-md">
       <h2 className="text-2xl font-semibold mb-6">Leave Status Tracker</h2>
       <button
-            className="text-gray-600 hover:text-gray-900 text-lg"
-            onClick={() => navigate(-1)}
-          >
-            ← Back
-          </button>
-      
+        className="text-gray-600 hover:text-gray-900 text-lg"
+        onClick={() => navigate(-1)}
+      >
+        ← Back
+      </button>
 
       {error && <p className="text-red-500 mb-4">{error}</p>}
 
@@ -123,4 +122,3 @@ const LeaveStatusTracker = () => {
 };
 
 export default LeaveStatusTracker;
-

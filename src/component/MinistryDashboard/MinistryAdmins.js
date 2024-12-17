@@ -6,7 +6,7 @@ import {
   FaUserShield,
   FaUsersCog,
   FaBuilding,
-  FaLayerGroup,
+ 
   FaUserTie, // Icon for Assign Admin to Department & Ministry
 } from "react-icons/fa";
 

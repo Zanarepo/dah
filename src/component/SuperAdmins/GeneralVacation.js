@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { supabase } from "../../supabaseClient";
 import { useNavigate } from "react-router-dom";
 
@@ -7,12 +7,8 @@ const OnVacation = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchDepartmentAdminId();
-  }, []);
-
-  // Fetch the department_id for the logged-in user from department_admins table
-  const fetchDepartmentAdminId = async () => {
+  // Memoize the function to avoid unnecessary re-renders
+  const fetchDepartmentAdminId = useCallback(async () => {
     const adminEmployeeId = localStorage.getItem("employee_id");
 
     if (!adminEmployeeId) {
@@ -41,7 +37,7 @@ const OnVacation = () => {
       console.error(err);
       setError("Failed to fetch department information.");
     }
-  };
+  }, []); // Empty dependency array ensures it's not recreated on each render
 
   // Fetch employees currently on vacation within the specific department
   const fetchOnVacationEmployees = async (departmentId) => {
@@ -67,6 +63,10 @@ const OnVacation = () => {
       setError("Failed to fetch employees on vacation.");
     }
   };
+
+  useEffect(() => {
+    fetchDepartmentAdminId();
+  }, [fetchDepartmentAdminId]); // Add fetchDepartmentAdminId to dependency array
 
   return (
     <div className="on-vacation-container bg-gradient-to-br from-blue-500 to-purple-600 min-h-screen flex flex-col items-center p-6">

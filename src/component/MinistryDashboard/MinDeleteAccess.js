@@ -9,50 +9,54 @@ const DeleteAdmin = () => {
   const [loading, setLoading] = useState(false); // Loading state
 
   // Fetch admins for the selected role
-  const fetchAdmins = async () => {
-    if (!role) {
-      setAdmins([]);
-      return;
-    }
+  useEffect(() => {
+    const fetchAdmins = async () => {
+      if (!role) {
+        setAdmins([]);
+        return;
+      }
 
-    setLoading(true);
-    setMessage(""); // Clear any existing message
+      setLoading(true);
+      setMessage(""); // Clear any existing message
 
-    try {
-      // Get all admins with the selected role
-      const { data, error } = await supabase
-        .from("access_level")
-        .select("employee_id, role_name")
-        .eq("role_name", role);
+      try {
+        // Get all admins with the selected role
+        const { data, error } = await supabase
+          .from("access_level")
+          .select("employee_id, role_name")
+          .eq("role_name", role);
 
-      if (error) throw error;
+        if (error) throw error;
 
-      // Fetch admin details
-      const adminDetails = await Promise.all(
-        data.map(async (admin) => {
-          const { data: employee, error: empError } = await supabase
-            .from("employee_profiles")
-            .select("employee_id, first_name, last_name")
-            .eq("employee_id", admin.employee_id)
-            .single();
+        // Fetch admin details
+        const adminDetails = await Promise.all(
+          data.map(async (admin) => {
+            const { data: employee, error: empError } = await supabase
+              .from("employee_profiles")
+              .select("employee_id, first_name, last_name")
+              .eq("employee_id", admin.employee_id)
+              .single();
 
-          if (empError) throw empError;
+            if (empError) throw empError;
 
-          return {
-            employee_id: admin.employee_id,
-            name: `${employee.first_name} ${employee.last_name}`,
-          };
-        })
-      );
+            return {
+              employee_id: admin.employee_id,
+              name: `${employee.first_name} ${employee.last_name}`,
+            };
+          })
+        );
 
-      setAdmins(adminDetails);
-    } catch (error) {
-      setMessage("Error fetching admins. Please try again.");
-      console.error(error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+        setAdmins(adminDetails);
+      } catch (error) {
+        setMessage("Error fetching admins. Please try again.");
+        console.error(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAdmins();
+  }, [role]); // Only depends on 'role'
 
   // Delete the selected admin
   const handleDelete = async () => {
@@ -97,11 +101,6 @@ const DeleteAdmin = () => {
       setLoading(false);
     }
   };
-
-  // Fetch admins whenever the role changes
-  useEffect(() => {
-    fetchAdmins();
-  }, [role]);
 
   return (
     <div className="p-6 max-w-4xl mx-auto bg-white rounded shadow">

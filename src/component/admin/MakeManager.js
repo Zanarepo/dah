@@ -109,7 +109,7 @@ const AddEmployees = () => {
         }));
 
       // Update employee_profiles with the selected managers and required fields
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from("employee_profiles")
         .upsert(selectedData, { onConflict: ["employee_id"] });
 

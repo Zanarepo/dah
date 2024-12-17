@@ -69,10 +69,6 @@ const RemoveManagerFromEmployee = () => {
   // Confirm removal of manager and proceed with the partial update
   const confirmRemoveManager = async () => {
     try {
-      const updatedEmployees = selectedEmployees.map((employee_id) => ({
-        employee_id,
-        manager_id: null, // Only update the manager_id field
-      }));
 
       // Update only the manager_id column without affecting other fields
       const { error } = await supabase

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate hook
-import { SunIcon, BriefcaseIcon, ClipboardDocumentListIcon, ArrowLeftIcon } from '@heroicons/react/24/outline';
+import { SunIcon, BriefcaseIcon, ClipboardDocumentListIcon } from '@heroicons/react/24/outline';
 import Backfunction from '../MinistryDashboard/Backfunction';
 
 
@@ -9,10 +9,6 @@ const MinistryActivities = () => {
 
   const navigateTo = (path) => {
     navigate(path); // Navigate to the desired path
-  };
-
-  const goBack = () => {
-    navigate(-1); // Go back to the previous page
   };
 
   return (

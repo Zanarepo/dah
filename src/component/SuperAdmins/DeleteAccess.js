@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { supabase } from "../../supabaseClient";
 import { toast } from "react-toastify"; // Import toast
 
@@ -8,8 +8,8 @@ const DeleteAdmin = () => {
   const [selectedAdminId, setSelectedAdminId] = useState(""); // ID of the admin selected for deletion
   const [loading, setLoading] = useState(false); // Loading state
 
-  // Fetch admins for the selected role
-  const fetchAdmins = async () => {
+  // Memoize the fetchAdmins function to prevent unnecessary re-creations
+  const fetchAdmins = useCallback(async () => {
     if (!role) {
       setAdmins([]);
       return;
@@ -51,7 +51,7 @@ const DeleteAdmin = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [role]); // Memoize with role as a dependency
 
   // Delete the selected admin
   const handleDelete = async () => {
@@ -99,7 +99,7 @@ const DeleteAdmin = () => {
   // Fetch admins whenever the role changes
   useEffect(() => {
     fetchAdmins();
-  }, [role]);
+  }, [fetchAdmins]); // Add fetchAdmins to dependencies
 
   return (
     <div className="p-6 max-w-4xl mx-auto bg-white rounded shadow">

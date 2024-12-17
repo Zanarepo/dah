@@ -43,7 +43,7 @@ const EmployeeRegistrationForm = () => {
 
     // Insert form data into the `employee_registration` table in Supabase
     try {
-      const { data, error } = await supabase.from("employee_registration").insert([
+      const { error } = await supabase.from("employee_registration").insert([
         {
           employee_id,
           first_name,

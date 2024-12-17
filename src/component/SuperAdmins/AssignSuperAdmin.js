@@ -52,7 +52,7 @@ const AssignSuperAdmin = () => {
 
     try {
       // Insert into super_admin table with auto-generated UUID
-      const { data, error: insertError } = await supabase
+      const { error: insertError } = await supabase
         .from("super_admin")
         .insert({
           employee_id: selectedEmployee,

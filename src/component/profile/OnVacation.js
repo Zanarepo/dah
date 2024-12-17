@@ -1,19 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { supabase } from "../../supabaseClient";
 import { useNavigate } from "react-router-dom";
 
-const OnVacation = () => {
-  const [onVacationEmployees, setOnVacationEmployees] = useState([]);
+const LeaveStatusTracker = () => {
+  const [leaveRecords, setLeaveRecords] = useState([]);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchDepartmentAdminId();
-  }, []);
-
-  // Fetch the department_id for the logged-in user from department_admins table
-  const fetchDepartmentAdminId = async () => {
-    const adminEmployeeId = localStorage.getItem("employee_id");
+  // Memoize the fetchDepartmentAdminId function to prevent unnecessary re-renders
+  const fetchDepartmentAdminId = useCallback(async () => {
+    const adminEmployeeId = localStorage.getItem("employee_id"); // Assuming employee_id is stored in localStorage for logged-in user
 
     if (!adminEmployeeId) {
       setError("You are not logged in.");
@@ -22,9 +18,9 @@ const OnVacation = () => {
 
     try {
       const { data: adminData, error: adminError } = await supabase
-        .from("department_admins")
-        .select("department_id")
-        .eq("employee_id", adminEmployeeId)
+        .from('department_admins')
+        .select('department_id')
+        .eq('employee_id', adminEmployeeId)
         .maybeSingle();
 
       if (adminError) {
@@ -32,105 +28,95 @@ const OnVacation = () => {
       }
 
       if (!adminData) {
-        setError("You are not assigned to any department.");
+        setError('You are not assigned to any department.');
         return;
       }
 
-      fetchOnVacationEmployees(adminData.department_id);
+      const departmentId = adminData.department_id;
+      fetchLeaveRecords(departmentId); // Fetch leave records after department ID is fetched
     } catch (err) {
       console.error(err);
       setError("Failed to fetch department information.");
     }
-  };
+  }, []); // Empty dependency array ensures this function is only created once
 
-  // Fetch employees currently on vacation within the specific department
-  const fetchOnVacationEmployees = async (departmentId) => {
+  // Fetch leave records only for the specific department the admin has access to
+  const fetchLeaveRecords = async (departmentId) => {
     try {
-      const currentDate = new Date().toISOString().slice(0, 10); // Format YYYY-MM-DD
-
       const { data, error } = await supabase
         .from("employee_leave")
-        .select(
-          `employee_id, start_date, end_date, leave_type, employee_profiles!employee_leave_employee_id_fkey(first_name, last_name, profile_picture, department_id, departments(name))`
-        )
-        .lte("start_date", currentDate)
-        .gte("end_date", currentDate)
-        .eq("status", "Approved")
-        .eq("employee_profiles.department_id", departmentId);
+        .select("id, leave_type, start_date, end_date, status, department_id")
+        .eq("department_id", departmentId); // Filter by department_id
 
       if (error) throw error;
 
-      const filteredData = data.filter((employee) => employee.employee_profiles !== null);
-      setOnVacationEmployees(filteredData);
+      setLeaveRecords(data);
     } catch (err) {
       console.error(err);
-      setError("Failed to fetch employees on vacation.");
+      setError("Failed to fetch leave records.");
     }
   };
 
-  return (
-    <div className="on-vacation-container bg-gradient-to-br from-blue-500 to-purple-600 min-h-screen flex flex-col items-center p-6">
-      {/* Back Button */}
-      <button
-        onClick={() => navigate(-1)}
-        className="absolute top-4 left-4 bg-white text-blue-500 px-4 py-2 rounded-full shadow-md hover:bg-blue-600 hover:text-white transition"
-      >
-        Back
-      </button>
+  // Function to determine the leave status
+  const determineStatus = (leave) => {
+    const currentDate = new Date();
+    const startDate = new Date(leave.start_date);
+    const endDate = new Date(leave.end_date);
 
-      {/* Error Message */}
+    if (leave.status === "Rejected") {
+      return { label: "Rejected", color: "bg-gray-400" };
+    } else if (currentDate < startDate) {
+      return { label: "Pending", color: "bg-blue-400" };
+    } else if (currentDate >= startDate && currentDate <= endDate) {
+      return { label: "Active", color: "bg-green-400" };
+    } else if (currentDate > endDate) {
+      return { label: "Expired", color: "bg-red-400" };
+    }
+  };
+
+  useEffect(() => {
+    fetchDepartmentAdminId();
+  }, [fetchDepartmentAdminId]); // Add fetchDepartmentAdminId to dependencies
+
+  return (
+    <div className="leave-status-tracker p-6 bg-gray-100 rounded-lg shadow-md">
+      <h2 className="text-2xl font-semibold mb-6">Leave Status Tracker</h2>
+      <button
+            className="text-gray-600 hover:text-gray-900 text-lg"
+            onClick={() => navigate(-1)}
+          >
+            ← Back
+          </button>
+
       {error && <p className="text-red-500 mb-4">{error}</p>}
 
-      {/* Header */}
-      <h2 className="text-4xl font-bold text-white mb-6">Employees On Vacation</h2>
-      <p className="text-lg text-white text-center mb-12">
-        These employees are currently on vacation. 🌴
-      </p>
-
-      {/* Responsive Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-5xl">
-        {onVacationEmployees.length === 0 ? (
-          <p className="text-center text-white col-span-full">No employees on vacation.</p>
-        ) : (
-          onVacationEmployees.map((employee) => (
-            <div
-              key={employee.employee_id}
-              className="bg-white p-6 rounded-lg shadow-lg flex flex-col items-center w-full"
-            >
-              {/* Profile Picture */}
-              <img
-                src={employee.employee_profiles?.profile_picture || "/default-profile.png"}
-                alt={`${employee.employee_profiles?.first_name} ${employee.employee_profiles?.last_name}`}
-                className="w-24 h-24 rounded-full object-cover border-4 border-gray-200 mb-4"
-              />
-              <h3 className="text-lg font-semibold text-gray-800">
-                {employee.employee_profiles?.first_name} {employee.employee_profiles?.last_name}
-              </h3>
-              <p className="text-sm text-gray-600">
-                <strong>Department:</strong> {employee.employee_profiles?.departments?.name}
-              </p>
-              <p className="text-sm text-gray-600">
-                <strong>Vacation:</strong> {employee.start_date} - {employee.end_date}
-              </p>
-              <div className="mt-4 text-4xl text-yellow-500">
-                {employee.leave_type === "vacation" ? "🌴" : "🏖️"}
-              </div>
-            </div>
-          ))
-        )}
-      </div>
-
-      {/* Pagination */}
-      <div className="flex justify-center mt-8">
-        <button className="bg-white text-blue-500 px-4 py-2 rounded-full shadow-md hover:bg-blue-600 hover:text-white transition mx-2">
-          Previous
-        </button>
-        <button className="bg-white text-blue-500 px-4 py-2 rounded-full shadow-md hover:bg-blue-600 hover:text-white transition mx-2">
-          Next
-        </button>
-      </div>
+      <table className="table-auto w-full border-collapse">
+        <thead>
+          <tr>
+            <th className="py-2 px-4 border">Leave Type</th>
+            <th className="py-2 px-4 border">Start Date</th>
+            <th className="py-2 px-4 border">End Date</th>
+            <th className="py-2 px-4 border">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {leaveRecords.map((leave) => {
+            const { label, color } = determineStatus(leave);
+            return (
+              <tr key={leave.id}>
+                <td className="py-2 px-4 border">{leave.leave_type}</td>
+                <td className="py-2 px-4 border">{leave.start_date}</td>
+                <td className="py-2 px-4 border">{leave.end_date}</td>
+                <td className={`py-2 px-4 border ${color} text-white font-semibold`}>
+                  {label}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
     </div>
   );
 };
 
-export default OnVacation;
+export default LeaveStatusTracker;

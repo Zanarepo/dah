@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { HiOutlineUpload } from "react-icons/hi"; // Importing an icon
 
 const FileUpload = ({ sendFileMessage }) => {
-  const [file, setFile] = useState(null); // Store selected file
+  const [ setFile] = useState(null); // Store selected file
   const [fileUrl, setFileUrl] = useState(null); // Store file URL for preview
 
   // Handle file change

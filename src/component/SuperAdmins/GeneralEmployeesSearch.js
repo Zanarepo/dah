@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { supabase } from "../../supabaseClient";
 import FileSaver from 'file-saver';
 import { useNavigate } from "react-router-dom";
-
 
 const DepartmentAdmin = () => {
   const [employees, setEmployees] = useState([]);
@@ -11,12 +10,12 @@ const DepartmentAdmin = () => {
   const [loading, setLoading] = useState(true);
   const [searchLoading, setSearchLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [ setNoProfilesFound] = useState(false);
+  const [setNoProfilesFound] = useState(false);
   const navigate = useNavigate();
   
   const adminEmployeeId = localStorage.getItem('employee_id');
 
-  const fetchEmployees = async () => {
+  const fetchEmployees = useCallback(async () => {
     try {
       setLoading(true);
 
@@ -54,17 +53,20 @@ const DepartmentAdmin = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [adminEmployeeId]); // Add `adminEmployeeId` as a dependency to ensure stability.
 
   useEffect(() => {
     fetchEmployees();
-  }, []);
+  }, [fetchEmployees]);
+
+  // Rest of the component...
+
 
   const handleSearch = () => {
     setSearchLoading(true);
     setNoProfilesFound(false);
 
-    if (searchQuery.trim() === '') {
+    if (searchQuery.trim() === "") {
       setFilteredEmployees(employees);
       setSearchLoading(false);
     } else {
@@ -85,41 +87,41 @@ const DepartmentAdmin = () => {
 
   const downloadEmployeeList = () => {
     const csvContent =
-      'data:text/csv;charset=utf-8,' +
+      "data:text/csv;charset=utf-8," +
       [
         [
-          'Employee ID',
-          'First Name',
-          'Last Name',
-          'Email',
-          'Phone',
-          'Nationality',
-          'State of Origin',
-          'LGA of Origin',
-          'Employment Date',
-          'Employment Type',
-          'Position',
-          'Grade Level',
-          'Qualification',
-        ].join(','),
+          "Employee ID",
+          "First Name",
+          "Last Name",
+          "Email",
+          "Phone",
+          "Nationality",
+          "State of Origin",
+          "LGA of Origin",
+          "Employment Date",
+          "Employment Type",
+          "Position",
+          "Grade Level",
+          "Qualification",
+        ].join(","),
         ...filteredEmployees.map((employee) =>
           [
             employee.employee_id,
             employee.first_name,
             employee.last_name,
-            employee.email || 'N/A',
-            employee.phone || 'N/A',
-            employee.nationality || 'N/A',
-            employee.state_of_origin || 'N/A',
-            employee.lga_of_origin || 'N/A',
-            employee.employment_date || 'N/A',
-            employee.employment_type || 'N/A',
-            employee.position || 'N/A',
-            employee.grade_level || 'N/A',
-            employee.qualification || 'N/A',
-          ].join(',')
+            employee.email || "N/A",
+            employee.phone || "N/A",
+            employee.nationality || "N/A",
+            employee.state_of_origin || "N/A",
+            employee.lga_of_origin || "N/A",
+            employee.employment_date || "N/A",
+            employee.employment_type || "N/A",
+            employee.position || "N/A",
+            employee.grade_level || "N/A",
+            employee.qualification || "N/A",
+          ].join(",")
         ),
-      ].join('\n');
+      ].join("\n");
 
     const encodedUri = encodeURI(csvContent);
     const fileName = `employees_department_${adminEmployeeId}.csv`;
@@ -129,9 +131,7 @@ const DepartmentAdmin = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
-        
         <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500"></div>
-        
       </div>
     );
   }
@@ -142,12 +142,12 @@ const DepartmentAdmin = () => {
 
   return (
     <div className="p-4">
-       <button
-          className="bg-blue-500 text-white py-2 px-4 rounded-lg"
-          onClick={() => navigate(-1)}
-        >
-          ← Back
-        </button>
+      <button
+        className="bg-blue-500 text-white py-2 px-4 rounded-lg"
+        onClick={() => navigate(-1)}
+      >
+        ← Back
+      </button>
       <div className="flex items-center mb-4 gap-2">
         <input
           type="text"
@@ -156,13 +156,15 @@ const DepartmentAdmin = () => {
           onChange={(e) => setSearchQuery(e.target.value)}
           className="border px-4 py-2 rounded-md shadow-md w-full"
         />
-        
+
         <button
           onClick={handleSearch}
-          className={`bg-gradient-to-r from-blue-400 to-blue-600 text-white px-4 py-2 rounded-md shadow-lg transition-all duration-300 hover:bg-blue-500 ${searchLoading ? 'cursor-not-allowed opacity-50' : ''}`}
+          className={`bg-gradient-to-r from-blue-400 to-blue-600 text-white px-4 py-2 rounded-md shadow-lg transition-all duration-300 hover:bg-blue-500 ${
+            searchLoading ? "cursor-not-allowed opacity-50" : ""
+          }`}
           disabled={searchLoading}
         >
-          {searchLoading ? 'Searching...' : 'Search'}
+          {searchLoading ? "Searching..." : "Search"}
         </button>
         <button
           onClick={downloadEmployeeList}
@@ -180,22 +182,24 @@ const DepartmentAdmin = () => {
               className="p-4 border rounded shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col items-center"
             >
               <img
-                src={employee.profile_picture || '/default-profile.png'}
+                src={employee.profile_picture || "/default-profile.png"}
                 alt={`${employee.first_name} ${employee.last_name}`}
                 className="w-20 h-20 rounded-full mb-4"
               />
               <p className="font-bold text-lg mb-1">
                 {employee.first_name} {employee.last_name}
               </p>
-              <p className="text-sm text-gray-500">{employee.position || 'N/A'}</p>
-              <p>Email: {employee.email || 'N/A'}</p>
-              <p>Phone: {employee.phone || 'N/A'}</p>
-              <p>Nationality: {employee.nationality || 'N/A'}</p>
-              <p>State of Origin: {employee.state_of_origin || 'N/A'}</p>
-              <p>LGA of Origin: {employee.lga_of_origin || 'N/A'}</p>
-              <p>Employment Date: {employee.employment_date || 'N/A'}</p>
-              <p>Grade Level: {employee.grade_level || 'N/A'}</p>
-              <p>Qualification: {employee.qualification || 'N/A'}</p>
+              <p className="text-sm text-gray-500">
+                {employee.position || "N/A"}
+              </p>
+              <p>Email: {employee.email || "N/A"}</p>
+              <p>Phone: {employee.phone || "N/A"}</p>
+              <p>Nationality: {employee.nationality || "N/A"}</p>
+              <p>State of Origin: {employee.state_of_origin || "N/A"}</p>
+              <p>LGA of Origin: {employee.lga_of_origin || "N/A"}</p>
+              <p>Employment Date: {employee.employment_date || "N/A"}</p>
+              <p>Grade Level: {employee.grade_level || "N/A"}</p>
+              <p>Qualification: {employee.qualification || "N/A"}</p>
             </div>
           ))
         ) : (

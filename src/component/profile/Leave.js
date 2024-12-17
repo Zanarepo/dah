@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { supabase } from "../../supabaseClient";
 import { FaEdit, FaTrash, FaEye, FaArrowLeft } from "react-icons/fa";
-//import CreateNotice from "../GeneralNotifications/CreateNotice";
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -21,6 +20,7 @@ const LeaveRequest = () => {
   const [employeeId, setEmployeeId] = useState(null);
   const navigate = useNavigate();
 
+  // UseEffect to get employee ID from local storage when component mounts
   useEffect(() => {
     const storedEmployeeId = localStorage.getItem("employee_id");
     if (storedEmployeeId) {
@@ -28,15 +28,12 @@ const LeaveRequest = () => {
     } else {
       toast.error("Employee ID is missing. Please log in again.");
     }
-  }, []);
+  }, []); // Empty dependency array ensures this runs only once on mount
 
-  useEffect(() => {
-    if (employeeId) {
-      fetchLeaveRecords();
-    }
-  }, [employeeId]);
+  // UseEffect for fetching leave records when employeeId is set
+  const fetchLeaveRecords = useCallback(async () => {
+    if (!employeeId) return;
 
-  const fetchLeaveRecords = async () => {
     try {
       const { data, error } = await supabase
         .from("employee_leave")
@@ -55,7 +52,11 @@ const LeaveRequest = () => {
       console.error(err);
       toast.error("Failed to fetch leave records.");
     }
-  };
+  }, [employeeId]); // Only re-run if employeeId changes
+
+  useEffect(() => {
+    fetchLeaveRecords();
+  }, [employeeId, fetchLeaveRecords]); // Add fetchLeaveRecords as a dependency
 
   const handleOpenModal = (type, leave = null) => {
     setModalType(type);
@@ -243,61 +244,72 @@ const LeaveRequest = () => {
 
             {modalType !== "view" ? (
               <div className="space-y-4">
-                <select
-                  className="w-full border p-2 rounded"
-                  value={leaveDetails.leaveType}
-                  onChange={(e) => setLeaveDetails({ ...leaveDetails, leaveType: e.target.value })}
-                >
-                  <option value="">Select Leave Type</option>
-                  <option value="Vacation">Vacation</option>
-                  <option value="Sick Leave">Sick Leave</option>
-                  <option value="Emergency Leave">Emergency Leave</option>
-                  <option value="Study Leave">Study Leave</option>
-                  <option value="Maternity/Paternity Leave">Maternity/Paternity Leave</option>
-                  <option value="Other">Other</option>
-                </select>
-                <input
-                  type="date"
-                  className="w-full border p-2 rounded"
-                  value={leaveDetails.startDate}
-                  onChange={(e) => setLeaveDetails({ ...leaveDetails, startDate: e.target.value })}
-                />
-                <input
-                  type="date"
-                  className="w-full border p-2 rounded"
-                  value={leaveDetails.endDate}
-                  onChange={(e) => setLeaveDetails({ ...leaveDetails, endDate: e.target.value })}
-                />
-                <textarea
-                  className="w-full border p-2 rounded"
-                  rows="4"
-                  placeholder="Leave Comments (Optional)"
-                  value={leaveDetails.comment}
-                  onChange={(e) => setLeaveDetails({ ...leaveDetails, comment: e.target.value })}
-                />
-                <button
-                  className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600"
-                  onClick={handleSaveLeave}
-                >
-                  Save Leave Request
-                </button>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Leave Type</label>
+                  <input
+                    type="text"
+                    className="mt-1 p-2 border border-gray-300 rounded-lg w-full"
+                    value={leaveDetails.leaveType}
+                    onChange={(e) => setLeaveDetails({ ...leaveDetails, leaveType: e.target.value })}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Start Date</label>
+                  <input
+                    type="date"
+                    className="mt-1 p-2 border border-gray-300 rounded-lg w-full"
+                    value={leaveDetails.startDate}
+                    onChange={(e) => setLeaveDetails({ ...leaveDetails, startDate: e.target.value })}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">End Date</label>
+                  <input
+                    type="date"
+                    className="mt-1 p-2 border border-gray-300 rounded-lg w-full"
+                    value={leaveDetails.endDate}
+                    onChange={(e) => setLeaveDetails({ ...leaveDetails, endDate: e.target.value })}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Comment</label>
+                  <textarea
+                    className="mt-1 p-2 border border-gray-300 rounded-lg w-full"
+                    rows="3"
+                    value={leaveDetails.comment}
+                    onChange={(e) => setLeaveDetails({ ...leaveDetails, comment: e.target.value })}
+                  />
+                </div>
               </div>
             ) : (
-              <div className="space-y-4">
+              <div>
                 <p><strong>Leave Type:</strong> {selectedLeave.leave_type}</p>
                 <p><strong>Start Date:</strong> {selectedLeave.start_date}</p>
                 <p><strong>End Date:</strong> {selectedLeave.end_date}</p>
                 <p><strong>Status:</strong> {selectedLeave.status}</p>
-                <p><strong>Comment:</strong> {selectedLeave.comment}</p>
+                <p><strong>Comment:</strong> {selectedLeave.comment || "No comment"}</p>
               </div>
             )}
 
-            <button
-              className="mt-4 bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600"
-              onClick={handleCloseModal}
-            >
-              Close
-            </button>
+            <div className="mt-4 flex justify-end space-x-4">
+              <button
+                className="bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600"
+                onClick={handleCloseModal}
+              >
+                Close
+              </button>
+              {modalType !== "view" && (
+                <button
+                  className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600"
+                  onClick={handleSaveLeave}
+                >
+                  {modalType === "edit" ? "Save Changes" : "Request Leave"}
+                </button>
+              )}
+            </div>
           </div>
         </div>
       )}

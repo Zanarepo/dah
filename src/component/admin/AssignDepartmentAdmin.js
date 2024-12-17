@@ -58,7 +58,7 @@ const DepartmentAdmin = () => {
     }
 
     try {
-      const { data, error } = await supabase.from("department_admins").insert([
+      const {  error } = await supabase.from("department_admins").insert([
         {
           employee_id: selectedEmployee.employee_id,
           department_id: selectedDepartment,

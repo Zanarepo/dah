@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { supabase } from "../../supabaseClient";
 import { useNavigate } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
@@ -14,7 +14,8 @@ const EmployeeTable = () => {
 
   const adminEmployeeId = localStorage.getItem('employee_id');
 
-  const fetchEmployees = async () => {
+  // Memoize fetchEmployees with useCallback to prevent unnecessary re-creations
+  const fetchEmployees = useCallback(async () => {
     try {
       setLoading(true);
       const { data: adminData, error: adminError } = await supabase
@@ -52,11 +53,11 @@ const EmployeeTable = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [adminEmployeeId]); // Depend on adminEmployeeId as it's used in the fetch
 
   useEffect(() => {
     fetchEmployees();
-  }, []);
+  }, [fetchEmployees]); // Add fetchEmployees to dependencies
 
   const handleSearch = () => {
     if (!searchQuery) {

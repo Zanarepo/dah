@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { supabase } from "../../supabaseClient";
 import { FaEdit, FaTrash, FaEye, FaArrowLeft } from "react-icons/fa";
-//import CreateNotice from "../GeneralNotifications/CreateNotice";
-
 import { useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const LeaveRequest = () => {
   const [leaveRecords, setLeaveRecords] = useState([]);
@@ -18,25 +18,22 @@ const LeaveRequest = () => {
   const [modalType, setModalType] = useState(""); // "add", "edit", or "view"
   const [selectedLeave, setSelectedLeave] = useState(null);
   const [employeeId, setEmployeeId] = useState(null);
-  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
+  // UseEffect to get employee ID from local storage when component mounts
   useEffect(() => {
     const storedEmployeeId = localStorage.getItem("employee_id");
     if (storedEmployeeId) {
       setEmployeeId(storedEmployeeId);
     } else {
-      setError("Employee ID is missing. Please log in again.");
+      toast.error("Employee ID is missing. Please log in again.");
     }
-  }, []);
+  }, []); // Empty dependency array ensures this runs only once on mount
 
-  useEffect(() => {
-    if (employeeId) {
-      fetchLeaveRecords();
-    }
-  }, [employeeId]);
+  // UseEffect for fetching leave records when employeeId is set
+  const fetchLeaveRecords = useCallback(async () => {
+    if (!employeeId) return;
 
-  const fetchLeaveRecords = async () => {
     try {
       const { data, error } = await supabase
         .from("employee_leave")
@@ -53,9 +50,13 @@ const LeaveRequest = () => {
       setLeaveRecords(activeRecords);
     } catch (err) {
       console.error(err);
-      setError("Failed to fetch leave records.");
+      toast.error("Failed to fetch leave records.");
     }
-  };
+  }, [employeeId]); // Only re-run if employeeId changes
+
+  useEffect(() => {
+    fetchLeaveRecords();
+  }, [employeeId, fetchLeaveRecords]); // Add fetchLeaveRecords as a dependency
 
   const handleOpenModal = (type, leave = null) => {
     setModalType(type);
@@ -83,18 +84,17 @@ const LeaveRequest = () => {
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    setError(null);
     setSelectedLeave(null);
   };
 
   const handleSaveLeave = async () => {
     if (!leaveDetails.leaveType || !leaveDetails.startDate || !leaveDetails.endDate) {
-      setError("All fields are required.");
+      toast.error("All fields are required.");
       return;
     }
 
     if (new Date(leaveDetails.startDate) > new Date(leaveDetails.endDate)) {
-      setError("Start date cannot be later than end date.");
+      toast.error("Start date cannot be later than end date.");
       return;
     }
 
@@ -108,7 +108,7 @@ const LeaveRequest = () => {
       if (profileError) throw profileError;
 
       if (!profileData) {
-        setError("Employee profile not found.");
+        toast.error("Employee profile not found.");
         return;
       }
 
@@ -134,18 +134,20 @@ const LeaveRequest = () => {
         if (error) throw error;
 
         fetchLeaveRecords();
+        toast.success("Leave request updated successfully.");
       } else {
         const { error } = await supabase.from("employee_leave").insert([payload]);
 
         if (error) throw error;
 
         fetchLeaveRecords();
+        toast.success("Leave request added successfully.");
       }
 
       handleCloseModal();
     } catch (err) {
       console.error(err);
-      setError("Failed to save leave request.");
+      toast.error("Failed to save leave request.");
     }
   };
 
@@ -155,14 +157,17 @@ const LeaveRequest = () => {
       if (error) throw error;
 
       setLeaveRecords((prev) => prev.filter((record) => record.id !== leaveId));
+      toast.success("Leave record deleted successfully.");
     } catch (err) {
       console.error(err);
-      setError("Failed to delete leave record.");
+      toast.error("Failed to delete leave record.");
     }
   };
 
   return (
     <div className="p-6 bg-gray-100 rounded-lg shadow-md">
+      <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
+
       {/* Back Button */}
       <button
         className="flex items-center text-blue-500 hover:text-blue-700 mb-4"
@@ -173,8 +178,6 @@ const LeaveRequest = () => {
 
       {/* Header */}
       <h2 className="text-2xl font-semibold mb-6">Leave Management</h2>
-
-      {error && <p className="text-red-500 mb-4">{error}</p>}
 
       {/* Add Leave Button */}
       <button
@@ -241,61 +244,72 @@ const LeaveRequest = () => {
 
             {modalType !== "view" ? (
               <div className="space-y-4">
-                <select
-                  className="w-full border p-2 rounded"
-                  value={leaveDetails.leaveType}
-                  onChange={(e) => setLeaveDetails({ ...leaveDetails, leaveType: e.target.value })}
-                >
-                  <option value="">Select Leave Type</option>
-                  <option value="Vacation">Vacation</option>
-                  <option value="Sick Leave">Sick Leave</option>
-                  <option value="Emergency Leave">Emergency Leave</option>
-                  <option value="Study Leave">Study Leave</option>
-                  <option value="Maternity/Paternity Leave">Maternity/Paternity Leave</option>
-                  <option value="Other">Other</option>
-                </select>
-                <input
-                  type="date"
-                  className="w-full border p-2 rounded"
-                  value={leaveDetails.startDate}
-                  onChange={(e) => setLeaveDetails({ ...leaveDetails, startDate: e.target.value })}
-                />
-                <input
-                  type="date"
-                  className="w-full border p-2 rounded"
-                  value={leaveDetails.endDate}
-                  onChange={(e) => setLeaveDetails({ ...leaveDetails, endDate: e.target.value })}
-                />
-                <textarea
-                  className="w-full border p-2 rounded"
-                  placeholder="Comment"
-                  value={leaveDetails.comment}
-                  onChange={(e) => setLeaveDetails({ ...leaveDetails, comment: e.target.value })}
-                  
-                ></textarea>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Leave Type</label>
+                  <input
+                    type="text"
+                    className="mt-1 p-2 border border-gray-300 rounded-lg w-full"
+                    value={leaveDetails.leaveType}
+                    onChange={(e) => setLeaveDetails({ ...leaveDetails, leaveType: e.target.value })}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Start Date</label>
+                  <input
+                    type="date"
+                    className="mt-1 p-2 border border-gray-300 rounded-lg w-full"
+                    value={leaveDetails.startDate}
+                    onChange={(e) => setLeaveDetails({ ...leaveDetails, startDate: e.target.value })}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">End Date</label>
+                  <input
+                    type="date"
+                    className="mt-1 p-2 border border-gray-300 rounded-lg w-full"
+                    value={leaveDetails.endDate}
+                    onChange={(e) => setLeaveDetails({ ...leaveDetails, endDate: e.target.value })}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Comment</label>
+                  <textarea
+                    className="mt-1 p-2 border border-gray-300 rounded-lg w-full"
+                    rows="3"
+                    value={leaveDetails.comment}
+                    onChange={(e) => setLeaveDetails({ ...leaveDetails, comment: e.target.value })}
+                  />
+                </div>
+              </div>
+            ) : (
+              <div>
+                <p><strong>Leave Type:</strong> {selectedLeave.leave_type}</p>
+                <p><strong>Start Date:</strong> {selectedLeave.start_date}</p>
+                <p><strong>End Date:</strong> {selectedLeave.end_date}</p>
+                <p><strong>Status:</strong> {selectedLeave.status}</p>
+                <p><strong>Comment:</strong> {selectedLeave.comment || "No comment"}</p>
+              </div>
+            )}
+
+            <div className="mt-4 flex justify-end space-x-4">
+              <button
+                className="bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600"
+                onClick={handleCloseModal}
+              >
+                Close
+              </button>
+              {modalType !== "view" && (
                 <button
                   className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600"
                   onClick={handleSaveLeave}
                 >
-                  Save
+                  {modalType === "edit" ? "Save Changes" : "Request Leave"}
                 </button>
-              </div>
-            ) : (
-              <div>
-                <p><strong>Leave Type:</strong> {selectedLeave?.leave_type}</p>
-                <p><strong>Start Date:</strong> {selectedLeave?.start_date}</p>
-                <p><strong>End Date:</strong> {selectedLeave?.end_date}</p>
-                <p><strong>Status:</strong> {selectedLeave?.status}</p>
-                <p><strong>Comments:</strong> {selectedLeave?.comment || "No comments provided."}</p>
-              </div>
-            )}
-
-            <button
-              className="bg-gray-500 text-white py-2 px-4 rounded-lg mt-4 hover:bg-gray-600"
-              onClick={handleCloseModal}
-            >
-              Close
-            </button>
+              )}
+            </div>
           </div>
         </div>
       )}

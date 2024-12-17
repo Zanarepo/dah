@@ -11,9 +11,7 @@ const MinistryActivities = () => {
     navigate(path); // Navigate to the desired path
   };
 
-  const goBack = () => {
-    navigate(-1); // Go back to the previous page
-  };
+ 
 
   return (
     <div className="min-w-full max-w-7xl mx-auto p-4 space-y-8">

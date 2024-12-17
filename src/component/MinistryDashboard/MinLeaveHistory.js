@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom"; // Added `useNavigate` for back navigation
 import { supabase } from "../../supabaseClient";
-import { MagnifyingGlassIcon, SearchIcon, CalendarIcon } from '@heroicons/react/24/outline';
+import { MagnifyingGlassIcon,  CalendarIcon } from '@heroicons/react/24/outline';
 // Heroicons for UI
 
 const MinistryLeaveHistory = () => {

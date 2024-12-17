@@ -4,7 +4,7 @@ import { toast } from "react-toastify"; // Import toast
 import "react-toastify/dist/ReactToastify.css"; // Import toast styles
 
 const RoleAssignment = () => {
-  const [roles, setRoles] = useState(["is_admin", "admin_ministry", "super_admin"]);
+  const [roles] = useState(["is_admin", "admin_ministry", "super_admin"]);
   const [selectedRole, setSelectedRole] = useState("");
   const [employees, setEmployees] = useState([]);
   const [departments, setDepartments] = useState([]);

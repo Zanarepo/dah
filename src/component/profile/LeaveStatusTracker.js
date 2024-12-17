@@ -1,19 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { supabase } from "../../supabaseClient";
 import { useNavigate } from "react-router-dom";
 
 const LeaveStatusTracker = () => {
   const [leaveRecords, setLeaveRecords] = useState([]);
   const [error, setError] = useState(null);
-  const [setDepartmentAdminId] = useState(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchDepartmentAdminId();
-  }, []);
-
-  // Fetch the department_id for the logged-in user from department_admins table
-  const fetchDepartmentAdminId = async () => {
+  // Memoize the fetchDepartmentAdminId function to prevent unnecessary re-renders
+  const fetchDepartmentAdminId = useCallback(async () => {
     const adminEmployeeId = localStorage.getItem("employee_id"); // Assuming employee_id is stored in localStorage for logged-in user
 
     if (!adminEmployeeId) {
@@ -38,13 +33,12 @@ const LeaveStatusTracker = () => {
       }
 
       const departmentId = adminData.department_id;
-      setDepartmentAdminId(departmentId);
       fetchLeaveRecords(departmentId); // Fetch leave records after department ID is fetched
     } catch (err) {
       console.error(err);
       setError("Failed to fetch department information.");
     }
-  };
+  }, []); // Empty dependency array ensures this function is only created once
 
   // Fetch leave records only for the specific department the admin has access to
   const fetchLeaveRecords = async (departmentId) => {
@@ -80,6 +74,10 @@ const LeaveStatusTracker = () => {
     }
   };
 
+  useEffect(() => {
+    fetchDepartmentAdminId();
+  }, [fetchDepartmentAdminId]); // Add fetchDepartmentAdminId to dependencies
+
   return (
     <div className="leave-status-tracker p-6 bg-gray-100 rounded-lg shadow-md">
       <h2 className="text-2xl font-semibold mb-6">Leave Status Tracker</h2>
@@ -89,7 +87,6 @@ const LeaveStatusTracker = () => {
           >
             ← Back
           </button>
-      
 
       {error && <p className="text-red-500 mb-4">{error}</p>}
 

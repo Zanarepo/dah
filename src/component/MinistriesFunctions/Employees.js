@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback  } from "react";
 import { supabase } from "../../supabaseClient";
 import FileSaver from 'file-saver';
 import { useNavigate } from "react-router-dom";
@@ -11,12 +11,11 @@ const DepartmentAdmin = () => {
   const [loading, setLoading] = useState(true);
   const [searchLoading, setSearchLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [noProfilesFound, setNoProfilesFound] = useState(false);
+  const [setNoProfilesFound] = useState(false);
   const navigate = useNavigate();
   
   const adminEmployeeId = localStorage.getItem('employee_id');
-
-  const fetchEmployees = async () => {
+  const fetchEmployees = useCallback(async () => {
     try {
       setLoading(true);
 
@@ -36,29 +35,35 @@ const DepartmentAdmin = () => {
       }
 
       const departmentId = adminData.department_id;
+
       const { data: employeeData, error: employeeError } = await supabase
         .from('employee_profiles')
         .select(
-          `employee_id, first_name, last_name, profile_picture, email, phone_number, 
-          nationality, state_of_origin, lga_of_origin, employment_date, employment_type, 
-          position, grade_level, qualification, department_id`
+          `employee_id, first_name, last_name, profile_picture, position, state_of_origin, department_id, departments(name)`
         )
         .eq('department_id', departmentId);
 
       if (employeeError) throw new Error(employeeError.message);
 
-      setEmployees(employeeData);
-      setFilteredEmployees(employeeData);
+      setEmployees(employeeData || []);
+      setFilteredEmployees(employeeData || []);
     } catch (err) {
       setError(err.message);
+      setEmployees([]);
+      setFilteredEmployees([]);
     } finally {
       setLoading(false);
     }
-  };
+  }, [adminEmployeeId]); // Dependency for fetchEmployees
 
+  // Use the memoized fetchEmployees in useEffect
   useEffect(() => {
     fetchEmployees();
-  }, []);
+  }, [fetchEmployees]);
+  useEffect(() => {
+    fetchEmployees();
+  }, [fetchEmployees]);  // Add fetchEmployees here
+  
 
   const handleSearch = () => {
     setSearchLoading(true);

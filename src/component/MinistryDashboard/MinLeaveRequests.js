@@ -7,7 +7,7 @@ const LeaveRequests = () => {
   const navigate = useNavigate();
   const [leaveRequests, setLeaveRequests] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [selectedLeave, setSelectedLeave] = useState(null);
+  const [ setSelectedLeave] = useState(null);
   const [adminComment, setAdminComment] = useState("");
   const [viewingLeave, setViewingLeave] = useState(null);
   const [message, setMessage] = useState("");

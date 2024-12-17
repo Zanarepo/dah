@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { supabase } from "../../supabaseClient"; // Ensure the import is correct
 import { toast } from "react-toastify"; // Import toast
 import 'react-toastify/dist/ReactToastify.css'; // Import toast styles
@@ -7,57 +7,11 @@ const EmployeeNotificationCenter = () => {
   const [notifications, setNotifications] = useState([]);
   const [newNotificationMessage, setNewNotificationMessage] = useState("");
   const [error, setError] = useState("");
-  const [ setUserId] = useState(null); // Store the userId dynamically
-  const [ setUserRole] = useState(""); // Track the user role (admin, admin_ministry, super_admin)
   const [departmentId, setDepartmentId] = useState(null); // Track the departmentId
   const [ministryId, setMinistryId] = useState(null); // Track the ministryId
 
-  // Fetch the user's profile and role from the employee_profiles table
-  const fetchUserProfile = async () => {
-    const storedUserId = localStorage.getItem("employee_id");
-
-    if (!storedUserId) {
-      setError("User is not authenticated");
-      toast.error("User is not authenticated"); // Toast notification for error
-      return;
-    }
-
-    try {
-      const { data: profileData, error: profileError } = await supabase
-        .from("employee_profiles")
-        .select("employee_id, department_id, ministry_id, is_admin, is_admin_ministry, role")
-        .eq("employee_id", storedUserId)
-        .single();
-
-      if (profileError || !profileData) {
-        setError("User profile not found or error fetching profile");
-        toast.error("User profile not found or error fetching profile"); // Toast notification for error
-        return;
-      }
-
-      setUserId(profileData.employee_id);
-      setDepartmentId(profileData.department_id);
-      setMinistryId(profileData.ministry_id);
-
-      // Determine the user role
-      if (profileData.is_admin) {
-        setUserRole("department_admin");
-      } else if (profileData.is_admin_ministry) {
-        setUserRole("ministry_admin");
-      } else {
-        setUserRole("employee");
-      }
-
-      fetchNotifications(profileData); // Fetch notifications based on profile
-    } catch (error) {
-      console.error("Error fetching user profile:", error);
-      setError("Error fetching user profile");
-      toast.error("Error fetching user profile"); // Toast notification for error
-    }
-  };
-
   // Fetch notifications based on the user's role (admin, ministry admin, super admin)
-  const fetchNotifications = async (profileData) => {
+  const fetchNotifications = useCallback(async (profileData) => {
     try {
       const userRole = profileData.is_admin
         ? "department_admin"
@@ -101,7 +55,41 @@ const EmployeeNotificationCenter = () => {
       setError("Error fetching notifications");
       toast.error("Error fetching notifications"); // Toast notification for error
     }
-  };
+  }, [setNotifications]); // Added setNotifications as a dependency
+
+  // Fetch the user's profile and role from the employee_profiles table
+  const fetchUserProfile = useCallback(async () => {
+    const storedUserId = localStorage.getItem("employee_id");
+
+    if (!storedUserId) {
+      setError("User is not authenticated");
+      toast.error("User is not authenticated"); // Toast notification for error
+      return;
+    }
+
+    try {
+      const { data: profileData, error: profileError } = await supabase
+        .from("employee_profiles")
+        .select("employee_id, department_id, ministry_id, is_admin, is_admin_ministry, role")
+        .eq("employee_id", storedUserId)
+        .single();
+
+      if (profileError || !profileData) {
+        setError("User profile not found or error fetching profile");
+        toast.error("User profile not found or error fetching profile"); // Toast notification for error
+        return;
+      }
+
+      setDepartmentId(profileData.department_id);
+      setMinistryId(profileData.ministry_id);
+
+      fetchNotifications(profileData); // Fetch notifications based on profile
+    } catch (error) {
+      console.error("Error fetching user profile:", error);
+      setError("Error fetching user profile");
+      toast.error("Error fetching user profile"); // Toast notification for error
+    }
+  }, [fetchNotifications]); // Added fetchNotifications as a dependency
 
   // Create a reminder notification (to be channeled to the right admins)
   const createReminderNotification = async () => {
@@ -122,17 +110,15 @@ const EmployeeNotificationCenter = () => {
     try {
       const { error: insertError } = await supabase
         .from("general_notifications")
-        .insert([
-          {
-            employee_id: storedUserId,
-            message: newNotificationMessage,
-            type: "Reminder",
-            is_read: false,
-            created_at: new Date().toISOString(),
-            department_id: departmentId,
-            ministry_id: ministryId,
-          },
-        ]);
+        .insert([{
+          employee_id: storedUserId,
+          message: newNotificationMessage,
+          type: "Reminder",
+          is_read: false,
+          created_at: new Date().toISOString(),
+          department_id: departmentId,
+          ministry_id: ministryId,
+        }]);
 
       if (insertError) {
         console.error("Error creating notification:", insertError);
@@ -153,7 +139,7 @@ const EmployeeNotificationCenter = () => {
 
   useEffect(() => {
     fetchUserProfile(); // Fetch user profile and notifications on mount
-  }, []);
+  }, [fetchUserProfile]); // Added fetchUserProfile as dependency
 
   return (
     <div className="min-h-screen bg-white p-6">
@@ -168,9 +154,7 @@ const EmployeeNotificationCenter = () => {
           notifications.map((notification) => (
             <div
               key={notification.id}
-              className={`p-4 border rounded-lg ${
-                notification.is_read ? "bg-gray-100" : "bg-white"
-              }`}
+              className={`p-4 border rounded-lg ${notification.is_read ? "bg-gray-100" : "bg-white"}`}
             >
               <p>{notification.message}</p>
               <div className="text-sm text-gray-500">

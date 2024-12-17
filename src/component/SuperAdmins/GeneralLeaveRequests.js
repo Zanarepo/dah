@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { supabase } from "../../supabaseClient";
 import { FaEdit, FaTrash, FaEye, FaArrowLeft } from "react-icons/fa";
-
 import { useNavigate } from "react-router-dom";
 
 const LeaveRequest = () => {
@@ -29,13 +28,8 @@ const LeaveRequest = () => {
     }
   }, []);
 
-  useEffect(() => {
-    if (employeeId) {
-      fetchLeaveRecords();
-    }
-  }, [employeeId]);
-
-  const fetchLeaveRecords = async () => {
+  // Use useCallback to memoize fetchLeaveRecords so it doesn't change on every render
+  const fetchLeaveRecords = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from("employee_leave")
@@ -54,7 +48,13 @@ const LeaveRequest = () => {
       console.error(err);
       setError("Failed to fetch leave records.");
     }
-  };
+  }, [employeeId]);
+
+  useEffect(() => {
+    if (employeeId) {
+      fetchLeaveRecords();
+    }
+  }, [employeeId, fetchLeaveRecords]); // Now fetchLeaveRecords is included in the dependency array
 
   const handleOpenModal = (type, leave = null) => {
     setModalType(type);
@@ -132,13 +132,13 @@ const LeaveRequest = () => {
 
         if (error) throw error;
 
-        fetchLeaveRecords();
+        fetchLeaveRecords();  // Call fetchLeaveRecords after update
       } else {
         const { error } = await supabase.from("employee_leave").insert([payload]);
 
         if (error) throw error;
 
-        fetchLeaveRecords();
+        fetchLeaveRecords();  // Call fetchLeaveRecords after insert
       }
 
       handleCloseModal();
@@ -243,57 +243,69 @@ const LeaveRequest = () => {
                 <select
                   className="w-full border p-2 rounded"
                   value={leaveDetails.leaveType}
-                  onChange={(e) => setLeaveDetails({ ...leaveDetails, leaveType: e.target.value })}
+                  onChange={(e) =>
+                    setLeaveDetails({ ...leaveDetails, leaveType: e.target.value })
+                  }
                 >
                   <option value="">Select Leave Type</option>
-                  <option value="Vacation">Vacation</option>
+                  <option value="Annual Leave">Annual Leave</option>
                   <option value="Sick Leave">Sick Leave</option>
                   <option value="Emergency Leave">Emergency Leave</option>
-                  <option value="Study Leave">Study Leave</option>
-                  <option value="Maternity/Paternity Leave">Maternity/Paternity Leave</option>
-                  <option value="Other">Other</option>
                 </select>
+
                 <input
                   type="date"
                   className="w-full border p-2 rounded"
                   value={leaveDetails.startDate}
-                  onChange={(e) => setLeaveDetails({ ...leaveDetails, startDate: e.target.value })}
+                  onChange={(e) =>
+                    setLeaveDetails({ ...leaveDetails, startDate: e.target.value })
+                  }
                 />
+
                 <input
                   type="date"
                   className="w-full border p-2 rounded"
                   value={leaveDetails.endDate}
-                  onChange={(e) => setLeaveDetails({ ...leaveDetails, endDate: e.target.value })}
+                  onChange={(e) =>
+                    setLeaveDetails({ ...leaveDetails, endDate: e.target.value })
+                  }
                 />
+
                 <textarea
                   className="w-full border p-2 rounded"
-                  placeholder="Comment"
+                  placeholder="Comments"
                   value={leaveDetails.comment}
-                  onChange={(e) => setLeaveDetails({ ...leaveDetails, comment: e.target.value })}
-                ></textarea>
+                  onChange={(e) =>
+                    setLeaveDetails({ ...leaveDetails, comment: e.target.value })
+                  }
+                />
+              </div>
+            ) : (
+              <div>
+                <p><strong>Leave Type:</strong> {selectedLeave.leave_type}</p>
+                <p><strong>Start Date:</strong> {selectedLeave.start_date}</p>
+                <p><strong>End Date:</strong> {selectedLeave.end_date}</p>
+                <p><strong>Status:</strong> {selectedLeave.status}</p>
+                <p><strong>Comment:</strong> {selectedLeave.comment}</p>
+              </div>
+            )}
+
+            <div className="flex justify-end space-x-4 mt-4">
+              <button
+                className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600"
+                onClick={handleCloseModal}
+              >
+                Close
+              </button>
+              {modalType !== "view" && (
                 <button
-                  className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600"
+                  className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
                   onClick={handleSaveLeave}
                 >
                   Save
                 </button>
-              </div>
-            ) : (
-              <div>
-                <p><strong>Leave Type:</strong> {selectedLeave?.leave_type}</p>
-                <p><strong>Start Date:</strong> {selectedLeave?.start_date}</p>
-                <p><strong>End Date:</strong> {selectedLeave?.end_date}</p>
-                <p><strong>Status:</strong> {selectedLeave?.status}</p>
-                <p><strong>Comments:</strong> {selectedLeave?.comment || "No comments provided."}</p>
-              </div>
-            )}
-
-            <button
-              className="bg-gray-500 text-white py-2 px-4 rounded-lg mt-4 hover:bg-gray-600"
-              onClick={handleCloseModal}
-            >
-              Close
-            </button>
+              )}
+            </div>
           </div>
         </div>
       )}
