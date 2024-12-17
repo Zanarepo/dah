@@ -4,6 +4,7 @@
   "description": "",
   "main": "config-overrides.js",
   "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "eslint-config-prettier": "^9.1.0",
     "react-app-rewired": "^2.2.1",
     "react-scripts": "^5.0.0"
@@ -33,6 +34,7 @@
   "dependencies": {
     "@heroicons/react": "^2.2.0",
     "@supabase/supabase-js": "^2.47.8",
+    "bcryptjs": "^2.4.3",
     "buffer": "^6.0.3",
     "crypto-browserify": "^3.12.1",
     "file-saver": "^2.0.5",
@@ -42,6 +44,7 @@
     "react-router-dom": "^6.4.3",
     "react-toastify": "^11.0.0",
     "stream-browserify": "^3.0.0",
+    "vm-browserify": "^1.1.2",
     "web-vitals": "^4.2.4"
   }
 }

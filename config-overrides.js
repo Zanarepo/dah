@@ -8,7 +8,7 @@ module.exports = {
       stream: require.resolve('stream-browserify'),
       crypto: require.resolve('crypto-browserify'),
       buffer: require.resolve('buffer'),
-      // Add other modules as needed
+      vm: require.resolve('vm-browserify'), // Add the vm polyfill
     };
 
     // Provide Buffer globally in the browser
