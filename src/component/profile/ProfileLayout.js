@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "../../supabaseClient";
-import { NavLink, Route, Routes } from "react-router-dom";
+import { NavLink, Route, Routes } from "react-router-dom"; // Import Routes and Route
 import EmployeePersonalDetails from "./EmployeePersonalDetails";
 import EmployeeEmploymentDetails from "./EmployeeEmploymentDetails";
 import Leave from "./Leave";
@@ -8,8 +8,7 @@ import Notifications from "../admin/Notification";
 import EmployeeChatApp from "../Chat/EmployeeChatApp";
 import WelcomeUser from "./WelcomeUser";
 import Notify from "../GeneralNotifications/Notify";
-import QuickActionPopup from "../profile/QuickActionPopup"
-
+import QuickActionPopup from "../profile/QuickActionPopup";
 
 import {
   BellIcon,
@@ -60,7 +59,6 @@ const EmployeeDashboard = () => {
   if (!employeeData) {
     return <div>Error: Employee data not found.</div>;
   }
-  
 
   const menuItems = [
     { name: "Personal Details", icon: <UserIcon className="h-6 w-6" />, route: "/personal-details" },
@@ -98,7 +96,7 @@ const EmployeeDashboard = () => {
             <XMarkIcon className="h-6 w-6" />
           </button>
         </div>
-       
+
         <ul>
           {menuItems.map((item, index) => (
             <li key={index} className="hover:bg-blue-700">
@@ -115,7 +113,7 @@ const EmployeeDashboard = () => {
           ))}
         </ul>
       </div>
-     
+
       {/* Main Content */}
       <div
         className={`flex-1 p-4 transition-all duration-300 ${isOpen ? "ml-64" : "ml-0"} md:ml-0`}
@@ -130,29 +128,28 @@ const EmployeeDashboard = () => {
         {/* Routes */}
         <Routes>
           <Route
-            path="/personal-details"
+            path="personal-details"
             element={<EmployeePersonalDetails employeeData={employeeData} setEmployeeData={setEmployeeData} />}
           />
           <Route
-            path="/employment-details"
+            path="employment-details"
             element={<EmployeeEmploymentDetails employeeData={employeeData} setEmployeeData={setEmployeeData} />}
           />
-          <Route path="/leave" element={<Leave employeeData={employeeData} />} />
+          <Route path="leave" element={<Leave employeeData={employeeData} />} />
           <Route
-            path="/profile-notifications"
+            path="profile-notifications"
             element={<Notifications employee_id={employeeData.employee_id} />}
           />
           <Route
-            path="/chatting"
+            path="chatting"
             element={<EmployeeChatApp employee_id={employeeData.employee_id} />}
           />
         </Routes>
       </div>
-      <Notify/>
+      <Notify />
       {/* Notify Component with fixed padding issue */}
       <div style={{ position: "absolute", right: 0, top: 0, bottom: 0 }}>
-      <QuickActionPopup />
-      
+        <QuickActionPopup />
       </div>
     </div>
   );

@@ -61,7 +61,7 @@ const LoginForm = () => {
       if (user.is_super_admin) roles.push({ name: "Super Admin", route: "/superadmins" });
       if (user.admin_ministry) roles.push({ name: "Admin Ministry", route: "/adminministry" });
       if (user.is_admin) roles.push({ name: "Admin", route: "/admindashboard" });
-      roles.push({ name: "Employee", route: "/my-profile" });
+      roles.push({ name: "Employee", route: "/personal-details" });
 
       // Navigate based on user roles
       if (roles.length === 1) {

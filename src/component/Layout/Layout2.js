@@ -1,7 +1,7 @@
 // Layout.js
 import React from 'react';
 import Sidebar from '../Dashbaord/Sidebar';  // Assuming Sidebar is in the same directory
-import AdminLeaveNotification from "../Notifications/AdminLeaveNotification";
+
 
 const Layout = ({ children }) => {
   
