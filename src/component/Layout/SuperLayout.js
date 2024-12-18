@@ -23,7 +23,7 @@ const SuperAdmin = () => {
     { name: "Ministries", icon: <BuildingLibraryIcon className="h-6 w-6" />, route: "/activity" },
     { name: "Admins", icon: <UsersIcon className="h-6 w-6" />, route: "/superadmins" },
     { name: "Dashboards", icon: <ChartPieIcon className="h-6 w-6" />, route: "/g-dashboards" },
-    { name: "Settings", icon: <CogIcon className="h-6 w-6" />, route: "/super-settings" },
+    { name: "Settings", icon: <CogIcon className="h-6 w-6" />, route: "/login" },
     { name: "Hello", icon: <ChatBubbleLeftIcon className="h-6 w-6" />, route: "/chats" },
   
   ];
