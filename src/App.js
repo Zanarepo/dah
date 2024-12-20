@@ -98,6 +98,7 @@ import MinRoleAssign from "./component/MinistryDashboard/MinRoleAssign.js"
 
 
 
+
 import GeneralEmployeesSearch from "./component/SuperAdmins/GeneralEmployeesSearch.js"
 import GeneralVacation from "./component/SuperAdmins/GeneralVacation.js"
 import GeneralEmployeeTable from "./component/SuperAdmins/GeneralEmployeeTable.js"
@@ -199,9 +200,13 @@ import DeptLeaveHistory from "./component/AdminPanel/DeptLeaveHistory.js"
   import MinistryRoleDashboard from "./component/MinistryDashboard/MinistryRoleDashboard.js"
   import MinistryAdmin from "./component/MinistryDashboard/MinistryAdmin.js"
   import MarkNotice from "./component/GeneralNotifications/MarkNotice.js"
-
-
-
+  import TodoList from "./component/Productivity/TodoList.js";
+  import AdminTaskAssignment from "./component/Productivity/AdminTaskAssignment";
+  import EmployeeTaskManager from "./component/Productivity/EmployeeTaskManager"
+  //import TaskDashboard from "./component/Productivity/TaskDashboard"
+  import TaskTracking from "./component/Productivity/TaskTracking"
+ import  TaskDashboardTracker  from "./component/Productivity/TaskDashboardTracker"
+  
 
 
 
@@ -245,6 +250,8 @@ const App = () => {
           <Route path="login" element={<LoginForm />} />
           <Route path="register" element={<RegistrationForm />} />
           <Route path="role-selection" element={<RoleSelection />} />
+        
+
 
         </Route>
 
@@ -256,15 +263,27 @@ const App = () => {
           <Route path="/chatting" element={<EmployeeChatApp />} />
           <Route path="/empchatlist" element={<EmpChatList />} />
           <Route path="/leave" element={<Leave/>} />
+          <Route path="/todo" element={<TodoList/>} />
+          <Route path="/taskmanager" element={<EmployeeTaskManager/>} />
+          <Route path="/task-dashboard" element={< TaskDashboardTracker/>} />
+         
+         
+          
+          
 
           {/* -------------Section 1: Independent Route 2 Profile Layout-------------------------------*/}
         </Route>
 
-        SuperLeaveApproval
         {/* -------Section 1: Independent Route 2 Profile Layout-----------------*/}
         
         <Route path="/" element={<SuperLayout />}>
         {/* Nested routes under SuperLayout */}
+        <Route path="/supertask" element={<AdminTaskAssignment/>} />
+        <Route path="/todos" element={<EmployeeTaskManager/>} />
+        <Route path="/tasktracking" element={<TaskTracking/>} />
+        
+       
+
         <Route path="/g-departments" element={<GeneralDepartments />} />
         <Route path="superadmins" element={<SuperAdmin />} />
         <Route path="g-settings" element={<GeneralSettings />} />
@@ -312,12 +331,23 @@ const App = () => {
         <Route path="/addmanager-dashboard" element={<AddManagerDashboard />} />
         <Route path="/addministry-dashboard" element={< AddMinistryDashboard />} />
         <Route path="/adddept-dashboard" element={< AddDepartmentDashboard />} /> 
+        <Route path="/task" element={<TodoList/>} />
+     
+
+
+
+
 
           {/* -------------Section 1: Independent Route 2 Profile Layout-------------------------------*/}
         </Route>
-
+       
         {/* Section 2: Independent Route 2 */}
         <Route path="/" element={<MinistryLayout />}>
+        <Route path="/minitask" element={<AdminTaskAssignment/>} />
+        <Route path="/minitrack" element={<TaskTracking/>} />
+
+
+
         <Route path="/Back" element={<Backfunction />}></Route> 
         <Route path="/ministry-admins" element={< MinistryAdmin/>}></Route> 
         <Route path="/adminministry" element={<MinistryDashboard /> } 
@@ -365,8 +395,9 @@ const App = () => {
       
         {/* Section 3: Independent Route 3 */}
         <Route path="" element={<Layout />}>
-          
-        <Route path="/admin-notification" element={<AdminNotification />}></Route>
+        
+         <Route path="/admintrack" element={<TaskTracking/>} />
+          <Route path="/admin-notification" element={<AdminNotification />}></Route>
           <Route path="/departactvities" element={<DepartmentActivities/>}></Route>
           <Route path="/department-vacation" element={<DepartmentVacationTracker/>}></Route>
           <Route path="/admindashboard" element={<AllDepartmentDashboard/>}></Route>
@@ -379,7 +410,7 @@ const App = () => {
           <Route path="/deptleave-tracker/:departmentId" element={<DeptLeaveTracker />} />
           <Route path="/deptleave-approval/:departmentId" element={<DeptLeaveApproval />} />
           <Route path="/deptleave-history/:departmentId" element={<DeptLeaveHistory />} />
-          
+          <Route path="/admintask" element={<AdminTaskAssignment/>} />
           
 
         </Route>

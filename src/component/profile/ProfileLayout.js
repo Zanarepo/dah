@@ -9,6 +9,10 @@ import EmployeeChatApp from "../Chat/EmployeeChatApp";
 import WelcomeUser from "./WelcomeUser";
 import Notify from "../GeneralNotifications/Notify";
 import QuickActionPopup from "../profile/QuickActionPopup";
+//import TodoList from "../Productivity/TodoList";
+//import EmployeeTaskManager from "../Productivity/EmployeeTaskManager";
+import TaskDashboardTracker from "../Productivity/TaskDashboardTracker"; // TaskDashboardTracker import
+import { FaTasks } from "react-icons/fa"; // Tasks icon for TodoList
 
 import {
   BellIcon,
@@ -66,12 +70,14 @@ const EmployeeDashboard = () => {
     { name: "Leave", icon: <CalendarIcon className="h-6 w-6" />, route: "/leave" },
     { name: "Notifications", icon: <BellIcon className="h-6 w-6" />, route: "/profile-notifications" },
     { name: "BuzzMe", icon: <ChatBubbleLeftIcon className="h-6 w-6" />, route: "/chatting" },
+   
+    { name: "Task Dashboard", icon: <FaTasks className="h-6 w-6" />, route: "/task-dashboard" },
   ];
 
-  const toggleSidebar = () => setIsOpen(!isOpen); // Toggle sidebar visibility
+  const toggleSidebar = () => setIsOpen(!isOpen);
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex flex-col md:flex-row min-h-screen">
       {/* Mobile Toggle Button */}
       <button
         onClick={toggleSidebar}
@@ -83,12 +89,10 @@ const EmployeeDashboard = () => {
       {/* Sidebar */}
       <div
         ref={sidebarRef}
-        className={`fixed top-0 left-0 h-full bg-gray-800 text-white transition-transform md:translate-x-0 ${
-          isOpen ? "translate-x-0 z-50" : "-translate-x-full z-30"
-        } md:relative md:w-64 w-64 md:block`}
-        style={{
-          height: "100vh", // Ensures the sidebar takes up the entire height of the screen
-        }}
+        className={`fixed top-0 left-0 bg-gray-800 text-white transition-transform w-64 z-40 ${
+          isOpen ? "translate-x-0" : "-translate-x-full"
+        } md:translate-x-0`}
+        style={{ height: "100vh" }}
       >
         <div className="flex items-center justify-between p-4">
           <h4 className="text-xl font-bold">Employee Dashboard</h4>
@@ -104,10 +108,10 @@ const EmployeeDashboard = () => {
                 to={item.route}
                 className="flex items-center p-4 space-x-2"
                 activeClassName="bg-blue-600"
-                onClick={() => setIsOpen(false)} // Close sidebar on mobile after navigation
+                onClick={() => setIsOpen(false)}
               >
                 {item.icon}
-                <span className={`${isOpen ? "block" : "hidden"} md:block`}>{item.name}</span>
+                <span>{item.name}</span>
               </NavLink>
             </li>
           ))}
@@ -116,15 +120,12 @@ const EmployeeDashboard = () => {
 
       {/* Main Content */}
       <div
-        className={`flex-1 p-4 transition-all duration-300 ${isOpen ? "ml-64" : "ml-0"} md:ml-0`}
-        style={{
-          marginLeft: isOpen ? "256px" : "0px", // Ensure content starts right after the sidebar
-          height: "100vh", // Set the height of the main content to take full screen
-          overflowY: "auto", // Allow the main content to scroll
-        }}
+        className={`flex-1 p-4 transition-all duration-300 ${isOpen ? "ml-64" : "ml-0"} md:ml-64`}
+        style={{ overflowY: "auto" }}
       >
         {/* Welcome Message */}
         <WelcomeUser name={employeeData.first_name} />
+
         {/* Routes */}
         <Routes>
           <Route
@@ -144,8 +145,11 @@ const EmployeeDashboard = () => {
             path="chatting"
             element={<EmployeeChatApp employee_id={employeeData.employee_id} />}
           />
+         
+          <Route path="task-dashboard" element={<TaskDashboardTracker />} />
         </Routes>
       </div>
+
       <Notify />
       {/* Notify Component with fixed padding issue */}
       <div style={{ position: "absolute", right: 0, top: 0, bottom: 0 }}>

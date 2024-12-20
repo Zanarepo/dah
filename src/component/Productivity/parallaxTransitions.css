@@ -1,0 +1,19 @@
+.parallax-enter {
+    transform: translateX(100%) scale(0.9);
+    opacity: 0;
+  }
+  .parallax-enter-active {
+    transform: translateX(0%) scale(1);
+    opacity: 1;
+    transition: all 800ms cubic-bezier(0.6, 0.2, 0.1, 1);
+  }
+  .parallax-exit {
+    transform: translateX(0%) scale(1);
+    opacity: 1;
+  }
+  .parallax-exit-active {
+    transform: translateX(-100%) scale(0.9);
+    opacity: 0;
+    transition: all 800ms cubic-bezier(0.6, 0.2, 0.1, 1);
+  }
+  

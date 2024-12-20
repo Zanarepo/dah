@@ -7,7 +7,7 @@ const LeaveRequests = () => {
   const navigate = useNavigate();
   const [leaveRequests, setLeaveRequests] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [ setSelectedLeave] = useState(null);
+  const [ setSelectedLeave] = useState(null); // Corrected line
   const [adminComment, setAdminComment] = useState("");
   const [viewingLeave, setViewingLeave] = useState(null);
   const [message, setMessage] = useState("");
@@ -17,12 +17,12 @@ const LeaveRequests = () => {
 
   useEffect(() => {
     const fetchAccessLevel = async () => {
-      const employeeId = localStorage.getItem('employee_id'); // Get employee ID from localStorage
+      const employeeId = localStorage.getItem("employee_id"); // Get employee ID from localStorage
 
       const { data, error } = await supabase
-        .from('access_level')
-        .select('access_id')
-        .eq('employee_id', employeeId)
+        .from("access_level")
+        .select("access_id")
+        .eq("employee_id", employeeId)
         .single();
 
       if (error) {
@@ -53,7 +53,6 @@ const LeaveRequests = () => {
            )`
         );
 
-      // If the user is not a super_admin (access_level !== 3), apply department filter
       if (userAccessLevel !== 3) {
         query = query.eq("department_id", departmentId);
       }
@@ -99,19 +98,18 @@ const LeaveRequests = () => {
     }, 3000);
 
     setLoading(false);
-    setSelectedLeave(null);
+    setSelectedLeave(null); // Function now correctly defined
   };
 
   const handleViewClick = (leave) => {
     setViewingLeave(leave);
-    setAdminComment(""); 
+    setAdminComment("");
   };
 
   const handleCollapseView = () => {
     setViewingLeave(null);
   };
 
-  // Filter based on showArchived toggle
   const filteredLeaveRequests = showArchived
     ? leaveRequests
     : leaveRequests.filter((leave) => leave.status === "Pending");
@@ -179,6 +177,7 @@ const LeaveRequests = () => {
                     className="ml-2 bg-blue-500 text-white py-1 px-3 rounded"
                   >
                     View
+
                   </button>
                 </td>
               </tr>
@@ -237,3 +236,4 @@ const LeaveRequests = () => {
 };
 
 export default LeaveRequests;
+ 

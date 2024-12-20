@@ -133,37 +133,39 @@ const EmployeeNotificationCenter = () => {
   useEffect(() => {
     fetchNotifications();
   }, []);
-
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-gray-50 p-4 sm:p-6">
       <ToastContainer />
 
       {/* Header and Clear Notifications */}
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-xl font-bold">Your Notifications</h1>
-        <button
-          onClick={clearNotifications}
-          className="bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 transition"
-        >
-          <FaTrash className="inline-block mr-2" />
-          Clear Notifications
-        </button>
-      </div>
+<div className="flex flex-col sm:flex-row sm:justify-between items-center mb-6">
+  <h1 className="text-xl sm:text-2xl font-bold text-center sm:text-left mb-4 sm:mb-0">
+    Your Notifications
+  </h1>
+  <button
+    onClick={clearNotifications}
+    className="bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 transition w-full sm:w-auto"
+  >
+    <FaTrash className="inline-block mr-2" />
+    Notifications
+  </button>
+</div>
 
-      {error && <div className="text-red-500">{error}</div>}
+
+      {error && <div className="text-red-500 text-sm">{error}</div>}
 
       {/* New Notification Input */}
-      <div className="flex items-center space-x-4 mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-4 mb-6">
         <input
           type="text"
           value={newNotificationMessage}
           onChange={(e) => setNewNotificationMessage(e.target.value)}
           placeholder="Enter notification message"
-          className="flex-grow p-2 border rounded-md"
+          className="flex-grow p-2 border rounded-md text-sm sm:text-base"
         />
         <button
           onClick={createNotification}
-          className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition"
+          className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition w-full sm:w-auto"
         >
           Add Notification
         </button>
@@ -180,17 +182,17 @@ const EmployeeNotificationCenter = () => {
               <div
                 key={notification.id}
                 className={`p-4 border rounded-lg ${
-                  notification.is_read ? "bg-gray-100" : "bg-blue-100"
+                  notification.is_read ? 'bg-gray-100' : 'bg-blue-100'
                 }`}
               >
-                <p className="font-medium">{notification.message}</p>
-                <div className="text-sm text-gray-500">
+                <p className="font-medium text-sm sm:text-base">{notification.message}</p>
+                <div className="text-xs sm:text-sm text-gray-500">
                   {new Date(notification.created_at).toLocaleString()}
                 </div>
                 {!notification.is_read && (
                   <button
                     onClick={() => markAsRead(notification.id)}
-                    className="mt-2 text-blue-500 hover:underline"
+                    className="mt-2 text-blue-500 hover:underline text-xs sm:text-sm"
                   >
                     Mark as read
                   </button>
@@ -202,5 +204,4 @@ const EmployeeNotificationCenter = () => {
     </div>
   );
 };
-
 export default EmployeeNotificationCenter;

@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import AdminLeaveNotification from "../Notifications/AdminLeaveNotification";
+
 import {
  
   BuildingLibraryIcon,
@@ -25,6 +26,11 @@ const SuperAdmin = () => {
     { name: "Dashboards", icon: <ChartPieIcon className="h-6 w-6" />, route: "/g-dashboards" },
     { name: "Settings", icon: <CogIcon className="h-6 w-6" />, route: "/login" },
     { name: "Hello", icon: <ChatBubbleLeftIcon className="h-6 w-6" />, route: "/chats" },
+    { name: "Hello", icon: <ChatBubbleLeftIcon className="h-6 w-6" />, route: "/task" },
+    { name: "Tasker", icon: <ChatBubbleLeftIcon className="h-6 w-6" />, route: "/supertask" },
+    { name: "Track", icon: <ChatBubbleLeftIcon className="h-6 w-6" />, route: "/tasktracking" },
+    
+    
   
   ];
 

@@ -1,12 +1,33 @@
 import React from "react";
+import HeaderSection from "./HeaderSection";
+import FeaturesSection from "./FeaturesSection";
+import DashboardPreview from "./DashboardPreview";
+import CallToAction from "./CallToAction";
+import WhyDatafy from "./WhyDatafy";  // Import the WhyDatafy component
+import QuickActionPopup from "../profile/QuickActionPopup";
 
-const Home = () => {
+
+const HomePage = () => {
   return (
-    <div className="text-center p-8">
-      <h1 className="text-4xl font-bold text-gray-700">Welcome to Our Platform</h1>
-      <p className="text-lg text-gray-500 mt-4">We are glad to have you here. Explore our platform!</p>
+    <div className="homepage-container">
+      {/* Header Section */}
+      <HeaderSection />
+      <QuickActionPopup/>
+      {/* Why Datafy Section */}
+      <WhyDatafy />  {/* Insert WhyDatafy here */}
+
+      {/* Features Section */}
+      <FeaturesSection />
+
+      {/* Dashboard Preview */}
+      <DashboardPreview />
+
+      {/* Call to Action */}
+      <CallToAction />
+      
     </div>
+
   );
 };
 
-export default Home;
+export default HomePage;

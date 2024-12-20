@@ -23,6 +23,8 @@ const Admin = () => {
     { name: "Dashboards", icon: <ChartPieIcon className="h-6 w-6" />, route: "/admin-dashboard" },
     { name: "Settings", icon: <CogIcon className="h-6 w-6" />, route: "/admin-settings" },
     { name: "BuzzMe", icon: <ChatBubbleLeftIcon className="h-6 w-6" />, route: "/hello" },
+    { name: "Tasker", icon: <ChatBubbleLeftIcon className="h-6 w-6" />, route: "/admintask" },
+    { name: "Tasker", icon: <ChatBubbleLeftIcon className="h-6 w-6" />, route: "/admintrack" },
   ];
 
   const toggleSidebar = () => setIsOpen(!isOpen); // Toggle sidebar visibility

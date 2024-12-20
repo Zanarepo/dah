@@ -1,18 +1,37 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaCalendarAlt } from "react-icons/fa"; // Icons
+import { FaCalendarAlt } from "react-icons/fa"; // Calendar Icon
 import { MdAdd } from "react-icons/md"; // Plus icon for the floating action button
-import { HiChatAlt } from "react-icons/hi"; // Chat icon from react-icons/hi
-import { MdAddAlert } from "react-icons/md";; // Mail icon for a different option, like notifications
+import { HiChatAlt } from "react-icons/hi"; // Chat icon
+import { MdAddAlert } from "react-icons/md"; // Mail icon for notifications
+import { FaTasks } from "react-icons/fa"; // Tasks icon for TodoList
 
 const QuickActionPopup = () => {
   const [isOpen, setIsOpen] = useState(false); // State for popup visibility
   const navigate = useNavigate();
+  const popupRef = useRef(null); // Ref to the popup div
 
   // Toggle the popup
   const togglePopup = () => {
     setIsOpen((prevState) => !prevState);
   };
+
+  // Close the modal if clicked outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (popupRef.current && !popupRef.current.contains(event.target)) {
+        setIsOpen(false); // Close popup when click is outside
+      }
+    };
+
+    // Adding the event listener on mount
+    document.addEventListener("mousedown", handleClickOutside);
+
+    // Cleanup the event listener on unmount
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <div>
@@ -26,7 +45,10 @@ const QuickActionPopup = () => {
 
       {/* Popup Options */}
       {isOpen && (
-        <div className="fixed bottom-20 right-6 bg-white p-4 shadow-md rounded-lg w-48">
+        <div
+          ref={popupRef}
+          className="fixed bottom-20 right-6 bg-white p-4 shadow-md rounded-lg w-48"
+        >
           <div className="flex flex-col items-start space-y-4">
             {/* Employee Chat Option */}
             <button
@@ -46,13 +68,22 @@ const QuickActionPopup = () => {
               <span className="text-sm font-medium">Leave Request</span>
             </button>
 
-            {/* Another Example: Mail or Notifications Option */}
+            {/* Notifications Option */}
             <button
               onClick={() => navigate("/profile-notifications")}
               className="flex items-center space-x-3 w-full text-gray-700 hover:text-blue-600"
             >
               <MdAddAlert className="text-blue-600 text-xl" /> {/* Mail Icon */}
               <span className="text-sm font-medium">Notifications</span>
+            </button>
+
+            {/* Task Management Option */}
+            <button
+              onClick={() => navigate("/task-dashboard")}
+              className="flex items-center space-x-3 w-full text-gray-700 hover:text-blue-600"
+            >
+              <FaTasks className="text-blue-600 text-xl" /> {/* Tasks Icon */}
+              <span className="text-sm font-medium">Task Management</span>
             </button>
           </div>
         </div>

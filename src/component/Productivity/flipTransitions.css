@@ -1,0 +1,19 @@
+.flip-enter {
+    transform: rotateX(-90deg);
+    opacity: 0;
+  }
+  .flip-enter-active {
+    transform: rotateX(0deg);
+    opacity: 1;
+    transition: all 500ms ease-in-out;
+  }
+  .flip-exit {
+    transform: rotateX(0deg);
+    opacity: 1;
+  }
+  .flip-exit-active {
+    transform: rotateX(90deg);
+    opacity: 0;
+    transition: all 500ms ease-in-out;
+  }
+  

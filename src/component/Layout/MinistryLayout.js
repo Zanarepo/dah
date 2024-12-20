@@ -25,6 +25,8 @@ const SuperAdmin = () => {
     { name: "Dashboards", icon: <ChartPieIcon className="h-6 w-6" />, route: "/g-dashboards" },
     { name: "Settings", icon: <CogIcon className="h-6 w-6" />, route: "/super-settings" },
     { name: "BuzzMe", icon: <ChatBubbleLeftIcon className="h-6 w-6" />, route: "/buzz" },
+    { name: "Tasker", icon: <ChatBubbleLeftIcon className="h-6 w-6" />, route: "/minitask" },
+    { name: "Tasker", icon: <ChatBubbleLeftIcon className="h-6 w-6" />, route: "/minitrack" },
   ];
 
   const toggleSidebar = () => setIsOpen(!isOpen); // Toggle sidebar visibility
