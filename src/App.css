@@ -36,3 +36,27 @@
     transform: rotate(360deg);
   }
 }
+/* App.css */
+
+.transition-wrapper {
+  /* Optional: add padding or margins to adjust the content */
+}
+
+/* Transition styles */
+.fade-enter {
+  opacity: 0;
+}
+
+.fade-enter-active {
+  opacity: 1;
+  transition: opacity 300ms ease-in;
+}
+
+.fade-exit {
+  opacity: 1;
+}
+
+.fade-exit-active {
+  opacity: 0;
+  transition: opacity 300ms ease-in;
+}

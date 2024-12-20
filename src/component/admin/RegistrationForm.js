@@ -132,7 +132,7 @@ const EmployeeRegistrationForm = () => {
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <label htmlFor="employee_id" className="block text-sm font-medium text-gray-700">
-            Employee ID (Optional)
+            Employee ID 
           </label>
           <input
             type="text"
@@ -141,7 +141,7 @@ const EmployeeRegistrationForm = () => {
             value={formData.employee_id}
             onChange={handleChange}
             className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-            placeholder="Auto-generated if left blank"
+            placeholder="Input Your Unique ID Here"
           />
         </div>
 
