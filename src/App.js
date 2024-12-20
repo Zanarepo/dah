@@ -206,7 +206,7 @@ import DeptLeaveHistory from "./component/AdminPanel/DeptLeaveHistory.js"
   //import TaskDashboard from "./component/Productivity/TaskDashboard"
   import TaskTracking from "./component/Productivity/TaskTracking"
  import  TaskDashboardTracker  from "./component/Productivity/TaskDashboardTracker"
-  
+  import Notify from "./component/GeneralNotifications/Notify"
 
 
 
@@ -266,6 +266,8 @@ const App = () => {
           <Route path="/todo" element={<TodoList/>} />
           <Route path="/taskmanager" element={<EmployeeTaskManager/>} />
           <Route path="/task-dashboard" element={< TaskDashboardTracker/>} />
+          <Route path="/notify" element={< Notify/>} />
+          
          
          
           

@@ -20,7 +20,6 @@ const LeaveRequest = () => {
   const [employeeId, setEmployeeId] = useState(null);
   const navigate = useNavigate();
 
-  // UseEffect to get employee ID from local storage when component mounts
   useEffect(() => {
     const storedEmployeeId = localStorage.getItem("employee_id");
     if (storedEmployeeId) {
@@ -28,9 +27,8 @@ const LeaveRequest = () => {
     } else {
       toast.error("Employee ID is missing. Please log in again.");
     }
-  }, []); // Empty dependency array ensures this runs only once on mount
+  }, []);
 
-  // UseEffect for fetching leave records when employeeId is set
   const fetchLeaveRecords = useCallback(async () => {
     if (!employeeId) return;
 
@@ -236,8 +234,8 @@ const LeaveRequest = () => {
 
       {/* Modal */}
       {isModalOpen && (
-        <div className="modal fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg">
+        <div className="modal fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg overflow-y-auto h-full md:h-auto">
             <h3 className="text-xl font-semibold mb-4">
               {modalType === "add" ? "Request Leave" : modalType === "edit" ? "Edit Leave" : "View Leave"}
             </h3>
@@ -246,8 +244,8 @@ const LeaveRequest = () => {
               <div className="space-y-4">
                 <select
                   className="w-full border p-2 rounded"
-                    value={leaveDetails.leaveType}
-                    onChange={(e) => setLeaveDetails({ ...leaveDetails, leaveType: e.target.value })}
+                  value={leaveDetails.leaveType}
+                  onChange={(e) => setLeaveDetails({ ...leaveDetails, leaveType: e.target.value })}
                 >
                   <option value="">Select Leave Type</option>
                   <option value="Vacation">Vacation</option>
@@ -259,29 +257,23 @@ const LeaveRequest = () => {
                 </select>
                   <input
                     type="date"
-                  className="w-full border p-2 rounded"
+                    className="w-full border p-2 rounded"
                     value={leaveDetails.startDate}
                     onChange={(e) => setLeaveDetails({ ...leaveDetails, startDate: e.target.value })}
                   />
                   <input
                     type="date"
-                  className="w-full border p-2 rounded"
+                    className="w-full border p-2 rounded"
                     value={leaveDetails.endDate}
                     onChange={(e) => setLeaveDetails({ ...leaveDetails, endDate: e.target.value })}
                   />
-                  <textarea
+                <textarea
                   className="w-full border p-2 rounded"
                   rows="4"
                   placeholder="Leave Comments (Optional)"
-                    value={leaveDetails.comment}
-                    onChange={(e) => setLeaveDetails({ ...leaveDetails, comment: e.target.value })}
-                  />
-                <button
-                  className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600"
-                  onClick={handleSaveLeave}
-                >
-                  Save Leave Request
-                </button>
+                  value={leaveDetails.comment}
+                  onChange={(e) => setLeaveDetails({ ...leaveDetails, comment: e.target.value })}
+                />
               </div>
             ) : (
               <div className="space-y-4">
@@ -300,6 +292,7 @@ const LeaveRequest = () => {
               >
                 Close
               </button>
+
               {modalType !== "view" && (
                 <button
                   className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600"

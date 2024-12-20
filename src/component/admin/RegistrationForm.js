@@ -18,7 +18,15 @@ const EmployeeRegistrationForm = () => {
 
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState({
+    employee_id: "",
+    first_name: "",
+    last_name: "",
+    email: "",
+    phone_number: "",
+    employment_date: "",
+    password: "",
+  });
 
   const handleChange = (e) => {
     setFormData({
@@ -31,39 +39,36 @@ const EmployeeRegistrationForm = () => {
     setPasswordVisible(!passwordVisible);
   };
 
+  const validateForm = () => {
+    let validationErrors = {};
+    
+    if (!formData.first_name) validationErrors.first_name = "First name is required.";
+    if (!formData.last_name) validationErrors.last_name = "Last name is required.";
+    if (!formData.email) validationErrors.email = "Email is required.";
+    if (!formData.phone_number) validationErrors.phone_number = "Phone number is required.";
+    if (!formData.employment_date) validationErrors.employment_date = "Employment date is required.";
+    if (!formData.password) validationErrors.password = "Password is required.";
+
+    setError(validationErrors);
+
+    return Object.keys(validationErrors).length === 0;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const {
-      employee_id,
-      first_name,
-      last_name,
-      email,
-      phone_number,
-      employment_date,
-      password,
-    } = formData;
+    // Validate fields before submitting
+    if (!validateForm()) return;
 
-    if (
-      !first_name ||
-      !last_name ||
-      !email ||
-      !phone_number ||
-      !employment_date ||
-      !password
-    ) {
-      toast.error("All fields are required. Please fill in all fields.");
-      return;
-    }
+    const { employee_id, first_name, last_name, email, phone_number, employment_date, password } = formData;
+    const generatedEmployeeId = employee_id || uuidv4();
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     setLoading(true);
-    setError(null);
+    setError({});  // Clear previous errors
 
     try {
-      const generatedEmployeeId = employee_id || uuidv4();
-      const hashedPassword = await bcrypt.hash(password, 10);
-
-      // Check if email or Employee ID already exists
+      // Check if email already exists
       const { data: existingEmail } = await supabase
         .from("employee_profiles")
         .select("email")
@@ -75,6 +80,7 @@ const EmployeeRegistrationForm = () => {
         return;
       }
 
+      // Check if Employee ID already exists
       const { data: existingEmployeeId } = await supabase
         .from("employee_profiles")
         .select("employee_id")
@@ -86,7 +92,7 @@ const EmployeeRegistrationForm = () => {
         return;
       }
 
-      // Insert new employee
+      // Insert new employee record
       const { error: regError } = await supabase.from("employee_profiles").insert([
         {
           employee_id: generatedEmployeeId,
@@ -126,13 +132,23 @@ const EmployeeRegistrationForm = () => {
   return (
     <div className="max-w-lg mx-auto p-6 bg-white rounded shadow-md md:my-10">
       <h2 className="text-2xl font-semibold mb-4 text-center">Employee Registration</h2>
-      
-      {error && <div className="text-red-600 mb-4">{error}</div>}
+
+      {/* Display error messages */}
+      {Object.values(error).length > 0 && (
+        <div className="text-red-600 mb-4">
+          <ul>
+            {Object.entries(error).map(([key, errMsg]) => (
+              <li key={key} className="text-sm">{errMsg}</li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit}>
+        {/* Employee ID */}
         <div className="mb-4">
           <label htmlFor="employee_id" className="block text-sm font-medium text-gray-700">
-            Employee ID 
+            Employee ID
           </label>
           <input
             type="text"
@@ -143,8 +159,10 @@ const EmployeeRegistrationForm = () => {
             className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
             placeholder="Input Your Unique ID Here"
           />
+          {error.employee_id && <p className="text-red-500 text-sm">{error.employee_id}</p>}
         </div>
 
+        {/* First Name */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
           <div>
             <label htmlFor="first_name" className="block text-sm font-medium text-gray-700">
@@ -157,10 +175,11 @@ const EmployeeRegistrationForm = () => {
               value={formData.first_name}
               onChange={handleChange}
               className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-              required
             />
+            {error.first_name && <p className="text-red-500 text-sm">{error.first_name}</p>}
           </div>
 
+          {/* Last Name */}
           <div>
             <label htmlFor="last_name" className="block text-sm font-medium text-gray-700">
               Last Name
@@ -172,11 +191,12 @@ const EmployeeRegistrationForm = () => {
               value={formData.last_name}
               onChange={handleChange}
               className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-              required
             />
+            {error.last_name && <p className="text-red-500 text-sm">{error.last_name}</p>}
           </div>
         </div>
 
+        {/* Email */}
         <div className="mb-4">
           <label htmlFor="email" className="block text-sm font-medium text-gray-700">
             Email
@@ -188,10 +208,11 @@ const EmployeeRegistrationForm = () => {
             value={formData.email}
             onChange={handleChange}
             className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-            required
           />
+          {error.email && <p className="text-red-500 text-sm">{error.email}</p>}
         </div>
 
+        {/* Phone Number */}
         <div className="mb-4">
           <label htmlFor="phone_number" className="block text-sm font-medium text-gray-700">
             Phone Number
@@ -203,10 +224,11 @@ const EmployeeRegistrationForm = () => {
             value={formData.phone_number}
             onChange={handleChange}
             className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-            required
           />
+          {error.phone_number && <p className="text-red-500 text-sm">{error.phone_number}</p>}
         </div>
 
+        {/* Employment Date */}
         <div className="mb-4">
           <label htmlFor="employment_date" className="block text-sm font-medium text-gray-700">
             Employment Date
@@ -218,10 +240,11 @@ const EmployeeRegistrationForm = () => {
             value={formData.employment_date}
             onChange={handleChange}
             className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-            required
           />
+          {error.employment_date && <p className="text-red-500 text-sm">{error.employment_date}</p>}
         </div>
 
+        {/* Password */}
         <div className="mb-4">
           <label htmlFor="password" className="block text-sm font-medium text-gray-700">
             Password
@@ -234,29 +257,31 @@ const EmployeeRegistrationForm = () => {
               value={formData.password}
               onChange={handleChange}
               className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-              required
             />
             <button
               type="button"
               onClick={togglePasswordVisibility}
-              className="absolute right-2 top-2 text-gray-500"
+              className="absolute top-1/2 right-2 transform -translate-y-1/2"
             >
               {passwordVisible ? "Hide" : "Show"}
             </button>
           </div>
+          {error.password && <p className="text-red-500 text-sm">{error.password}</p>}
         </div>
 
-        
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
-        >
-          {loading ? "Registering..." : "Register"}
-        </button>
+        {/* Submit Button */}
+        <div className="flex justify-center">
+          <button
+            type="submit"
+            disabled={loading}
+            className="px-6 py-2 bg-blue-500 text-white rounded-md"
+          >
+            {loading ? "Registering..." : "Register Employee"}
+          </button>
+        </div>
       </form>
 
-      <ToastContainer position="top-right" autoClose={3000} />
+      <ToastContainer />
     </div>
   );
 };

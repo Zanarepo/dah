@@ -7,7 +7,6 @@ import About from "./About";
 import RegistrationForm from "../admin/RegistrationForm";
 import LoginForm from "../auth/LoginForm";
 import RoleSelection from "../auth/RoleSelection";
-import Notifications from "../admin/Notification";
 
 const HomePageLayout = () => {
   return (
@@ -23,7 +22,7 @@ const HomePageLayout = () => {
           <Route path="/login" element={<LoginForm />} />
           <Route path="/register" element={<RegistrationForm />} />
           <Route path="/role-selection" element={<RoleSelection />} />
-          <Route path="/notifications" element={<Notifications />} />
+       
         </Routes>
       </div>
 

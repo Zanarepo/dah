@@ -6,6 +6,9 @@ import "react-toastify/dist/ReactToastify.css";
 const EmployeePersonalDetails = ({ employeeData, setEmployeeData }) => {
   const [profilePicture, setProfilePicture] = useState(employeeData?.profile_picture || null);
   const [isEditable, setIsEditable] = useState(false);
+  const [isUploading, setIsUploading] = useState(false); // Track upload state
+  const [temporaryImage, setTemporaryImage] = useState(null); // For image preview
+ // For image preview
 
   // Load employee data from localStorage on initial render
   useEffect(() => {
@@ -32,12 +35,18 @@ const EmployeePersonalDetails = ({ employeeData, setEmployeeData }) => {
     }));
   };
 
-  // Handle profile picture upload
+
+
+  // Handle profile picture upload with preview
   const handleProfilePictureChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
+      setIsUploading(true); // Start uploading process
+      setTemporaryImage(URL.createObjectURL(file)); // Show preview of the image immediately
+
       try {
         const fileName = `${Date.now()}-${file.name}`;
+        // Upload the file to Supabase storage
         const { error: uploadError } = await supabase.storage
           .from("Images")
           .upload(fileName, file);
@@ -52,6 +61,7 @@ const EmployeePersonalDetails = ({ employeeData, setEmployeeData }) => {
 
         const publicURL = publicURLData.publicUrl;
 
+        // Update the profile picture URL in the employee profile
         const { error: updateError } = await supabase
           .from("employee_profiles")
           .update({ profile_picture: publicURL })
@@ -61,9 +71,11 @@ const EmployeePersonalDetails = ({ employeeData, setEmployeeData }) => {
 
         setProfilePicture(publicURL);
         setEmployeeData((prev) => ({ ...prev, profile_picture: publicURL }));
-        toast.success("Profile picture updated successfully."); // Success Pop-up
+        toast.success("Profile picture updated successfully.");
       } catch (error) {
-        toast.error(error.message); // Error Pop-up
+        toast.error(error.message);
+      } finally {
+        setIsUploading(false); // Stop uploading process
       }
     }
   };
@@ -72,7 +84,7 @@ const EmployeePersonalDetails = ({ employeeData, setEmployeeData }) => {
   const handleSaveChanges = async () => {
     try {
       if (!employeeData.first_name || !employeeData.last_name) {
-        toast.error("First Name and Last Name are required!"); // Error Pop-up
+        toast.error("First Name and Last Name are required!");
         return;
       }
 
@@ -96,9 +108,9 @@ const EmployeePersonalDetails = ({ employeeData, setEmployeeData }) => {
 
       if (error) throw new Error("Failed to update profile.");
 
-      toast.success("Profile updated successfully."); // Success Pop-up
+      toast.success("Profile updated successfully.");
     } catch (error) {
-      toast.error(error.message); // Error Pop-up
+      toast.error(error.message);
     }
   };
 
@@ -116,15 +128,29 @@ const EmployeePersonalDetails = ({ employeeData, setEmployeeData }) => {
             {employeeData.first_name} {employeeData.last_name}
           </h2>
         </div>
-
+  
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {/* Profile Picture Card */}
           <div className="bg-gradient-to-tl from-green-400 via-teal-500 to-blue-500 p-6 rounded-xl shadow-2xl hover:scale-105 transform transition-all duration-300">
             <div className="text-center">
               <h3 className="text-2xl text-white font-semibold mb-4">Profile Picture</h3>
               <div className="w-24 h-24 rounded-full overflow-hidden mx-auto mb-4">
-                {profilePicture ? (
-                  <img src={profilePicture} alt="Profile" className="w-full h-full object-cover" />
+                {isUploading ? (
+                  <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-400">
+                    Uploading...
+                  </div>
+                ) : temporaryImage ? (
+                  <img
+                    src={temporaryImage}
+                    alt="Temporary Preview"
+                    className="w-full h-full object-cover"
+                  />
+                ) : profilePicture ? (
+                  <img
+                    src={profilePicture}
+                    alt="Profile"
+                    className="w-full h-full object-cover"
+                  />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-400">
                     No Image
@@ -140,7 +166,7 @@ const EmployeePersonalDetails = ({ employeeData, setEmployeeData }) => {
               )}
             </div>
           </div>
-
+  
           {/* Name, Phone, Email, and Other Details */}
           <div className="bg-white p-6 rounded-xl shadow-lg transition-all transform hover:scale-105">
             <label className="text-lg font-semibold text-gray-800">Full Name</label>
@@ -163,7 +189,7 @@ const EmployeePersonalDetails = ({ employeeData, setEmployeeData }) => {
               placeholder="Last Name"
             />
           </div>
-
+          
           {/* Birthday and Position Card */}
           <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
             <div className="mb-4">
@@ -205,7 +231,7 @@ const EmployeePersonalDetails = ({ employeeData, setEmployeeData }) => {
               className="mt-2 p-3 w-full border rounded-lg"
               placeholder="Phone Number"
             />
-            <label className="text-lg font-semibold text-gray-800 mt-4">Email</label>
+            <label className="text-lg font-semibold text-gray-800 mt-4 block">Email</label>
             <input
               type="email"
               name="email"
@@ -222,13 +248,14 @@ const EmployeePersonalDetails = ({ employeeData, setEmployeeData }) => {
         <div className="mt-6 text-center">
           <button
             onClick={toggleEditMode}
-            className="bg-blue-600 text-white py-2 px-4 rounded-lg shadow-lg hover:bg-blue-700 transition-all duration-300"
+            className={`px-6 py-3 rounded-lg text-white ${
+              isEditable ? "bg-green-500 hover:bg-green-700" : "bg-indigo-500 hover:bg-indigo-700"
+            } transition-all duration-200`}
           >
             {isEditable ? "Save Changes" : "Edit Details"}
           </button>
         </div>
       </div>
-      {/* Toast Container */}
       <ToastContainer />
     </div>
   );
