@@ -1,5 +1,5 @@
 import React from "react";
-import { FaCalendarAlt } from "react-icons/fa"; // Importing the calendar icon
+import { FaCalendarAlt, FaTasks } from "react-icons/fa"; // Importing the task icon
 
 const features = [
   {
@@ -37,6 +37,11 @@ const features = [
     description: "A common platform for easy and fast information delivery across all departments and ministries.",
     icon: "📢",
   },
+  {
+    title: "Task Management", // New task management feature
+    description: "Create and manage both personal and assigned tasks for improved productivity and tracking.",
+    icon: <FaTasks className="text-4xl text-blue-600" />, // Task management icon
+  },
 ];
 
 const FeaturesSection = () => {
@@ -51,7 +56,7 @@ const FeaturesSection = () => {
             key={index}
             className="feature-card bg-white shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all p-6 rounded-lg text-center duration-300 ease-in-out"
           >
-            <div className="flex justify-center items-center text-4xl mb-4"> 
+            <div className="flex justify-center items-center text-4xl mb-4">
               {feature.icon}
             </div> {/* Ensures icons are centered */}
             <h3 className="text-xl font-semibold text-gray-800 mb-2">
