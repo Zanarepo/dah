@@ -2,12 +2,27 @@ import React, { useEffect, useState } from "react";
 
 const WelcomeUser = ({ name }) => {
   const [greeting, setGreeting] = useState("");
-  const [showWelcome, setShowWelcome] = useState(true); // State to control visibility
+  const [showWelcome, setShowWelcome] = useState(false); // State to control visibility
 
   useEffect(() => {
+    // Check if the user has seen the welcome message before
+    const hasSeenWelcome = localStorage.getItem("hasSeenWelcome");
+
+    // If the user hasn't seen the welcome message, show it
+    if (!hasSeenWelcome) {
+      setShowWelcome(true);
+
+      // Mark the user as having seen the welcome message
+      localStorage.setItem("hasSeenWelcome", "true");
+
+      // Hide the welcome message after 5 seconds
+      setTimeout(() => {
+        setShowWelcome(false);
+      }, 5000); // 5 seconds timeout
+    }
+
     // Determine the current time and set the greeting
     const currentHour = new Date().getHours();
-
     if (currentHour < 12) {
       setGreeting("Good Morning");
     } else if (currentHour >= 12 && currentHour < 18) {
@@ -15,7 +30,7 @@ const WelcomeUser = ({ name }) => {
     } else {
       setGreeting("Good Evening");
     }
-  }, []);
+  }, []); // Empty dependency array to run only once on mount
 
   const handleContinue = () => {
     setShowWelcome(false); // Hide the welcome component when Continue is clicked

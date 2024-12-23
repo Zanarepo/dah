@@ -4,8 +4,10 @@ import bcrypt from "bcryptjs";
 import { supabase } from "../../supabaseClient";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 const EmployeeRegistrationForm = () => {
+  const navigate = useNavigate(); // Initialize navigate
   const [formData, setFormData] = useState({
     employee_id: "",
     first_name: "",
@@ -41,7 +43,6 @@ const EmployeeRegistrationForm = () => {
 
   const validateForm = () => {
     let validationErrors = {};
-    
     if (!formData.first_name) validationErrors.first_name = "First name is required.";
     if (!formData.last_name) validationErrors.last_name = "Last name is required.";
     if (!formData.email) validationErrors.email = "Email is required.";
@@ -50,14 +51,12 @@ const EmployeeRegistrationForm = () => {
     if (!formData.password) validationErrors.password = "Password is required.";
 
     setError(validationErrors);
-
     return Object.keys(validationErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validate fields before submitting
     if (!validateForm()) return;
 
     const { employee_id, first_name, last_name, email, phone_number, employment_date, password } = formData;
@@ -65,14 +64,10 @@ const EmployeeRegistrationForm = () => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     setLoading(true);
-    setError({});  // Clear previous errors
+    setError({});
 
     try {
-      // Check if email already exists
-      const { data: existingEmail } = await supabase
-        .from("employee_profiles")
-        .select("email")
-        .eq("email", email);
+      const { data: existingEmail } = await supabase.from("employee_profiles").select("email").eq("email", email);
 
       if (existingEmail && existingEmail.length > 0) {
         toast.error("Email already exists. Please use a different email.");
@@ -80,11 +75,7 @@ const EmployeeRegistrationForm = () => {
         return;
       }
 
-      // Check if Employee ID already exists
-      const { data: existingEmployeeId } = await supabase
-        .from("employee_profiles")
-        .select("employee_id")
-        .eq("employee_id", generatedEmployeeId);
+      const { data: existingEmployeeId } = await supabase.from("employee_profiles").select("employee_id").eq("employee_id", generatedEmployeeId);
 
       if (existingEmployeeId && existingEmployeeId.length > 0) {
         toast.error("Employee ID already exists. Please use a unique ID.");
@@ -92,7 +83,6 @@ const EmployeeRegistrationForm = () => {
         return;
       }
 
-      // Insert new employee record
       const { error: regError } = await supabase.from("employee_profiles").insert([
         {
           employee_id: generatedEmployeeId,
@@ -122,7 +112,12 @@ const EmployeeRegistrationForm = () => {
       });
 
       setLoading(false);
-      toast.success("Employee registered successfully!");
+      toast.success(" Your Registration successful! Redirecting you to the login page in 5 seconds...");
+
+      // Route to login page after 5 seconds
+      setTimeout(() => {
+        navigate("/login"); // Replace "/login" with your actual login route
+      }, 5000);
     } catch (error) {
       toast.error("An unexpected error occurred. Please try again later.");
       setLoading(false);
@@ -143,7 +138,6 @@ const EmployeeRegistrationForm = () => {
           </ul>
         </div>
       )}
-
       <form onSubmit={handleSubmit}>
         {/* Employee ID */}
         <div className="mb-4">
@@ -157,7 +151,7 @@ const EmployeeRegistrationForm = () => {
             value={formData.employee_id}
             onChange={handleChange}
             className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-            placeholder="Input Your Unique ID Here"
+            placeholder="Input your unique ID here, ID must be numbers ONLY"
           />
           {error.employee_id && <p className="text-red-500 text-sm">{error.employee_id}</p>}
         </div>
@@ -175,6 +169,8 @@ const EmployeeRegistrationForm = () => {
               value={formData.first_name}
               onChange={handleChange}
               className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+              placeholder="Type your first name"
+              
             />
             {error.first_name && <p className="text-red-500 text-sm">{error.first_name}</p>}
           </div>
@@ -191,6 +187,8 @@ const EmployeeRegistrationForm = () => {
               value={formData.last_name}
               onChange={handleChange}
               className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+              placeholder="Type your last name"
+              
             />
             {error.last_name && <p className="text-red-500 text-sm">{error.last_name}</p>}
           </div>
@@ -208,6 +206,8 @@ const EmployeeRegistrationForm = () => {
             value={formData.email}
             onChange={handleChange}
             className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+            placeholder="Type your valid email "
+              
           />
           {error.email && <p className="text-red-500 text-sm">{error.email}</p>}
         </div>
@@ -231,7 +231,7 @@ const EmployeeRegistrationForm = () => {
         {/* Employment Date */}
         <div className="mb-4">
           <label htmlFor="employment_date" className="block text-sm font-medium text-gray-700">
-            Employment Date
+            Employment Date  (when where you employed?)
           </label>
           <input
             type="date"
@@ -257,6 +257,8 @@ const EmployeeRegistrationForm = () => {
               value={formData.password}
               onChange={handleChange}
               className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+              placeholder="Use strong password"
+              
             />
             <button
               type="button"
@@ -280,7 +282,6 @@ const EmployeeRegistrationForm = () => {
           </button>
         </div>
       </form>
-
       <ToastContainer />
     </div>
   );

@@ -12,6 +12,11 @@ import {
   Bars3Icon as MenuIcon,
   XMarkIcon,
   ChatBubbleLeftIcon,
+  UserGroupIcon,
+  ViewColumnsIcon,
+  CheckCircleIcon,
+  HomeIcon
+
 } from "@heroicons/react/24/outline";
 
 const SuperAdmin = () => {
@@ -19,16 +24,23 @@ const SuperAdmin = () => {
   const sidebarRef = useRef(null); // Reference to the sidebar
 
   const menuItems = [
+    { name: "Home", icon: <HomeIcon className="h-6 w-6" />, route: "/" },
     { name: "Notifications", icon: <BellIcon className="h-6 w-6" />, route: "/super-notification" },
+    { name: "Employees", icon: <UserGroupIcon className="h-6 w-6" />, route: "/generallist" },
     //{ name: "Departments", icon: <BuildingOffice2Icon className="h-6 w-6" />, route: "/adminministry" },
     { name: "Ministries", icon: <BuildingLibraryIcon className="h-6 w-6" />, route: "/activity" },
-    { name: "Admins", icon: <UsersIcon className="h-6 w-6" />, route: "/superadmins" },
+    { name: "BuzzMe", icon: <ChatBubbleLeftIcon className="h-6 w-6" />, route: "/chats" },
+    { name: "Task Board", icon: <ViewColumnsIcon className="h-6 w-6" />, route: "/taskboard" },
     { name: "Dashboards", icon: <ChartPieIcon className="h-6 w-6" />, route: "/g-dashboards" },
+    { name: "Admins", icon: <UsersIcon className="h-6 w-6" />, route: "/superadmins" },
+    { name: "Attendance", icon: < CheckCircleIcon className="h-6 w-6" />, route: "/super-attendance" },
+
     { name: "Settings", icon: <CogIcon className="h-6 w-6" />, route: "/login" },
-    { name: "Hello", icon: <ChatBubbleLeftIcon className="h-6 w-6" />, route: "/chats" },
-    { name: "Hello", icon: <ChatBubbleLeftIcon className="h-6 w-6" />, route: "/task" },
-    { name: "Tasker", icon: <ChatBubbleLeftIcon className="h-6 w-6" />, route: "/supertask" },
-    { name: "Track", icon: <ChatBubbleLeftIcon className="h-6 w-6" />, route: "/tasktracking" },
+    
+    
+     
+    
+    
     
     
   

@@ -1,16 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "../../supabaseClient";
-//import FileUpload from './FileUpload'; 
-//import { FaRegSmile, FaPaperPlane } from 'react-icons/fa';
+import { XMarkIcon } from "@heroicons/react/24/outline";
 
-const ChatBox = ({ selectedUser }) => {
+const ChatBox = ({ selectedUser, onClose }) => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [error, setError] = useState(null);
   const [isSending, setIsSending] = useState(false);
+  const [showProfileModal, setShowProfileModal] = useState(false);
   const messagesEndRef = useRef(null);
   const currentUserId = parseInt(localStorage.getItem("employee_id"), 10);
-  //const [showFileUpload, setShowFileUpload] = useState(false);
   const [isUserOnline, setIsUserOnline] = useState(false);
 
   // Fetch messages
@@ -43,8 +42,16 @@ const ChatBox = ({ selectedUser }) => {
         { event: "INSERT", schema: "public", table: "direct_chats" },
         (payload) => {
           const newMessage = payload.new;
+          // Prevent duplicate messages by checking if the message already exists
           if (
             newMessage &&
+            !messages.some(
+              (msg) =>
+                msg.id === newMessage.id ||
+                (msg.sender_id === newMessage.sender_id &&
+                  msg.receiver_id === newMessage.receiver_id &&
+                  msg.message === newMessage.message)
+            ) &&
             ((parseInt(newMessage.sender_id, 10) === currentUserId &&
               parseInt(newMessage.receiver_id, 10) === selectedUser.employee_id) ||
               (parseInt(newMessage.sender_id, 10) === selectedUser.employee_id &&
@@ -73,19 +80,18 @@ const ChatBox = ({ selectedUser }) => {
     return () => {
       supabase.removeChannel(subscription);
     };
-  }, [selectedUser, currentUserId]);
+  }, [selectedUser, currentUserId, messages]); // Add `messages` to the dependency array
 
   // Check if user is online (simulated here for demonstration)
   useEffect(() => {
     const checkUserStatus = async () => {
       try {
-        // Simulate checking user status from a 'users' table or similar
         const { data, error } = await supabase
-          .from("users")
+          .from("direct_chats")
           .select("is_online")
-          .eq("employee_id", selectedUser.employee_id)
-          .single();
-        
+          .eq("receiver_id", selectedUser.employee_id) // Checking receiver_id for online status
+          .single(); // Ensure only one row is returned
+
         if (error) throw error;
         setIsUserOnline(data?.is_online);
       } catch (statusError) {
@@ -99,20 +105,20 @@ const ChatBox = ({ selectedUser }) => {
   // Send message function
   const sendMessage = async () => {
     if (!newMessage.trim() || isSending) return;
-  
+
     setIsSending(true);
     const messageContent = newMessage.trim();
-  
+
     try {
       const { error } = await supabase.from("direct_chats").insert([{
         sender_id: currentUserId,
         receiver_id: selectedUser.employee_id,
         message: messageContent,
-        status: "sent", // Initially mark message as sent
+        status: "", // Initially mark message as sent
       }]);
-  
+
       if (error) throw error;
-  
+
       setMessages((prev) => [
         ...prev,
         {
@@ -123,10 +129,10 @@ const ChatBox = ({ selectedUser }) => {
           created_at: new Date().toISOString(),
         },
       ]);
-  
+
       // Scroll to the bottom after sending a message
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  
+
     } catch (sendError) {
       console.error("Error sending message:", sendError);
       setError("Failed to send message. Please try again.");
@@ -135,9 +141,41 @@ const ChatBox = ({ selectedUser }) => {
       setIsSending(false);
     }
   };
-  
+
+  // Handle profile picture click
+  const handleProfilePictureClick = () => {
+    setShowProfileModal(true);
+  };
+
+  // Close the profile modal
+  const handleCloseModal = () => {
+    setShowProfileModal(false);
+  };
+
   return (
-    <div className="flex flex-col h-full p-4 bg-gray-50 border-l border-gray-300 dark:bg-gray-800 dark:border-gray-600">
+    <div
+      className="flex flex-col h-full p-4 bg-gray-50 border-l border-gray-300 dark:bg-gray-800 dark:border-gray-600 max-w-full sm:max-w-lg md:max-w-md lg:max-w-lg xl:max-w-3xl mx-auto overflow-y-auto"
+      onClick={(e) => e.stopPropagation()} // Prevent closing the modal when clicking inside
+    >
+      {/* Profile Picture Modal */}
+      {showProfileModal && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+          <div className="bg-white p-4 rounded-lg max-w-lg w-full mx-4">
+            <button
+              onClick={handleCloseModal}
+              className="absolute top-2 right-2 text-gray-600 dark:text-gray-300"
+            >
+              <XMarkIcon className="w-6 h-6" />
+            </button>
+            <img
+              src={selectedUser.profile_picture || `https://ui-avatars.com/api/?name=${selectedUser.first_name}+${selectedUser.last_name}`}
+              alt={`${selectedUser.first_name} ${selectedUser.last_name}`}
+              className="w-full h-auto rounded-lg"
+            />
+          </div>
+        </div>
+      )}
+
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-2">
           <div
@@ -147,11 +185,20 @@ const ChatBox = ({ selectedUser }) => {
             {selectedUser.first_name} {selectedUser.last_name}
           </h2>
         </div>
-        <img
-          src={`https://ui-avatars.com/api/?name=${selectedUser.first_name}+${selectedUser.last_name}`}
-          alt={`${selectedUser.first_name} ${selectedUser.last_name}`}
-          className="w-10 h-10 rounded-full"
-        />
+        <div className="flex items-center space-x-2">
+          <img
+            src={selectedUser.profile_picture || `https://ui-avatars.com/api/?name=${selectedUser.first_name}+${selectedUser.last_name}`}
+            alt={`${selectedUser.first_name} ${selectedUser.last_name}`}
+            className="w-10 h-10 rounded-full cursor-pointer"
+            onClick={handleProfilePictureClick}
+          />
+          <button
+            onClick={onClose}
+            className="text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100"
+          >
+            <XMarkIcon className="w-6 h-6" />
+          </button>
+        </div>
       </div>
 
       {error && (
@@ -175,6 +222,9 @@ const ChatBox = ({ selectedUser }) => {
               >
                 <p>{msg.message}</p>
                 <div className="flex items-center space-x-1 text-xs text-gray-500 mt-1">
+                  {isCurrentUser && msg.status === "sent" && (
+                    <span className="text-green-500">✔</span>
+                  )}
                   <span>{msg.status === "sent" ? "•" : msg.status === "delivered" ? "••" : ""}</span>
                   <span>{msg.status === "sent" ? "Sent" : msg.status === "delivered" ? "Delivered" : ""}</span>
                 </div>

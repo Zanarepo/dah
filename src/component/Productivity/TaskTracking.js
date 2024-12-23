@@ -84,7 +84,7 @@ const TaskTracking = () => {
         const { data: ministryData, error: ministryError } = await ministryQuery;
 
         if (departmentError || ministryError) {
-          toast.error('Error fetching filter options.');
+          toast.error('No tracking data available for your department, yet.');// will chage this later for better user-experience
           setLoading(false);
           return;
         }

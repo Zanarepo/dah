@@ -52,9 +52,8 @@ const ChatList = ({ onSelectChat }) => {
     <div className="flex flex-col h-full p-4 bg-gray-800 text-white border rounded-md shadow-lg md:max-w-xs w-full">
       {/* Header */}
       <h2 className="text-xl font-semibold mb-4 text-center w-full">
-  Members
-</h2>
-
+        Members
+      </h2>
 
       {/* Search Bar */}
       <input
@@ -84,7 +83,11 @@ const ChatList = ({ onSelectChat }) => {
               className="flex items-center p-2 rounded-md hover:bg-gray-700 cursor-pointer transition duration-150"
             >
               <img
-                src={`https://ui-avatars.com/api/?name=${employee.first_name}+${employee.last_name}`}
+                src={
+                  employee.profile_picture_url
+                    ? employee.profile_picture_url
+                    : `https://ui-avatars.com/api/?name=${employee.first_name}+${employee.last_name}`
+                }
                 alt={employee.first_name}
                 className="w-8 h-8 rounded-full mr-4"
               />

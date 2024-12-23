@@ -9,23 +9,33 @@ import {
   BellIcon,
   Bars3Icon as MenuIcon,
   XMarkIcon,
-  ChatBubbleLeftIcon
+  ChatBubbleLeftIcon,
+  ViewColumnsIcon,
+  UserGroupIcon,
+  CheckCircleIcon,
+  HomeIcon
+
 } from "@heroicons/react/24/outline";
 
 const Admin = () => {
   const [isOpen, setIsOpen] = useState(false); // Track sidebar state
   const sidebarRef = useRef(null); // Reference to the sidebar
 
-  const menuItems = [
-    { name: "Notifications", icon: <BellIcon className="h-6 w-6" />, route: "/admin-notification" },
-    //{ name: "Departments", icon: <BuildingOffice2Icon className="h-6 w-6" />, route: "/adminministry" },
-    { name: "Ministry", icon: <BuildingLibraryIcon className="h-6 w-6" />, route: "/departactvities" },
-    { name: "Dashboards", icon: <ChartPieIcon className="h-6 w-6" />, route: "/admin-dashboard" },
-    { name: "Settings", icon: <CogIcon className="h-6 w-6" />, route: "/admin-settings" },
-    { name: "BuzzMe", icon: <ChatBubbleLeftIcon className="h-6 w-6" />, route: "/hello" },
-    { name: "Tasker", icon: <ChatBubbleLeftIcon className="h-6 w-6" />, route: "/admintask" },
-    { name: "Tasker", icon: <ChatBubbleLeftIcon className="h-6 w-6" />, route: "/admintrack" },
-  ];
+  
+    const menuItems = [
+      { name: "Home", icon: <HomeIcon className="h-6 w-6" />, route: "/" },
+      { name: "Notifications", icon: <BellIcon className="h-6 w-6" />, route: "/admin-notification" },
+      { name: "Ministry", icon: <BuildingLibraryIcon className="h-6 w-6" />, route: "/departactvities" },
+      { name: "Dashboards", icon: <ChartPieIcon className="h-6 w-6" />, route: "/admin-dashboard" },
+      { name: "Settings", icon: <CogIcon className="h-6 w-6" />, route: "/admin-settings" },
+      { name: "BuzzMe", icon: <ChatBubbleLeftIcon className="h-6 w-6" />, route: "/hello" },
+      { name: "Task Board", icon: <ViewColumnsIcon className="h-6 w-6" />, route: "/admintaskboard" },
+      { name: "Employees", icon: <UserGroupIcon className="h-6 w-6" />, route: "/adminlist" },
+      { name: "Attendance", icon: < CheckCircleIcon className="h-6 w-6" />, route: "/dept-attendance" },
+     
+ 
+    ];
+    
 
   const toggleSidebar = () => setIsOpen(!isOpen); // Toggle sidebar visibility
 

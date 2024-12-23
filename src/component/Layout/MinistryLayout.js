@@ -10,7 +10,11 @@ import {
   BellIcon,
   Bars3Icon as MenuIcon,
   XMarkIcon,
-  ChatBubbleLeftIcon
+  ChatBubbleLeftIcon,
+  UserGroupIcon,
+  ViewColumnsIcon,
+  CheckCircleIcon,
+  HomeIcon
 } from "@heroicons/react/24/outline";
 
 const SuperAdmin = () => {
@@ -18,15 +22,19 @@ const SuperAdmin = () => {
   const sidebarRef = useRef(null); // Reference to the sidebar
 
   const menuItems = [
+    { name: "Home", icon: <HomeIcon className="h-6 w-6" />, route: "/" },
     { name: "Notifications", icon: <BellIcon className="h-6 w-6" />, route: "/general-notification" },
+    { name: "Employees", icon: <UserGroupIcon className="h-6 w-6" />, route: "/ministrieslist" },
+    { name: "Attendance", icon: < CheckCircleIcon className="h-6 w-6" />, route: "/ministry-attendance" },
     //{ name: "Departments", icon: <BuildingOffice2Icon className="h-6 w-6" />, route: "/adminministry" },
     { name: "Ministries", icon: <BuildingLibraryIcon className="h-6 w-6" />, route: "/activities" },
-    { name: "Admins", icon: <UsersIcon className="h-6 w-6" />, route: "/ministryadmins" },
-    { name: "Dashboards", icon: <ChartPieIcon className="h-6 w-6" />, route: "/g-dashboards" },
-    { name: "Settings", icon: <CogIcon className="h-6 w-6" />, route: "/super-settings" },
     { name: "BuzzMe", icon: <ChatBubbleLeftIcon className="h-6 w-6" />, route: "/buzz" },
-    { name: "Tasker", icon: <ChatBubbleLeftIcon className="h-6 w-6" />, route: "/minitask" },
-    { name: "Tasker", icon: <ChatBubbleLeftIcon className="h-6 w-6" />, route: "/minitrack" },
+    { name: "Task Board", icon: <ViewColumnsIcon className="h-6 w-6" />, route: "/ministrytaskboard" },
+    { name: "Dashboards", icon: <ChartPieIcon className="h-6 w-6" />, route: "/g-dashboards" },
+    { name: "Admins", icon: <UsersIcon className="h-6 w-6" />, route: "/ministryadmins" },
+    { name: "Settings", icon: <CogIcon className="h-6 w-6" />, route: "/super-settings" },
+   
+   
   ];
 
   const toggleSidebar = () => setIsOpen(!isOpen); // Toggle sidebar visibility

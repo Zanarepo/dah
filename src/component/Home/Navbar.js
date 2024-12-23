@@ -26,6 +26,11 @@ const Navbar = () => {
     };
   }, []);
 
+  // Close the menu when a link is clicked
+  const handleLinkClick = () => {
+    setIsMenuOpen(false);
+  };
+
   return (
     <nav className="bg-blue-600 p-4 fixed top-0 left-0 w-full z-50" ref={navbarRef}>
       <div className="max-w-7xl mx-auto flex justify-between items-center">
@@ -79,10 +84,10 @@ const Navbar = () => {
 
       {/* Mobile Menu (Visible when menu is open) */}
       <div className={`sm:hidden ${isMenuOpen ? "block" : "hidden"} mt-4 space-y-4`}>
-        <Link to="/" className="block text-white hover:text-gray-300 transition duration-300">Home</Link>
-        <Link to="/about" className="block text-white hover:text-gray-300 transition duration-300">About</Link>
-        <Link to="/login" className="block text-white hover:text-gray-300 transition duration-300">Login</Link>
-        <Link to="/register" className="block text-white hover:text-gray-300 transition duration-300">Sign Up</Link>
+        <Link to="/" onClick={handleLinkClick} className="block text-white hover:text-gray-300 transition duration-300">Home</Link>
+        <Link to="/about" onClick={handleLinkClick} className="block text-white hover:text-gray-300 transition duration-300">About</Link>
+        <Link to="/login" onClick={handleLinkClick} className="block text-white hover:text-gray-300 transition duration-300">Login</Link>
+        <Link to="/register" onClick={handleLinkClick} className="block text-white hover:text-gray-300 transition duration-300">Sign Up</Link>
       </div>
     </nav>
   );

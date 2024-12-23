@@ -207,13 +207,17 @@ import DeptLeaveHistory from "./component/AdminPanel/DeptLeaveHistory.js"
   import TaskTracking from "./component/Productivity/TaskTracking"
  import  TaskDashboardTracker  from "./component/Productivity/TaskDashboardTracker"
   import Notify from "./component/GeneralNotifications/Notify"
-
-
-
-
-
-
-
+  import PerformanceDashboard from "./component/Productivity/PerformanceDashboard"
+  import AdminTaskManagerBoard from "./component/Productivity/AdminTaskManagerBoard"
+  import EmployeeList from "./component/SuperAdmins/EmployeeList"
+  import Attendance from "./component/Productivity/Attendance"
+  import EmployeeAttendance from "./component/Productivity/Attendance"
+  import AttendanceDashboard from "./component/Productivity/AttendanceDashboard"
+  import AdminAttendance from "./component/Productivity/AdminAttendance"
+  import MinistryAttendance from "./component/Productivity/MinistryAttendance"
+ import DeptAttendance from "./component/Productivity/DeptAttendance"
+ import AttendanceCalendar from "./component/Productivity/AttendanceCalendar"
+import AttendanceMessage from "./component/Productivity/AttendanceMessage"
 
 
 
@@ -260,17 +264,22 @@ const App = () => {
           <Route path="/personal-details" element={<EmployeePersonalDetails />} />
           <Route path="/employment-details" element={<EmployeeEmploymentDetails />} />
           <Route path="/profile-notifications" element={<ProfileNotification />} />
-          <Route path="/chatting" element={<EmployeeChatApp />} />
-          <Route path="/empchatlist" element={<EmpChatList />} />
+          <Route path="/chattings" element={<EmployeeChatApp />} />
+          <Route path="/empchatlists" element={<EmpChatList />} />
           <Route path="/leave" element={<Leave/>} />
           <Route path="/todo" element={<TodoList/>} />
           <Route path="/taskmanager" element={<EmployeeTaskManager/>} />
           <Route path="/task-dashboard" element={< TaskDashboardTracker/>} />
           <Route path="/notify" element={< Notify/>} />
-          
-         
-         
-          
+          <Route path="/checkin" element={< Attendance/>} />
+          <Route path="/employee-checkins" element={< EmployeeAttendance/>} />
+           <Route path="/attendance-board" element={< AttendanceDashboard/>} />
+           <Route path="/calendar" element={< AttendanceCalendar/>} />
+           <Route path="/empchatlist" element={<ChatList/>} />
+          <Route path="/chattings" element={<AdminsChatApp />} />
+          <Route path="/greetings" element={<AttendanceMessage />} />
+          <Route path="/chatting" element={<EmployeeChatApp/>} />
+   
           
 
           {/* -------------Section 1: Independent Route 2 Profile Layout-------------------------------*/}
@@ -283,8 +292,14 @@ const App = () => {
         <Route path="/supertask" element={<AdminTaskAssignment/>} />
         <Route path="/todos" element={<EmployeeTaskManager/>} />
         <Route path="/tasktracking" element={<TaskTracking/>} />
+        <Route path="/performance-board" element={<PerformanceDashboard/>} />
+        <Route path="/taskboard" element={<AdminTaskManagerBoard/>} />
+        <Route path="/generallist" element={<EmployeeList/>} />
+        <Route path="/genattendance" element={< Attendance/>} />   {/* this retrievs list of attendance from the databse and populat ina table */}
+        <Route path="/gen-checkins" element={< EmployeeAttendance/>} />
+        <Route path="/super-attendance" element={< AdminAttendance/>} />    {/* the checking component for sign in and out of the office */}
         
-       
+
 
         <Route path="/g-departments" element={<GeneralDepartments />} />
         <Route path="superadmins" element={<SuperAdmin />} />
@@ -308,7 +323,8 @@ const App = () => {
         <Route path="/department-dashboard" element={<DepartmentDashboard/>} />
         <Route path="/chatlist" element={<ChatList/>} />
         <Route path="/chatbox" element={<ChatBox/>} />
-        <Route path="/chats" element={<AdminsChatApp />} />
+        <Route path="/chatss" element={<AdminsChatApp />} />
+        <Route path="/chats" element={<EmployeeChatApp/>} />
         <Route path="/GeneralEmployeesSearch" element={<GeneralEmployeesSearch />} />
         <Route path="/GeneralVacation" element={< GeneralVacation/>} />
         <Route path="/GeneralEmployeeTable" element={<GeneralEmployeeTable />} />
@@ -347,8 +363,11 @@ const App = () => {
         <Route path="/" element={<MinistryLayout />}>
         <Route path="/minitask" element={<AdminTaskAssignment/>} />
         <Route path="/minitrack" element={<TaskTracking/>} />
-
-
+        <Route path="/ministrytaskboard" element={<AdminTaskManagerBoard/>} />
+        <Route path="/ministrieslist" element={<EmployeeList/>} />
+        <Route path="/" element={< AdminAttendance/>} />
+        <Route path="/ministry-attendance" element={< MinistryAttendance/>} />
+         
 
         <Route path="/Back" element={<Backfunction />}></Route> 
         <Route path="/ministry-admins" element={< MinistryAdmin/>}></Route> 
@@ -360,7 +379,8 @@ const App = () => {
         <Route path="/mini-departments" element={<MinistryDepartments />} />
         <Route path="/ministry-list" element={<MinistryList />} />
         <Route path="/department-dashboard" element={<DepartmentDashboard />} />
-        <Route path="/department-list" element={<DepartmentList />} />
+        <Route path="/department-lists" element={<DepartmentList />} />
+        <Route path="/department-list" element={<ChatList/>} />
         <Route path="/" element={<MinistryLeave />} />
 
         <Route path="/minleave-requests/:departmentId" element={<MinLeaveRequests />} />
@@ -397,8 +417,13 @@ const App = () => {
       
         {/* Section 3: Independent Route 3 */}
         <Route path="" element={<Layout />}>
-        
-         <Route path="/admintrack" element={<TaskTracking/>} />
+        <Route path="/gen-checkins" element={< EmployeeAttendance/>} /> 
+        <Route path="/admintrack" element={<TaskTracking/>} />
+        <Route path="/admin-attendance" element={< AdminAttendance/>} /> 
+        <Route path="/dept-attendance" element={<DeptAttendance/>} /> 
+       
+
+
           <Route path="/admin-notification" element={<AdminNotification />}></Route>
           <Route path="/departactvities" element={<DepartmentActivities/>}></Route>
           <Route path="/department-vacation" element={<DepartmentVacationTracker/>}></Route>
@@ -413,8 +438,9 @@ const App = () => {
           <Route path="/deptleave-approval/:departmentId" element={<DeptLeaveApproval />} />
           <Route path="/deptleave-history/:departmentId" element={<DeptLeaveHistory />} />
           <Route path="/admintask" element={<AdminTaskAssignment/>} />
-          
-
+          <Route path="/admintaskboard" element={<AdminTaskManagerBoard/>} />
+          <Route path="/adminlists" element={<EmployeeList/>} />
+          <Route path="/adminlist" element={<ChatList/>} />
         </Route>
 
 

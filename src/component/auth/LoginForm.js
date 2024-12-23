@@ -2,14 +2,12 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../../supabaseClient";
 import bcrypt from "bcryptjs";
-import NotificationModal from "../profile/NotificationModal"; // Import the NotificationModal
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const LoginForm = () => {
   const [formData, setFormData] = useState({ employee_id: "", password: "" });
   const [loading, setLoading] = useState(false);
-  const [modalOpen, setModalOpen] = useState(false); // Modal visibility state
-  const [modalMessage, setModalMessage] = useState(""); // Message for modal
-  const [modalType, setModalType] = useState("error"); // Modal type (success/error)
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -26,7 +24,6 @@ const LoginForm = () => {
     const { employee_id, password } = formData;
 
     try {
-      // Attempt to fetch user data from Supabase
       const { data: user, error } = await supabase
         .from("employee_profiles")
         .select("employee_id, password, is_admin, admin_ministry, is_super_admin")
@@ -34,26 +31,18 @@ const LoginForm = () => {
         .single();
 
       if (error || !user) {
-        setModalMessage("Invalid Employee ID or password.");
-        setModalType("error");
-        setModalOpen(true); // Open error modal
+        toast.error("Invalid Employee ID or password.", { position: "top-center" });
         setLoading(false);
-        setTimeout(() => setModalOpen(false), 3000); // Close modal after 3 seconds
         return;
       }
 
-      // Check if password is correct using bcrypt
       const isPasswordValid = await bcrypt.compare(password, user.password);
       if (!isPasswordValid) {
-        setModalMessage("Invalid Employee ID or password.");
-        setModalType("error");
-        setModalOpen(true); // Open error modal
+        toast.error("Invalid Employee ID or password.", { position: "top-center" });
         setLoading(false);
-        setTimeout(() => setModalOpen(false), 3000); // Close modal after 3 seconds
         return;
       }
 
-      // Store user details and session in localStorage
       localStorage.setItem("employee_id", employee_id);
       localStorage.setItem("user", JSON.stringify(user));
 
@@ -63,25 +52,18 @@ const LoginForm = () => {
       if (user.is_admin) roles.push({ name: "Admin", route: "/admindashboard" });
       roles.push({ name: "Employee", route: "/personal-details" });
 
-      // Navigate based on user roles
       if (roles.length === 1) {
         navigate(roles[0].route);
       } else {
         navigate("/role-selection", { state: { roles } });
       }
 
-      setLoading(false);
-      setModalMessage("Login Successful!");
-      setModalType("success");
-      setModalOpen(true); // Open success modal
-      setTimeout(() => setModalOpen(false), 3000); // Close modal after 3 seconds
+      toast.success("Login successful!", { position: "top-center" });
     } catch (err) {
       console.error("Login error:", err.message);
-      setModalMessage("An unexpected error occurred. Please try again.");
-      setModalType("error");
-      setModalOpen(true); // Open error modal
+      toast.error("An unexpected error occurred. Please try again.", { position: "top-center" });
+    } finally {
       setLoading(false);
-      setTimeout(() => setModalOpen(false), 3000); // Close modal after 3 seconds
     }
   };
 
@@ -103,6 +85,7 @@ const LoginForm = () => {
               type="text"
               id="employee_id"
               name="employee_id"
+              placeholder="Enter your Employee ID"
               value={formData.employee_id}
               onChange={handleChange}
               className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -118,6 +101,7 @@ const LoginForm = () => {
               type="password"
               id="password"
               name="password"
+              placeholder="Enter your Password"
               value={formData.password}
               onChange={handleChange}
               className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -163,15 +147,6 @@ const LoginForm = () => {
           </button>
         </div>
       </div>
-
-      {/* Notification Modal */}
-      {modalOpen && (
-        <NotificationModal 
-          message={modalMessage}
-          type={modalType} // Pass the type (success/error)
-          onClose={() => setModalOpen(false)} 
-        />
-      )}
     </div>
   );
 };

@@ -7,12 +7,17 @@ import Leave from "./Leave";
 import Notifications from "../admin/Notification";
 import EmployeeChatApp from "../Chat/EmployeeChatApp";
 import WelcomeUser from "./WelcomeUser";
-import Notify from "../GeneralNotifications/Notify";
+//import Notify from "../GeneralNotifications/Notify";
 import QuickActionPopup from "../profile/QuickActionPopup";
 //import TodoList from "../Productivity/TodoList";
 //import EmployeeTaskManager from "../Productivity/EmployeeTaskManager";
 import TaskDashboardTracker from "../Productivity/TaskDashboardTracker"; // TaskDashboardTracker import
+import EmployeeAttendance from "../Productivity/EmployeeAttendance"
+import AttendanceDashboard from"../Productivity/AttendanceDashboard"
+import Calendar from "react-calendar";
+import AttendanceMessage from "../Productivity/AttendanceMessage"
 import { FaTasks } from "react-icons/fa"; // Tasks icon for TodoList
+
 
 import {
   BellIcon,
@@ -22,7 +27,11 @@ import {
   XMarkIcon,
   BriefcaseIcon,
   CalendarIcon,
+  CheckCircleIcon,
+  HomeIcon
+ 
 } from "@heroicons/react/24/outline";
+import Attendance from "../Productivity/Attendance";
 
 const EmployeeDashboard = () => {
   const [employeeData, setEmployeeData] = useState(null);
@@ -65,13 +74,18 @@ const EmployeeDashboard = () => {
   }
 
   const menuItems = [
+    { name: "Home", icon: <HomeIcon className="h-6 w-6" />, route: "/" },
+    { name: "BuzzMe", icon: <ChatBubbleLeftIcon className="h-6 w-6" />, route: "/chatting" },
     { name: "Personal Details", icon: <UserIcon className="h-6 w-6" />, route: "/personal-details" },
     { name: "Employment Details", icon: <BriefcaseIcon className="h-6 w-6" />, route: "/employment-details" },
+    { name: "Attendance Board", icon: <CheckCircleIcon className="h-6 w-6" />, route: "/attendance-board" },
     { name: "Leave", icon: <CalendarIcon className="h-6 w-6" />, route: "/leave" },
     { name: "Notifications", icon: <BellIcon className="h-6 w-6" />, route: "/profile-notifications" },
-    { name: "BuzzMe", icon: <ChatBubbleLeftIcon className="h-6 w-6" />, route: "/chatting" },
-   
+
     { name: "Task Dashboard", icon: <FaTasks className="h-6 w-6" />, route: "/task-dashboard" },
+
+   
+    
   ];
 
   const toggleSidebar = () => setIsOpen(!isOpen);
@@ -145,13 +159,36 @@ const EmployeeDashboard = () => {
             path="chatting"
             element={<EmployeeChatApp employee_id={employeeData.employee_id} />}
           />
-         
-          <Route path="task-dashboard" element={<TaskDashboardTracker />} />
-        </Routes>
-      </div>
+           <Route
+            path="checkin"
+            element={<Attendance employee_id={employeeData.employee_id} />}
+          />
+          <Route
+            path="employee-checkins"
+            element={<EmployeeAttendance employee_id={employeeData.employee_id} />}
+          />
+        <Route
+            path="attendance-board"
+            element={<AttendanceDashboard employee_id={employeeData.employee_id} />}
+          />
+      <Route
+            path="calendar"
+            element={<Calendar employee_id={employeeData.employee_id} />}
+          />
+    
+         <Route path="greetings" element={<AttendanceMessage />} />
 
-      <Notify />
-      {/* Notify Component with fixed padding issue */}
+          <Route path="task-dashboard" element={<TaskDashboardTracker />} />
+
+        </Routes>
+
+        
+      </div>
+     
+
+
+       {/*Notify Component with fixed padding issue
+       <Notify /> */}
       <div style={{ position: "absolute", right: 0, top: 0, bottom: 0 }}>
         <QuickActionPopup />
       </div>

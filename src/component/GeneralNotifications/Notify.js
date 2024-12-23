@@ -15,23 +15,23 @@ const EmployeeNotificationCenter = () => {
   useEffect(() => {
     const fetchSenderDetails = async () => {
       const storedUserId = localStorage.getItem("employee_id");
-  
+
       if (!storedUserId) {
         setNotificationModal({ isOpen: true, message: "User is not authenticated", type: "error" });
         return;
       }
-  
+
       const { data, error } = await supabase
         .from("employee_profiles")
         .select("employee_id, first_name, last_name, department_id, ministry_id")
         .eq("employee_id", storedUserId)
         .single();
-  
+
       if (error) {
         setNotificationModal({ isOpen: true, message: "Failed to fetch sender details", type: "error" });
         return;
       }
-  
+
       setSenderDetails({
         employee_id: data.employee_id,  // Ensure employee_id is correctly fetched
         name: `${data.first_name} ${data.last_name}`,
@@ -39,7 +39,7 @@ const EmployeeNotificationCenter = () => {
         ministry_id: data.ministry_id,
       });
     };
-  
+
     fetchSenderDetails();
   }, []);
 
@@ -49,41 +49,39 @@ const EmployeeNotificationCenter = () => {
       setNotificationModal({ isOpen: true, message: "Please provide all required information", type: "error" });
       return;
     }
-  
+
     // Show a loading notification
     setNotificationModal({ isOpen: true, message: "Creating notification...", type: "info" });
-  
+
     try {
       // 1. Create the notification for the employee
       const { error } = await supabase
         .from("general_notifications")
-        .insert([ 
-          {
-            employee_id: senderDetails.employee_id,
-            ministry_id: senderDetails.ministry_id,
-            department_id: senderDetails.department_id,
-            sender_id: senderDetails.employee_id,
-            type: notificationType,
-            message: newNotificationMessage,
-          },
-        ]);
-  
+        .insert([{
+          employee_id: senderDetails.employee_id,
+          ministry_id: senderDetails.ministry_id,
+          department_id: senderDetails.department_id,
+          sender_id: senderDetails.employee_id,
+          type: notificationType,
+          message: newNotificationMessage,
+        }]);
+
       if (error) throw new Error("Error creating notification");
-  
+
       // 2. Get the admin users with access_id 2 and 3
       const { data: admins, error: adminError } = await supabase
         .from("access_level")
         .select("employee_id")
         .in("access_id", [2, 3]) // Admin and super admin access IDs
         .in("department_id", [senderDetails.department_id, senderDetails.ministry_id]);
-  
+
       if (adminError) throw new Error("Error fetching admin users");
-  
+
       // 3. Create admin notifications with sender's details included
       const adminNotifications = admins.map((admin) => {
         const senderFullName = `${senderDetails.first_name} ${senderDetails.last_name}`;
         const senderDepartment = senderDetails.department_name; // Ensure department is correctly retrieved
-  
+
         return {
           employee_id: admin.employee_id,
           ministry_id: senderDetails.ministry_id,
@@ -93,13 +91,13 @@ const EmployeeNotificationCenter = () => {
           message: `From: ${senderFullName} (${senderDepartment}) - ${newNotificationMessage}`, // Enrich message with sender details
         };
       });
-  
+
       const { error: adminNotificationError } = await supabase
         .from("general_notifications")
         .insert(adminNotifications);
-  
+
       if (adminNotificationError) throw new Error("Error sending notifications to admins");
-  
+
       // Success notification
       setNotificationModal({ isOpen: true, message: "Notification sent successfully!", type: "success" });
     } catch (error) {
@@ -107,22 +105,33 @@ const EmployeeNotificationCenter = () => {
     }
   };
 
+  // Prevent page scrolling when modal is open
+  useEffect(() => {
+    if (isModalOpen) {
+      document.body.style.overflow = "hidden"; // Prevent body scroll
+      document.body.style.paddingRight = "15px"; // Prevent horizontal scroll bar appearing due to modal
+    } else {
+      document.body.style.overflow = ""; // Re-enable body scroll
+      document.body.style.paddingRight = ""; // Reset body padding
+    }
+  }, [isModalOpen]);
+
   return (
-    <div className="min-h-screen bg-gray-50 p-6 relative">
-      {/* Notification Button */}
+    <div className="min-h-screen bg-gray-50 relative">
+      {/* Notification Button with minimal padding and smaller size */}
       <button
-        className="fixed bottom-28 right-6 bg-blue-600 text-white p-4 rounded-full shadow-lg hover:bg-blue-700 transition flex items-center justify-center"
+        className="fixed top-2/3 right-2 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition flex items-center justify-center z-40"
         onClick={() => setIsModalOpen(true)}
       >
-        <MdAddAlert className="text-2xl" /> {/* Bell icon with plus sign */}
+        <MdAddAlert className="text-xl" /> {/* Smaller bell icon with plus sign */}
       </button>
 
       {/* Modal for adding notifications */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-96 max-h-[90%] overflow-auto">
             <h2 className="text-lg font-bold mb-4">Reminder Notification</h2>
-            
+
             {/* Dropdown for notification type */}
             <select
               value={notificationType}

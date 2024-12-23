@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaCalendarAlt } from "react-icons/fa"; // Calendar Icon
@@ -6,7 +5,7 @@ import { MdAdd } from "react-icons/md"; // Plus icon for the floating action but
 import { HiChatAlt } from "react-icons/hi"; // Chat icon
 import { MdAddAlert } from "react-icons/md"; // Mail icon for notifications
 import { FaTasks } from "react-icons/fa"; // Tasks icon for TodoList
-//import Notify from "../GeneralNotifications/Notify"
+import { CheckCircleIcon } from "@heroicons/react/24/outline";
 
 const QuickActionPopup = () => {
   const [isOpen, setIsOpen] = useState(false); // State for popup visibility
@@ -36,11 +35,11 @@ const QuickActionPopup = () => {
   }, []);
 
   return (
-    <div>
+    <div className="relative">
       {/* Floating Action Button */}
       <button
         onClick={togglePopup}
-        className="fixed bottom-6 right-6 bg-blue-500 text-white p-4 rounded-full shadow-lg hover:bg-blue-600 focus:outline-none"
+        className="fixed top-1/2 right-2 transform -translate-y-1/2 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition flex items-center justify-center z-50"
       >
         <MdAdd className="text-2xl" /> {/* Plus Icon */}
       </button>
@@ -49,9 +48,9 @@ const QuickActionPopup = () => {
       {isOpen && (
         <div
           ref={popupRef}
-          className="fixed bottom-20 right-6 bg-white p-4 shadow-md rounded-lg w-48"
+          className="fixed top-1/2 right-6 transform -translate-y-1/2 bg-white shadow-md rounded-lg w-48 z-50"
         >
-          <div className="flex flex-col items-start space-y-4">
+          <div className="flex flex-col items-start space-y-4 p-4">
             {/* Employee Chat Option */}
             <button
               onClick={() => navigate("/chatting")}
@@ -68,6 +67,15 @@ const QuickActionPopup = () => {
             >
               <FaCalendarAlt className="text-blue-600 text-xl" /> {/* Calendar Icon */}
               <span className="text-sm font-medium">Leave Request</span>
+            </button>
+
+            {/*  Checkin Compo */}
+            <button
+              onClick={() => navigate("/attendance-board")}
+              className="flex items-center space-x-3 w-full text-gray-700 hover:text-blue-600"
+            >
+              <CheckCircleIcon className="text-blue-600 h-6 w-6" />
+              <span className="text-sm font-medium">Checkin</span>
             </button>
 
             {/* Notifications Option */}
