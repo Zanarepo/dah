@@ -27,19 +27,19 @@ const AttendanceDashboard = () => {
       <div className="flex flex-wrap justify-center gap-2 md:gap-4 mb-4 w-full max-w-2xl">
         <button
           onClick={() => handleViewChange('checkin')}
-          className={`flex-1 min-w-[100px] px-4 py-2 md:px-6 md:py-3 rounded-lg text-sm md:text-base ${currentView === 'checkin' ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-600'} transition duration-300`}
+          className={`flex-1 min-w-[120px] px-4 py-2 md:px-6 md:py-3 rounded-lg text-sm md:text-base ${currentView === 'checkin' ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-600'} transition duration-300`}
         >
           CheckIn : CheckOut
         </button>
         <button
           onClick={() => handleViewChange('employee-checkins')}
-          className={`flex-1 min-w-[100px] px-4 py-2 md:px-6 md:py-3 rounded-lg text-sm md:text-base ${currentView === 'employee-checkins' ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-600'} transition duration-300`}
+          className={`flex-1 min-w-[120px] px-4 py-2 md:px-6 md:py-3 rounded-lg text-sm md:text-base ${currentView === 'employee-checkins' ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-600'} transition duration-300`}
         >
           Attendance Summary
         </button>
         <button
           onClick={() => handleViewChange('calendar')}
-          className={`flex-1 min-w-[100px] px-4 py-2 md:px-6 md:py-3 rounded-lg text-sm md:text-base ${currentView === 'calendar' ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-600'} transition duration-300`}
+          className={`flex-1 min-w-[120px] px-4 py-2 md:px-6 md:py-3 rounded-lg text-sm md:text-base ${currentView === 'calendar' ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-600'} transition duration-300`}
         >
           Calendar View
         </button>
