@@ -9,17 +9,15 @@ const Attendance = () => {
   const [loadingCheckOut, setLoadingCheckOut] = useState(false);
   const [accessDetails, setAccessDetails] = useState(null);
 
-  // Define the office/work location and the allowed radius (in meters)
-const WORK_LOCATION = {
-    latitude: 6.4520192, // Example latitude (e.g., office latitude)
-    longitude:  3.4308096,
-
-
-    // Example longitude (e.g., office longitude)
+  const WORK_LOCATION = {
+    latitude: 6.4520192,
+    longitude: 3.4275328,
     radius: 50, // 50 meters radius
-  };
+
+
   
-  // Function to calculate the distance between two geographical points using the Haversine formula
+  };
+
   const calculateDistance = (lat1, lon1, lat2, lon2) => {
     const toRad = (x) => (x * Math.PI) / 180;
     const R = 6371; // Radius of the Earth in kilometers
@@ -33,18 +31,16 @@ const WORK_LOCATION = {
     const distance = R * c * 1000; // Convert to meters
     return distance;
   };
-  
-  // Wrap the `isInWorkLocation` function inside a `useCallback`
+
   const isInWorkLocation = useCallback((lat, lon) => {
     const distance = calculateDistance(lat, lon, WORK_LOCATION.latitude, WORK_LOCATION.longitude);
     return distance <= WORK_LOCATION.radius;
   }, [WORK_LOCATION.latitude, WORK_LOCATION.longitude, WORK_LOCATION.radius]);
-  
 
   // Fetch employee's department_id and ministry_id
   useEffect(() => {
     const fetchAccessDetails = async () => {
-      const employeeId = localStorage.getItem('employee_id'); // Retrieve employee ID
+      const employeeId = localStorage.getItem('employee_id'); 
       if (!employeeId) {
         toast.error('Employee ID not found.');
         return;
@@ -71,13 +67,6 @@ const WORK_LOCATION = {
 
     fetchAccessDetails();
   }, []);
-
-  // Check if the current time is after 6 PM
-  const isAfter6pm = () => {
-    const currentTime = new Date();
-    const currentHour = currentTime.getHours();
-    return currentHour >= 18;
-  };
 
   // Fetch last attendance record
   const fetchLastAttendance = useCallback(async () => {
@@ -108,7 +97,6 @@ const WORK_LOCATION = {
     }
   }, []);
 
-  // Geolocation as a Promise with Timeout
   const getLocation = useCallback(() => {
     return new Promise((resolve, reject) => {
       if (!navigator.geolocation) {
@@ -142,47 +130,53 @@ const WORK_LOCATION = {
       return;
     }
 
-  setLoadingCheckIn(true);
-  try {
-    const loc = await getLocation();
+    setLoadingCheckIn(true);
+    try {
+      const loc = await getLocation();
 
-    // Check if the employee is within the work location
-    if (!isInWorkLocation(loc.latitude, loc.longitude)) {
-      toast.error('You must be within the office/work location to check in.');
-      return;
+      // Check if the employee is within the work location
+      if (!isInWorkLocation(loc.latitude, loc.longitude)) {
+        toast.error('You must be within the office/work location to check in.');
+        return;
+      }
+
+      // If the employee has an unfinished session, reset it
+      if (attendance && !attendance.check_out_time) {
+        await supabase
+          .from('attendance')
+          .update({ check_out_time: null })
+          .eq('attendance_id', attendance.attendance_id); // Reset previous check-out
+      }
+
+      // Insert the new check-in record
+      const { data, error } = await supabase
+        .from('attendance')
+        .insert([{
+          employee_id: employeeId,
+          department_id: accessDetails.department_id,
+          ministry_id: accessDetails.ministry_id,
+          check_in_time: new Date().toISOString(),
+          check_out_time: null,
+          latitude: loc.latitude,
+          longitude: loc.longitude,
+        }])
+        .select();
+
+      if (error) {
+        console.error('Error during check-in:', error);
+        toast.error('Error checking in.');
+      } else if (data && data.length > 0) {
+        toast.success('Checked in successfully recorded!');
+        setAttendance(data[0]);
+      }
+    } catch (err) {
+      console.error('Unexpected error during check-in:', err);
+      toast.error('Unexpected error during check-in.');
+    } finally {
+      setLoadingCheckIn(false);
     }
+  }, [accessDetails, getLocation, isInWorkLocation, attendance]); // Add attendance to the dependency array
 
-    const { data, error } = await supabase
-      .from('attendance')
-      .insert([{
-        employee_id: employeeId,
-        department_id: accessDetails.department_id,
-        ministry_id: accessDetails.ministry_id,
-        check_in_time: new Date().toISOString(),
-        check_out_time: null,
-        latitude: loc.latitude,
-        longitude: loc.longitude,
-      }])
-      .select();
-
-    if (error) {
-      console.error('Error during check-in:', error);
-      toast.error('Error checking in.');
-    } else if (data && data.length > 0) {
-      toast.success('Checked in successfully recorded!');
-      setAttendance(data[0]);
-    }
-  } catch (err) {
-    console.error('Unexpected error during check-in:', err);
-    toast.error('Unexpected error during check-in.');
-  } finally {
-    setLoadingCheckIn(false);
-  }
-}, [accessDetails, getLocation, isInWorkLocation]); // Add isInWorkLocation to the dependency array
-
-
-
-  
   // Handle Check-Out
   const handleCheckOut = useCallback(async () => {
     const employeeId = localStorage.getItem('employee_id');
@@ -206,11 +200,11 @@ const WORK_LOCATION = {
         console.error('No active check-in found:', fetchError);
         toast.error('No active check-in record found.');
       } else {
-        const { attendance_id } = attendanceData; // Use `attendance_id` instead of `id`
+        const { attendance_id } = attendanceData;
         const { error: updateError } = await supabase
           .from('attendance')
           .update({ check_out_time: new Date().toISOString() })
-          .eq('attendance_id', attendance_id); // Update by `attendance_id`
+          .eq('attendance_id', attendance_id);
 
         if (updateError) {
           console.error('Error during check-out:', updateError);
@@ -228,12 +222,11 @@ const WORK_LOCATION = {
     }
   }, []);
 
-  // Fetch last attendance info on component mount and every refresh
   useEffect(() => {
     fetchLastAttendance();
 
     // Reset check-in time if after 6 PM and no check-out has been done
-    if (isAfter6pm() && attendance && !attendance.check_out_time) {
+    if (attendance && !attendance.check_out_time && new Date().getHours() >= 18) {
       const resetAttendance = async () => {
         await supabase
           .from('attendance')
@@ -241,22 +234,13 @@ const WORK_LOCATION = {
           .eq('attendance_id', attendance.attendance_id);
       };
       resetAttendance();
-      }
+    }
   }, [fetchLastAttendance, attendance]);
 
-// Render
-
-
-return (
-  
-      
-      
-   
-<div className="container mx-auto p-4 text-center">
-  <h1 className="text-2xl font-bold mb-4">Attendance</h1>
-
-
-  <AttendanceMessage/>
+  return (
+    <div className="container mx-auto p-4 text-center">
+      <h1 className="text-2xl font-bold mb-4">Attendance</h1>
+      <AttendanceMessage />
       {attendance ? (
         <div className="space-y-4">
           <div className="flex flex-col items-center sm:flex-row sm:justify-between">
@@ -269,7 +253,6 @@ return (
               {attendance.check_out_time ? new Date(attendance.check_out_time).toLocaleString() : 'Not checked out'}
             </p>
           </div>
-          <AttendanceMessage/>
           <div className="flex justify-center mt-6">
             <button
               onClick={attendance.check_out_time ? null : handleCheckOut}
@@ -282,8 +265,6 @@ return (
             </button>
           </div>
         </div>
-
-        
       ) : (
         <div className="flex justify-center mt-6">
           <button

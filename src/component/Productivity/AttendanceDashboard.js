@@ -17,38 +17,40 @@ const AttendanceDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center bg-gray-50 py-6 overflow-hidden"> {/* Prevent external scrolling */}
+    <div className="min-h-screen flex flex-col items-center bg-gray-50 py-4 px-2 md:py-6 md:px-6">
       <ToastContainer />
-      <h1 className="text-3xl font-bold text-blue-700 mb-6">Attendance Dashboard</h1>
-      
-      {/* Button for navigation between views */}
-      <div className="flex space-x-4 mb-6">
+      <h1 className="text-2xl md:text-3xl font-bold text-blue-700 mb-4 md:mb-6 text-center">
+        Attendance Dashboard
+      </h1>
+
+      {/* Navigation Buttons */}
+      <div className="flex flex-wrap justify-center gap-2 md:gap-4 mb-4 w-full max-w-2xl">
         <button
           onClick={() => handleViewChange('checkin')}
-          className={`px-6 py-3 rounded-lg ${currentView === 'checkin' ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-600'} transition duration-300`}
+          className={`flex-1 min-w-[100px] px-4 py-2 md:px-6 md:py-3 rounded-lg text-sm md:text-base ${currentView === 'checkin' ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-600'} transition duration-300`}
         >
           CheckIn : CheckOut
         </button>
         <button
           onClick={() => handleViewChange('employee-checkins')}
-          className={`px-6 py-3 rounded-lg ${currentView === 'employee-checkins' ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-600'} transition duration-300`}
+          className={`flex-1 min-w-[100px] px-4 py-2 md:px-6 md:py-3 rounded-lg text-sm md:text-base ${currentView === 'employee-checkins' ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-600'} transition duration-300`}
         >
           Attendance Summary
         </button>
         <button
           onClick={() => handleViewChange('calendar')}
-          className={`px-6 py-3 rounded-lg ${currentView === 'calendar' ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-600'} transition duration-300`}
+          className={`flex-1 min-w-[100px] px-4 py-2 md:px-6 md:py-3 rounded-lg text-sm md:text-base ${currentView === 'calendar' ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-600'} transition duration-300`}
         >
-          Calendar / Calendar View
+          Calendar View
         </button>
       </div>
 
       {/* Transition between views */}
-      <div className="w-full max-w-3xl px-4 overflow-y-auto"> {/* Allow scrolling only within the component */}
+      <div className="w-full max-w-full sm:max-w-lg md:max-w-3xl px-2">
         <TransitionGroup>
           <CSSTransition key={currentView} timeout={800} classNames="parallax">
-            <div className="w-full p-0 rounded-lg shadow-lg">
-              <Suspense fallback={<div className="text-center text-xl">Loading...</div>}>
+            <div className="w-full">
+              <Suspense fallback={<div className="text-center text-xl text-gray-600">Loading...</div>}>
                 {currentView === 'checkin' && <CheckIn />}
                 {currentView === 'employee-checkins' && <EmployeeCheckins />}
                 {currentView === 'calendar' && <CalendarView />}
