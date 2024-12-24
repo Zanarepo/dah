@@ -191,35 +191,35 @@ import AddRemMinDashboard from "./component/MinistryDashboard/AddRemMinDashboard
 import DeptLeaveHistory from "./component/AdminPanel/DeptLeaveHistory.js"
 
 
-  import GeneralNotificationCenter from "./component/GeneralNotifications/GeneralNotificationCenter.js"
-  import MinistryAdmins from "./component/MinistryDashboard/MinistryAdmins.js"
-  import MinistryNotification from "./component/GeneralNotifications/MinistryNotification.js"
-  import CreateNotice from "./component/GeneralNotifications/CreateNotice.js"
-  import Fetch from "./component/GeneralNotifications/Fetch.js"
-  import MinAssignRole from "./component/MinistryDashboard/MinAssignRole.js"
-  import MinistryRoleDashboard from "./component/MinistryDashboard/MinistryRoleDashboard.js"
-  import MinistryAdmin from "./component/MinistryDashboard/MinistryAdmin.js"
-  import MarkNotice from "./component/GeneralNotifications/MarkNotice.js"
-  import TodoList from "./component/Productivity/TodoList.js";
-  import AdminTaskAssignment from "./component/Productivity/AdminTaskAssignment";
-  import EmployeeTaskManager from "./component/Productivity/EmployeeTaskManager"
-  //import TaskDashboard from "./component/Productivity/TaskDashboard"
-  import TaskTracking from "./component/Productivity/TaskTracking"
- import  TaskDashboardTracker  from "./component/Productivity/TaskDashboardTracker"
-  import Notify from "./component/GeneralNotifications/Notify"
-  import PerformanceDashboard from "./component/Productivity/PerformanceDashboard"
-  import AdminTaskManagerBoard from "./component/Productivity/AdminTaskManagerBoard"
-  import EmployeeList from "./component/SuperAdmins/EmployeeList"
-  import Attendance from "./component/Productivity/Attendance"
-  import EmployeeAttendance from "./component/Productivity/Attendance"
-  import AttendanceDashboard from "./component/Productivity/AttendanceDashboard"
-  import AdminAttendance from "./component/Productivity/AdminAttendance"
-  import MinistryAttendance from "./component/Productivity/MinistryAttendance"
- import DeptAttendance from "./component/Productivity/DeptAttendance"
- import AttendanceCalendar from "./component/Productivity/AttendanceCalendar"
+import GeneralNotificationCenter from "./component/GeneralNotifications/GeneralNotificationCenter.js"
+import MinistryAdmins from "./component/MinistryDashboard/MinistryAdmins.js"
+import MinistryNotification from "./component/GeneralNotifications/MinistryNotification.js"
+import CreateNotice from "./component/GeneralNotifications/CreateNotice.js"
+import Fetch from "./component/GeneralNotifications/Fetch.js"
+import MinAssignRole from "./component/MinistryDashboard/MinAssignRole.js"
+import MinistryRoleDashboard from "./component/MinistryDashboard/MinistryRoleDashboard.js"
+import MinistryAdmin from "./component/MinistryDashboard/MinistryAdmin.js"
+import MarkNotice from "./component/GeneralNotifications/MarkNotice.js"
+import TodoList from "./component/Productivity/TodoList.js";
+import AdminTaskAssignment from "./component/Productivity/AdminTaskAssignment";
+import EmployeeTaskManager from "./component/Productivity/EmployeeTaskManager"
+//import TaskDashboard from "./component/Productivity/TaskDashboard"
+import TaskTracking from "./component/Productivity/TaskTracking"
+import  TaskDashboardTracker  from "./component/Productivity/TaskDashboardTracker"
+import Notify from "./component/GeneralNotifications/Notify"
+import PerformanceDashboard from "./component/Productivity/PerformanceDashboard"
+import AdminTaskManagerBoard from "./component/Productivity/AdminTaskManagerBoard"
+import EmployeeList from "./component/SuperAdmins/EmployeeList"
+import Attendance from "./component/Productivity/Attendance"
+import EmployeeAttendance from "./component/Productivity/Attendance"
+import AttendanceDashboard from "./component/Productivity/AttendanceDashboard"
+import AdminAttendance from "./component/Productivity/AdminAttendance"
+import MinistryAttendance from "./component/Productivity/MinistryAttendance"
+import DeptAttendance from "./component/Productivity/DeptAttendance"
+import AttendanceCalendar from "./component/Productivity/AttendanceCalendar"
 import AttendanceMessage from "./component/Productivity/AttendanceMessage"
-
-
+import CheckInInstructions from "./component/Productivity/CheckInInstructions"
+import EmployeeIssueReport from "./component/Productivity/EmployeeIssueReport"
 
 
 
@@ -279,7 +279,9 @@ const App = () => {
           <Route path="/chattings" element={<AdminsChatApp />} />
           <Route path="/greetings" element={<AttendanceMessage />} />
           <Route path="/chatting" element={<EmployeeChatApp/>} />
-   
+          <Route path="/chatting" element={<CheckInInstructions/>} />
+          <Route path="/reports" element={<EmployeeIssueReport/>} />
+          
           
 
           {/* -------------Section 1: Independent Route 2 Profile Layout-------------------------------*/}

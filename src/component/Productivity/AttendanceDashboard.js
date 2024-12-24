@@ -2,6 +2,7 @@ import React, { useState, Suspense, lazy } from 'react';
 import { ToastContainer } from 'react-toastify';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import './parallaxTransitions.css'; // Ensure this file has the correct styles
+import CheckInInstructions from "../Productivity/CheckInInstructions";
 
 // Lazy loading the views for better performance
 const CheckIn = lazy(() => import('../Productivity/Attendance')); // Make sure the path is correct
@@ -17,11 +18,17 @@ const AttendanceDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center bg-gray-50 py-4 px-2 md:py-6 md:px-6">
+    <div className="min-h-screen flex flex-col items-center bg-gray-50 py-4 px-2 md:py-6 md:px-6 mt-12"> {/* Added mt-12 to bring down the dashboard */}
       <ToastContainer />
+      
       <h1 className="text-2xl md:text-3xl font-bold text-blue-700 mb-4 md:mb-6 text-center">
         Attendance Dashboard
       </h1>
+
+      {/* Centered CheckInInstructions Component */}
+      <div className="w-full flex justify-center mb-4">
+        <CheckInInstructions />
+      </div>
 
       {/* Navigation Buttons */}
       <div className="flex flex-wrap justify-center gap-2 md:gap-4 mb-4 w-full max-w-2xl">
@@ -44,7 +51,7 @@ const AttendanceDashboard = () => {
           Calendar View
         </button>
       </div>
-
+      
       {/* Transition between views */}
       <div className="w-full max-w-full sm:max-w-lg md:max-w-3xl px-2">
         <TransitionGroup>

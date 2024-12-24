@@ -4,7 +4,7 @@ const About = () => {
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800 pt-16"> {/* Added padding-top */}
       {/* Header Section */}
-      <header className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-10 px-6 text-center">
+      <header className="bg-gradient-to-r from-blue-500 to-blue-800 text-white py-10 px-6 text-center">
         <h1 className="text-4xl sm:text-5xl font-bold">Who We Are</h1>
         <p className="text-base sm:text-lg mt-3 max-w-2xl mx-auto">
           At MyDatafy, we believe in creating a better future by empowering
@@ -46,7 +46,7 @@ const About = () => {
               key={index}
               className="bg-white p-6 rounded-lg shadow-md text-center transition hover:scale-105"
             >
-              <h3 className="text-xl font-semibold text-blue-700 mb-4">{value.title}</h3>
+              <h3 className="text-xl font-semibold text-blue-500 mb-4">{value.title}</h3>
               <p className="text-gray-600">{value.description}</p>
             </div>
           ))}
@@ -55,7 +55,7 @@ const About = () => {
 
       {/* Team Section */}
       <section className="py-10 px-6 lg:px-32">
-        <h2 className="text-center text-3xl font-bold text-blue-800 mb-8">
+        <h2 className="text-center text-3xl font-bold text-blue-500 mb-8">
           Meet the Team
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">

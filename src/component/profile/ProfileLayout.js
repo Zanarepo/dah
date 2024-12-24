@@ -16,6 +16,7 @@ import EmployeeAttendance from "../Productivity/EmployeeAttendance"
 import AttendanceDashboard from"../Productivity/AttendanceDashboard"
 import Calendar from "react-calendar";
 import AttendanceMessage from "../Productivity/AttendanceMessage"
+import EmployeeIssueReport from "../Productivity/EmployeeIssueReport";
 import { FaTasks } from "react-icons/fa"; // Tasks icon for TodoList
 
 
@@ -81,11 +82,12 @@ const EmployeeDashboard = () => {
     { name: "Attendance Board", icon: <CheckCircleIcon className="h-6 w-6" />, route: "/attendance-board" },
     { name: "Leave", icon: <CalendarIcon className="h-6 w-6" />, route: "/leave" },
     { name: "Notifications", icon: <BellIcon className="h-6 w-6" />, route: "/profile-notifications" },
-
     { name: "Task Dashboard", icon: <FaTasks className="h-6 w-6" />, route: "/task-dashboard" },
+     {/* { name: "Reports", icon: <FaTasks className="h-6 w-6" />, route: "/reports" }, */} 
+    
 
    
-    
+   
   ];
 
   const toggleSidebar = () => setIsOpen(!isOpen);
@@ -179,6 +181,7 @@ const EmployeeDashboard = () => {
          <Route path="greetings" element={<AttendanceMessage />} />
 
           <Route path="task-dashboard" element={<TaskDashboardTracker />} />
+          <Route path="reports" element={<EmployeeIssueReport />} />
 
         </Routes>
 

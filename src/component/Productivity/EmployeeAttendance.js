@@ -105,7 +105,7 @@ const EmployeeAttendance = () => {
   };
 
   return (
-    <div className="container mx-auto p-6 space-y-8">
+    <div className="w-full px-0 py-0 space-y-8">
       <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">Attendance Summary</h1>
 
       {loading ? (
@@ -114,8 +114,8 @@ const EmployeeAttendance = () => {
         <div className="text-center text-red-500">{error}</div>
       ) : (
         <>
-          <div className="bg-white-600 p-6 rounded-lg shadow-lg text-white flex flex-col items-center space-y-4">
-            <div className="w-full sm:w-3/4 md:w-1/2 p-4 bg-blue-700 rounded-lg shadow-sm space-y-3">
+          <div className="bg-white p-6 rounded-lg shadow-lg text-white flex flex-col items-center space-y-4 w-full">
+            <div className="w-full sm:w-full md:w-full p-4 bg-blue-700 rounded-lg shadow-sm space-y-3">
               <p className="text-lg">
                 <strong>Name:</strong> {employeeDetails?.first_name} {employeeDetails?.last_name}
               </p>
@@ -137,7 +137,7 @@ const EmployeeAttendance = () => {
             </div>
           </div>
 
-          <div className="overflow-x-auto shadow-lg rounded-lg bg-white p-4">
+          <div className="overflow-x-auto shadow-lg rounded-lg bg-white p-4 w-full">
             <h2 className="text-xl font-semibold mb-4">Attendance Records</h2>
             <table className="min-w-full table-auto">
               <thead className="bg-blue-100">
@@ -172,7 +172,7 @@ const EmployeeAttendance = () => {
             </table>
           </div>
 
-          <div className="flex justify-between items-center mt-4">
+          <div className="flex justify-between items-center mt-4 w-full">
             <button
               onClick={handlePrevPage}
               className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 disabled:bg-gray-400"
@@ -198,3 +198,4 @@ const EmployeeAttendance = () => {
 };
 
 export default EmployeeAttendance;
+
