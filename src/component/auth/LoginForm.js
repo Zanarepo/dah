@@ -47,9 +47,9 @@ const LoginForm = () => {
       localStorage.setItem("user", JSON.stringify(user));
 
       const roles = [];
-      if (user.is_super_admin) roles.push({ name: "Super Admin", route: "/superadmins" });
-      if (user.admin_ministry) roles.push({ name: "Admin Ministry", route: "/adminministry" });
-      if (user.is_admin) roles.push({ name: "Admin", route: "/admindashboard" });
+      if (user.is_super_admin) roles.push({ name: "Super Admin", route: "/superhome" });
+      if (user.admin_ministry) roles.push({ name: "Admin Ministry", route: "/ministryhome" });
+      if (user.is_admin) roles.push({ name: "Admin", route: "/adminhome" });
       roles.push({ name: "Employee", route: "/personal-details" });
 
       if (roles.length === 1) {

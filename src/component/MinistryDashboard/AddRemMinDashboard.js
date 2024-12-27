@@ -1,13 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom"; // Import useNavigate for back navigation
-import AddMinistryDepartment from "./AddMinistryDepartment"
+import AddMinistryDepartment from "./AddMinistryDepartment";
 import RemoveMinDepartmement from "./RemoveMinDepartmement"; // Ensure RemoveDepartment is imported
-
-
-
-
-              
-              
 
 const AddDepartmentDashboard = () => {
   const [isAddDepartmentVisible, setIsAddDepartmentVisible] = useState(false);
@@ -30,18 +24,18 @@ const AddDepartmentDashboard = () => {
         </button>
 
         {/* Header Section */}
-        <div className="pt-12">
-          <h2 className="text-2xl font-bold mb-6 text-center">
+        <div className="mt-4">
+          <h2 className="text-2xl font-bold mb-4 text-center">
             Department Management Dashboard
           </h2>
-          <p className="text-gray-700 text-center mb-8">
+          <p className="text-gray-700 text-center mb-6">
             Welcome to the Department Management Dashboard. Below you can add or
             remove departments from the database.
           </p>
         </div>
 
         {/* Dashboard Buttons */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Button to Add Department */}
           <div className="flex justify-center">
             <button
@@ -65,12 +59,12 @@ const AddDepartmentDashboard = () => {
 
         {/* Conditional Rendering for Components */}
         {isAddDepartmentVisible && (
-          <div className="mt-6">
+          <div className="mt-4">
             <AddMinistryDepartment />
           </div>
         )}
         {isRemoveDepartmentVisible && (
-          <div className="mt-6">
+          <div className="mt-4">
             <RemoveMinDepartmement />
           </div>
         )}

@@ -2,70 +2,7 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 
-/*
-import ProfileForm from "./component/profile/ProfileForm.js";
-import EmployeeForm from "./component/admin/EmployeeForm.js";
-import ActivateAccount from "./component/admin/ActivateAccount.js";
-import LeaveHistory from "./component/profile/LeaveHistory.js";
 
-import AssignAdminRoles from "./component/auth/AssignAdminRoles.js";
-import AdminPanel from "./component/admin/AdminPanel.js";
-import LeaveApproval from "./component/profile/LeaveApproval.js";
-import MinistryActivity from "./component/GeneralActivities/MinistryActivity.js";
-import Settings from "./component/admin/Settings.js";
-import PopulateMinistries from "./component/admin/PopulateMinistries.js";
-import ForgotPassword from "./component/auth/ForgotPassword.js";
-import Recruitment from "./component/MinistriesFunctions/Recruitment.js"
-import Dapartments from "./component/MinistriesFunctions/Departments.js"
-import Ministries from "./component/MinistriesFunctions/Ministries.js"
-import Performance from "./component/MinistriesFunctions/Performance.js"
-import Promotions from "./component/MinistriesFunctions/Promotions.js"
-import Retirement from "./component/MinistriesFunctions/Retirement.js"
-import VerificationExercise from "./component/MinistriesFunctions/VerificationExercise.js"
-import Attendance from "./component/MinistriesFunctions/Attendance.js"
-import Employees from "./component/MinistriesFunctions/Employees.js"
-import AssignDepartmentAdmin from "./component/admin/AssignDepartmentAdmin.js"
-import LeaveTrackerEducation from "./component/profile/LeaveTrackerEducation.js"*/
-
-
-
-
-//import Analytics from "./component/SuperAdmins/Analytics.js";
-//import AssignSuperAdmin from "./component/SuperAdmins/AssignSuperAdmin.js"
-
-/*
-import LeaveTracking from "./component/auth/LeaveTracking.js"; 
-import LeaveApprovalDetail from "./component/auth/LeaveApprovalDetail.js"; 
-import AssignManager from "./component/admin/AssignManager.js";
-import MakeManager from "./component/admin/MakeManager.js";
-import AddManager from "./component/admin/AddManager.js";
-import AddMinistryForm from "./component/admin/AddMinistryForm.js";
-import AddDepartment from "./component/admin/AddDepartment.js";
-import CreateManager from "./component/admin/CreateManager.js";
-import ManageDepartmentManager from "./component/admin/ManageDepartmentManager.js";
-import UnassignManagerFromDepartments from "./component/admin/UnassignManagerFromDepartments.js"
-import RemoveManagerFromEmployee from "./component/admin/RemoveManagerFromEmployee.js"
-import DeleteManager from "./component/admin/DeleteManager.js"
-import RemoveMinistry  from "./component/admin/RemoveMinistry.js"
-import RemoveDepartment from "./component/admin/RemoveDepartment.js"
-import LeaveCancel from "./component/profile/LeaveCancel.js"
-import LeaveStatusTracker from "./component/profile/LeaveStatusTracker.js"
-import OnVacation from "./component/profile/OnVacation.js"
-import Notification from "./component/admin/Notification.js"
-import NotificationCenter from "./component/admin/NotificationCenter.js"
-import AdminPage from "./component/admin/AdminPage.js"
-import LeaveCentre from "./component/admin/LeaveCenter.js"
-import LeaveApprovalNotification from "./component/Notifications/LeaveApprovalNotification.js";
-import Navbar from "./component/Dashbaord/Navbar.js"
-import Sidebar from "./component/Dashbaord/Sidebar.js"
-import MainDashboard from "./component/Dashbaord/MainDashboard.js"
-import AdminLayout from "./component/Layout/Layout.js"
-import EmployeeTable from "./component/MinistriesFunctions/EmployeeTable.js"
-import EmployeePortal from "./component/Dashbaord/EmployeePortal.js"
-import AssignSuperAdmin from "./component/SuperAdmins/AssignSuperAdmin.js"
-import Analytics from "./component/SuperAdmins/Analytics.js";
-
- */
 
 
 
@@ -220,17 +157,21 @@ import AttendanceCalendar from "./component/Productivity/AttendanceCalendar"
 import AttendanceMessage from "./component/Productivity/AttendanceMessage"
 import CheckInInstructions from "./component/Productivity/CheckInInstructions"
 import EmployeeIssueReport from "./component/Productivity/EmployeeIssueReport"
+import IssueTracker from "./component/Productivity/IssueTracker"
+import Logout from "./component/auth/Logout"
+import Settings from "./component/admin/Settings"
+import AdminLandingPage from "./component/SuperAdmins/AdminLandingPage"
+import ExploreAdminDashboard from "./component/SuperAdmins/ExploreAdminDashboard"
+import AdminHomePage from "./component/admin/AdminHomePage"
+import ExploreAdmin from "./component/admin/ExploreAdmin"
+import MinistryHomePage from "./component/MinistryDashboard/MinistryHomePage"
+import ExploreMinistryDashboard from "./component/MinistryDashboard/ExploreMinistryDashboard"
+import DisplaySettings from "./component/MinistryDashboard/DisplaySettings"
 
+import MinistrySettings from "./component/MinistryDashboard/MinistrySettings"
 
-
-
-
-
-
-
-
-
-
+import { ThemeProvider } from "./component/ThemeContext";
+//import DisplaLayout from "./component/Layout/DisplayLayout.js";
 
 
 
@@ -244,6 +185,7 @@ import EmployeeIssueReport from "./component/Productivity/EmployeeIssueReport"
 
 const App = () => {
   return (
+    <ThemeProvider> 
     <Router>
       <Routes>
 
@@ -260,7 +202,8 @@ const App = () => {
         </Route>
 
         {/* -------Section 1: Independent Route 2 Profile Layout-----------------*/}
-        <Route path="" element={<ProfileLayout />}>
+          
+          <Route path="" element={<ProfileLayout />}>
           <Route path="/personal-details" element={<EmployeePersonalDetails />} />
           <Route path="/employment-details" element={<EmployeeEmploymentDetails />} />
           <Route path="/profile-notifications" element={<ProfileNotification />} />
@@ -281,17 +224,21 @@ const App = () => {
           <Route path="/chatting" element={<EmployeeChatApp/>} />
           <Route path="/chatting" element={<CheckInInstructions/>} />
           <Route path="/reports" element={<EmployeeIssueReport/>} />
+          <Route path="/logout" element={< Logout/>} /> 
           
+       
           
 
           {/* -------------Section 1: Independent Route 2 Profile Layout-------------------------------*/}
         </Route>
 
         {/* -------Section 1: Independent Route 2 Profile Layout-----------------*/}
-        
+      
         <Route path="/" element={<SuperLayout />}>
         {/* Nested routes under SuperLayout */}
         <Route path="/supertask" element={<AdminTaskAssignment/>} />
+        <Route path="/explore" element={<ExploreAdminDashboard/>} />
+        
         <Route path="/todos" element={<EmployeeTaskManager/>} />
         <Route path="/tasktracking" element={<TaskTracking/>} />
         <Route path="/performance-board" element={<PerformanceDashboard/>} />
@@ -300,7 +247,15 @@ const App = () => {
         <Route path="/genattendance" element={< Attendance/>} />   {/* this retrievs list of attendance from the databse and populat ina table */}
         <Route path="/gen-checkins" element={< EmployeeAttendance/>} />
         <Route path="/super-attendance" element={< AdminAttendance/>} />    {/* the checking component for sign in and out of the office */}
+        <Route path="/issue-tracker" element={< IssueTracker/>} /> 
+        <Route path="/settings" element={< Settings/>} /> 
+        <Route path="/superhome" element={< AdminLandingPage/>} /> 
+        <Route path="/display" element={< DisplaySettings/>} /> 
         
+        
+        <Route path="/logouts" element={< Logout/>} /> 
+        
+       
 
 
         <Route path="/g-departments" element={<GeneralDepartments />} />
@@ -354,7 +309,7 @@ const App = () => {
         <Route path="/task" element={<TodoList/>} />
      
 
-
+      
 
 
 
@@ -412,18 +367,26 @@ const App = () => {
         <Route path="/adremove-minidashboard" element={<   AddRemMinDashboard/>} />
         <Route path="/assignadmin-department" element={<   AssignAdminsDepartment/>} />
         <Route path="/ministryadmins" element={<   MinistryAdmins/>} />
+        <Route path="/ministryhome" element={<   MinistryHomePage/>} />
+        <Route path="/explores" element={<   ExploreMinistryDashboard/>} />
+         <Route path="/ministrysettings" element={<   MinistrySettings/>} />
+         <Route path="/display" element={< DisplaySettings/>} /> 
+        
+        
 
         </Route>
 
 
       
         {/* Section 3: Independent Route 3 */}
+        
         <Route path="" element={<Layout />}>
         <Route path="/gen-checkins" element={< EmployeeAttendance/>} /> 
         <Route path="/admintrack" element={<TaskTracking/>} />
         <Route path="/admin-attendance" element={< AdminAttendance/>} /> 
         <Route path="/dept-attendance" element={<DeptAttendance/>} /> 
-       
+        <Route path="/adminhome" element={<AdminHomePage/>} /> 
+        <Route path="/onboard" element={<ExploreAdmin/>} /> 
 
 
           <Route path="/admin-notification" element={<AdminNotification />}></Route>
@@ -443,6 +406,13 @@ const App = () => {
           <Route path="/admintaskboard" element={<AdminTaskManagerBoard/>} />
           <Route path="/adminlists" element={<EmployeeList/>} />
           <Route path="/adminlist" element={<ChatList/>} />
+          <Route path="/display" element={< DisplaySettings/>} /> 
+          <Route path="/signout" element={< Logout/>} /> 
+         
+          
+        
+          
+
         </Route>
 
 
@@ -464,6 +434,7 @@ const App = () => {
         <Route path="*" element={<div>404 Not Found</div>} />
       </Routes>
     </Router>
+    </ThemeProvider> 
   );
 };
 

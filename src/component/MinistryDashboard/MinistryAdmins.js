@@ -13,7 +13,8 @@ import {
 const SettingsDashboard = () => {
   return (
     <div className="max-w-7xl mx-auto mt-10 bg-white shadow-lg p-6 rounded-lg">
-      <h2 className="text-2xl font-bold mb-6 text-center">Settings Dashboard</h2>
+     
+      {/* Dashboard Buttons Grid  <h2 className="text-2xl font-bold mb-6 text-center">Settings Dashboard</h2>*/}
       <p className="text-gray-700 text-center mb-8">
         Manage roles, departments, ministries, and more from this dashboard. Click any option to proceed.
       </p>
@@ -59,7 +60,7 @@ const SettingsDashboard = () => {
           <Link to="/assignadmin-department">
             <button className="w-full bg-purple-500 text-white py-3 px-6 rounded-lg shadow-md hover:bg-purple-700 transition duration-300 flex items-center justify-center">
               <FaUserTie className="mr-2 text-xl" />
-              <span>Assign Admin to Department & Ministry</span>
+              <span>Assign Admin to Departments</span>
             </button>
           </Link>
         </div>

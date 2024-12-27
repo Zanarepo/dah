@@ -96,3 +96,67 @@
 
 <Route path="/activate" element={<ActivateAccount />} />  
 {/* Helps employees activate their accounts (work in progress) */}
+/*
+import ProfileForm from "./component/profile/ProfileForm.js";
+import EmployeeForm from "./component/admin/EmployeeForm.js";
+import ActivateAccount from "./component/admin/ActivateAccount.js";
+import LeaveHistory from "./component/profile/LeaveHistory.js";
+
+import AssignAdminRoles from "./component/auth/AssignAdminRoles.js";
+import AdminPanel from "./component/admin/AdminPanel.js";
+import LeaveApproval from "./component/profile/LeaveApproval.js";
+import MinistryActivity from "./component/GeneralActivities/MinistryActivity.js";
+import Settings from "./component/admin/Settings.js";
+import PopulateMinistries from "./component/admin/PopulateMinistries.js";
+import ForgotPassword from "./component/auth/ForgotPassword.js";
+import Recruitment from "./component/MinistriesFunctions/Recruitment.js"
+import Dapartments from "./component/MinistriesFunctions/Departments.js"
+import Ministries from "./component/MinistriesFunctions/Ministries.js"
+import Performance from "./component/MinistriesFunctions/Performance.js"
+import Promotions from "./component/MinistriesFunctions/Promotions.js"
+import Retirement from "./component/MinistriesFunctions/Retirement.js"
+import VerificationExercise from "./component/MinistriesFunctions/VerificationExercise.js"
+import Attendance from "./component/MinistriesFunctions/Attendance.js"
+import Employees from "./component/MinistriesFunctions/Employees.js"
+import AssignDepartmentAdmin from "./component/admin/AssignDepartmentAdmin.js"
+import LeaveTrackerEducation from "./component/profile/LeaveTrackerEducation.js"*/
+
+
+
+
+//import Analytics from "./component/SuperAdmins/Analytics.js";
+//import AssignSuperAdmin from "./component/SuperAdmins/AssignSuperAdmin.js"
+
+/*
+import LeaveTracking from "./component/auth/LeaveTracking.js"; 
+import LeaveApprovalDetail from "./component/auth/LeaveApprovalDetail.js"; 
+import AssignManager from "./component/admin/AssignManager.js";
+import MakeManager from "./component/admin/MakeManager.js";
+import AddManager from "./component/admin/AddManager.js";
+import AddMinistryForm from "./component/admin/AddMinistryForm.js";
+import AddDepartment from "./component/admin/AddDepartment.js";
+import CreateManager from "./component/admin/CreateManager.js";
+import ManageDepartmentManager from "./component/admin/ManageDepartmentManager.js";
+import UnassignManagerFromDepartments from "./component/admin/UnassignManagerFromDepartments.js"
+import RemoveManagerFromEmployee from "./component/admin/RemoveManagerFromEmployee.js"
+import DeleteManager from "./component/admin/DeleteManager.js"
+import RemoveMinistry  from "./component/admin/RemoveMinistry.js"
+import RemoveDepartment from "./component/admin/RemoveDepartment.js"
+import LeaveCancel from "./component/profile/LeaveCancel.js"
+import LeaveStatusTracker from "./component/profile/LeaveStatusTracker.js"
+import OnVacation from "./component/profile/OnVacation.js"
+import Notification from "./component/admin/Notification.js"
+import NotificationCenter from "./component/admin/NotificationCenter.js"
+import AdminPage from "./component/admin/AdminPage.js"
+import LeaveCentre from "./component/admin/LeaveCenter.js"
+import LeaveApprovalNotification from "./component/Notifications/LeaveApprovalNotification.js";
+import Navbar from "./component/Dashbaord/Navbar.js"
+import Sidebar from "./component/Dashbaord/Sidebar.js"
+import MainDashboard from "./component/Dashbaord/MainDashboard.js"
+import AdminLayout from "./component/Layout/Layout.js"
+import EmployeeTable from "./component/MinistriesFunctions/EmployeeTable.js"
+import EmployeePortal from "./component/Dashbaord/EmployeePortal.js"
+import AssignSuperAdmin from "./component/SuperAdmins/AssignSuperAdmin.js"
+import Analytics from "./component/SuperAdmins/Analytics.js";
+
+ */

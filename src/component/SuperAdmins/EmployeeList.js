@@ -48,7 +48,7 @@ const EmployeeList = () => {
             employment_date, 
             grade_level, 
             department_id,
-            departments(name)
+            departments!fk_department(name)
           `);
 
         if (accessId === 1) {

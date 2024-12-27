@@ -18,7 +18,7 @@ const SuperAdminDashboard = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex items-start justify-center min-h-screen bg-gray-100">
       <div className="relative max-w-4xl w-full bg-white shadow-lg p-6 rounded-lg">
         {/* Back Button */}
         <button
@@ -29,18 +29,18 @@ const SuperAdminDashboard = () => {
         </button>
 
         {/* Header Section */}
-        <div className="pt-12">
-          <h2 className="text-2xl font-bold mb-6 text-center">
+        <div className="pt-4">
+          <h2 className="text-2xl font-bold mb-4 text-center">
             Super Admin Dashboard
           </h2>
-          <p className="text-gray-700 text-center mb-8">
+          <p className="text-gray-700 text-center mb-6">
             Welcome to the Super Admin Dashboard. Below you can manage roles,
             assign managers, and delete admin access.
           </p>
         </div>
 
         {/* Dashboard Buttons */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <div className="flex justify-center">
             <button
               onClick={toggleAssignRole}
@@ -69,17 +69,17 @@ const SuperAdminDashboard = () => {
 
         {/* Conditional Rendering for Components */}
         {isAssignRoleVisible && (
-          <div className="mt-6">
+          <div className="mt-4">
             <AssignRole />
           </div>
         )}
         {isRoleAssignmentVisible && (
-          <div className="mt-6">
+          <div className="mt-4">
             <RoleAssignmentManagers />
           </div>
         )}
         {isDeleteAccessVisible && (
-          <div className="mt-6">
+          <div className="mt-4">
             <DeleteAccess />
           </div>
         )}

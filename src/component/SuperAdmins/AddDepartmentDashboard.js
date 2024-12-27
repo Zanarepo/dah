@@ -13,8 +13,8 @@ const AddDepartmentDashboard = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="relative max-w-4xl w-full bg-white shadow-lg p-6 rounded-lg">
+    <div className="flex items-start justify-center min-h-screen bg-gray-100 pt-6">
+      <div className="relative max-w-4xl w-full bg-white shadow-lg rounded-lg">
         {/* Back Button */}
         <button
           onClick={() => navigate(-1)} // Navigate back to the previous page
@@ -24,7 +24,7 @@ const AddDepartmentDashboard = () => {
         </button>
 
         {/* Header Section */}
-        <div className="pt-12">
+        <div>
           <h2 className="text-2xl font-bold mb-6 text-center">
             Department Management Dashboard
           </h2>

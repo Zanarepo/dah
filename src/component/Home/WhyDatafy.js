@@ -51,8 +51,7 @@ const WhyDatafy = () => {
 
       <div className="mt-12 text-center">
         <p className="text-lg text-gray-600">
-          With Datafy, we&apos;re not just transforming processes—we&apos;re reshaping how governments can work, leading to a brighter, more efficient future.
-        </p>
+          With Datafy, we&apos;re not just transforming processes—we&apos;re reshaping how governments can work, leading to a brighter, more efficient workforce       </p>
       </div>
     </div>
   );

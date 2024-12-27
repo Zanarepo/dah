@@ -13,8 +13,8 @@ const AddMinistryDashboard = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="relative max-w-4xl w-full bg-white shadow-lg p-6 rounded-lg">
+    <div className="flex items-start justify-center min-h-screen pt-4">
+      <div className="relative max-w-4xl w-full">
         {/* Back Button */}
         <button
           onClick={() => navigate(-1)}
@@ -24,19 +24,19 @@ const AddMinistryDashboard = () => {
         </button>
 
         {/* Header Section */}
-        <div className="pt-12">
+        <div className="pt-4">
           <h2 className="text-2xl font-bold mb-4 text-center">Ministry Management Dashboard</h2>
-          <p className="text-gray-700 text-center mb-8">
+          <p className="text-gray-700 text-center mb-6">
             Welcome to the Ministry Management Dashboard. Below you can add or remove ministries from your database.
           </p>
         </div>
 
         {/* Dashboard Buttons */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="flex justify-center">
             <button
               onClick={toggleAddMinistry}
-              className="w-full bg-green-500 text-white py-3 px-6 rounded-lg shadow-md hover:bg-green-700 transition duration-300"
+              className="w-40 bg-green-500 text-white py-2 px-4 rounded-lg shadow-md hover:bg-green-700 transition duration-300"
             >
               Add Ministry
             </button>
@@ -44,7 +44,7 @@ const AddMinistryDashboard = () => {
           <div className="flex justify-center">
             <button
               onClick={toggleRemoveMinistry}
-              className="w-full bg-red-500 text-white py-3 px-6 rounded-lg shadow-md hover:bg-red-700 transition duration-300"
+              className="w-40 bg-red-500 text-white py-2 px-4 rounded-lg shadow-md hover:bg-red-700 transition duration-300"
             >
               Remove Ministry
             </button>

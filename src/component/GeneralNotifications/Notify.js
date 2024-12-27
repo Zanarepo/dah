@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../../supabaseClient"; // Ensure this is correct
-import { MdAddAlert } from "react-icons/md"; // Bell icon with a plus sign
-import NotificationModal from "../profile/NotificationModal"; // Ensure the path to NotificationModal is correct
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const EmployeeNotificationCenter = () => {
   const [newNotificationMessage, setNewNotificationMessage] = useState("");
   const [notificationTopic, setNotificationTopic] = useState("");
-  const [notificationType, setNotificationType] = useState(""); // New state for notification type
+  const [notificationType, setNotificationType] = useState("");
   const [senderDetails, setSenderDetails] = useState({});
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [notificationModal, setNotificationModal] = useState({ isOpen: false, message: "", type: "" });
 
   // Fetch sender details
   useEffect(() => {
@@ -17,7 +15,7 @@ const EmployeeNotificationCenter = () => {
       const storedUserId = localStorage.getItem("employee_id");
 
       if (!storedUserId) {
-        setNotificationModal({ isOpen: true, message: "User is not authenticated", type: "error" });
+        toast.error("User is not authenticated");
         return;
       }
 
@@ -28,12 +26,12 @@ const EmployeeNotificationCenter = () => {
         .single();
 
       if (error) {
-        setNotificationModal({ isOpen: true, message: "Failed to fetch sender details", type: "error" });
+        toast.error("Failed to fetch sender details");
         return;
       }
 
       setSenderDetails({
-        employee_id: data.employee_id,  // Ensure employee_id is correctly fetched
+        employee_id: data.employee_id,
         name: `${data.first_name} ${data.last_name}`,
         department_id: data.department_id,
         ministry_id: data.ministry_id,
@@ -46,143 +44,77 @@ const EmployeeNotificationCenter = () => {
   // Add new notification
   const createNotification = async () => {
     if (!notificationType || !newNotificationMessage) {
-      setNotificationModal({ isOpen: true, message: "Please provide all required information", type: "error" });
+      toast.error("Please provide all required information");
       return;
     }
 
-    // Show a loading notification
-    setNotificationModal({ isOpen: true, message: "Creating notification...", type: "info" });
-
     try {
-      // 1. Create the notification for the employee
+      toast.info("Creating notification...");
+
       const { error } = await supabase
         .from("general_notifications")
-        .insert([{
-          employee_id: senderDetails.employee_id,
-          ministry_id: senderDetails.ministry_id,
-          department_id: senderDetails.department_id,
-          sender_id: senderDetails.employee_id,
-          type: notificationType,
-          message: newNotificationMessage,
-        }]);
+        .insert([
+          {
+            employee_id: senderDetails.employee_id,
+            ministry_id: senderDetails.ministry_id,
+            department_id: senderDetails.department_id,
+            sender_id: senderDetails.employee_id,
+            type: notificationType,
+            message: newNotificationMessage,
+          },
+        ]);
 
       if (error) throw new Error("Error creating notification");
 
-      // 2. Get the admin users with access_id 2 and 3
-      const { data: admins, error: adminError } = await supabase
-        .from("access_level")
-        .select("employee_id")
-        .in("access_id", [2, 3]) // Admin and super admin access IDs
-        .in("department_id", [senderDetails.department_id, senderDetails.ministry_id]);
-
-      if (adminError) throw new Error("Error fetching admin users");
-
-      // 3. Create admin notifications with sender's details included
-      const adminNotifications = admins.map((admin) => {
-        const senderFullName = `${senderDetails.first_name} ${senderDetails.last_name}`;
-        const senderDepartment = senderDetails.department_name; // Ensure department is correctly retrieved
-
-        return {
-          employee_id: admin.employee_id,
-          ministry_id: senderDetails.ministry_id,
-          department_id: senderDetails.department_id,
-          sender_id: senderDetails.employee_id,
-          type: notificationType,
-          message: `From: ${senderFullName} (${senderDepartment}) - ${newNotificationMessage}`, // Enrich message with sender details
-        };
-      });
-
-      const { error: adminNotificationError } = await supabase
-        .from("general_notifications")
-        .insert(adminNotifications);
-
-      if (adminNotificationError) throw new Error("Error sending notifications to admins");
-
-      // Success notification
-      setNotificationModal({ isOpen: true, message: "Notification sent successfully!", type: "success" });
+      toast.success("Notification sent successfully!");
+      setNewNotificationMessage("");
+      setNotificationTopic("");
+      setNotificationType("");
     } catch (error) {
-      setNotificationModal({ isOpen: true, message: error.message || "An error occurred", type: "error" });
+      toast.error(error.message || "An error occurred");
     }
   };
 
-  // Prevent page scrolling when modal is open
-  useEffect(() => {
-    if (isModalOpen) {
-      document.body.style.overflow = "hidden"; // Prevent body scroll
-      document.body.style.paddingRight = "15px"; // Prevent horizontal scroll bar appearing due to modal
-    } else {
-      document.body.style.overflow = ""; // Re-enable body scroll
-      document.body.style.paddingRight = ""; // Reset body padding
-    }
-  }, [isModalOpen]);
-
   return (
-    <div className="min-h-screen bg-gray-50 relative">
-      {/* Notification Button with minimal padding and smaller size */}
-      <button
-        className="fixed top-2/3 right-2 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition flex items-center justify-center z-40"
-        onClick={() => setIsModalOpen(true)}
-      >
-        <MdAddAlert className="text-xl" /> {/* Smaller bell icon with plus sign */}
-      </button>
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
+      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg">
+        <h2 className="text-lg font-bold mb-4">Send Notification</h2>
 
-      {/* Modal for adding notifications */}
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-96 max-h-[90%] overflow-auto">
-            <h2 className="text-lg font-bold mb-4">Reminder Notification</h2>
+        {/* Dropdown for notification type */}
+        <select
+          value={notificationType}
+          onChange={(e) => setNotificationType(e.target.value)}
+          className="w-full p-2 border rounded-md mb-4"
+        >
+          <option value="">Select Notification Type</option>
+          <option value="Emergency">Emergency</option>
+          <option value="Appointment Reminder">Appointment Reminder</option>
+          <option value="Leave Approval">Leave Approval</option>
+          <option value="Meeting Reminder">Meeting Reminder</option>
+        </select>
 
-            {/* Dropdown for notification type */}
-            <select
-              value={notificationType}
-              onChange={(e) => setNotificationType(e.target.value)}
-              className="w-full p-2 border rounded-md mb-4"
-            >
-              <option value="">Select Notification Type</option>
-              <option value="Emergency">Emergency</option>
-              <option value="Appointment Reminder">Appointment Reminder</option>
-              <option value="Leave Approval">Leave Approval</option>
-              <option value="Meeting Reminder">Meeting Reminder</option>
-            </select>
-
-            <input
-              type="text"
-              value={notificationTopic}
-              onChange={(e) => setNotificationTopic(e.target.value)}
-              placeholder="Enter notification topic"
-              className="w-full p-2 border rounded-md mb-4"
-            />
-            <textarea
-              value={newNotificationMessage}
-              onChange={(e) => setNewNotificationMessage(e.target.value)}
-              placeholder="Enter notification message"
-              className="w-full p-2 border rounded-md mb-4"
-              rows="4"
-            ></textarea>
-            <button
-              onClick={createNotification}
-              className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition w-full"
-            >
-              Send Notification
-            </button>
-            <button
-              onClick={() => setIsModalOpen(false)}
-              className="mt-4 w-full text-center text-gray-500 hover:underline"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Notification Modal */}
-      {notificationModal.isOpen && (
-        <NotificationModal
-          message={notificationModal.message}
-          type={notificationModal.type}
-          onClose={() => setNotificationModal({ ...notificationModal, isOpen: false })}
+        <input
+          type="text"
+          value={notificationTopic}
+          onChange={(e) => setNotificationTopic(e.target.value)}
+          placeholder="Enter notification topic"
+          className="w-full p-2 border rounded-md mb-4"
         />
-      )}
+        <textarea
+          value={newNotificationMessage}
+          onChange={(e) => setNewNotificationMessage(e.target.value)}
+          placeholder="Enter notification message"
+          className="w-full p-2 border rounded-md mb-4"
+          rows="4"
+        ></textarea>
+        <button
+          onClick={createNotification}
+          className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition w-full"
+        >
+          Send Notification
+        </button>
+      </div>
     </div>
   );
 };

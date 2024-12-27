@@ -4,7 +4,7 @@ import { FaCalendarAlt } from "react-icons/fa"; // Calendar Icon
 import { MdAdd } from "react-icons/md"; // Plus icon for the floating action button
 import { HiChatAlt } from "react-icons/hi"; // Chat icon
 import { MdAddAlert } from "react-icons/md"; // Mail icon for notifications
-import { FaTasks } from "react-icons/fa"; // Tasks icon for TodoList
+import { FaTasks, FaBell } from "react-icons/fa"; // Tasks icon for TodoList
 import { CheckCircleIcon } from "@heroicons/react/24/outline";
 
 const QuickActionPopup = () => {
@@ -86,6 +86,18 @@ const QuickActionPopup = () => {
               <MdAddAlert className="text-blue-600 text-xl" /> {/* Mail Icon */}
               <span className="text-sm font-medium">Notifications</span>
             </button>
+
+
+              {/* Notifications Option */}
+              <button
+              onClick={() => navigate("/notify")}
+              className="flex items-center space-x-3 w-full text-gray-700 hover:text-blue-600"
+            >
+              <FaBell className="text-blue-600 text-xl" /> {/* Mail Icon */}
+              <span className="text-sm font-medium">Notify</span>
+
+            </button>
+
 
             {/* Task Management Option */}
             <button

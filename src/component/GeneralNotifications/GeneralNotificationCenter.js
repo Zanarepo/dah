@@ -8,9 +8,11 @@ const GeneralNotificationCentre = () => {
 
   // Fetch notifications on component mount
   useEffect(() => {
-    Fetch(setNotifications); // Fetch function to get notifications
+    Fetch(setNotifications)
+      .then(() => console.log("Notifications fetched successfully"))
+      .catch((error) => console.error("Error fetching notifications:", error));
   }, []);
-
+  
   // Sort notifications so unread ones are at the top
   const sortedNotifications = notifications.sort((a, b) => {
     return a.is_read - b.is_read; // Unread notifications come before read
