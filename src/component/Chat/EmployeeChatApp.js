@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { AiOutlineRight, AiOutlineLeft } from "react-icons/ai"; // Arrow icons
 import ChatList from "../profile/EmpChatList";
 import ChatBox from "../Chat/EmployeeChatBox";
-//import EmployeeChatUI from "../Chat/EmployeeChatUI"; // Import the new UI component
 
 const EmployeeChatApp = () => {
   const [selectedUser, setSelectedUser] = useState(null);
@@ -31,8 +30,8 @@ const EmployeeChatApp = () => {
       </div>
 
       {/* Chat Box */}
-      <div className={`flex-1 ${isVisible ? "hidden md:block" : "w-full"}`}>
-        <div className="relative h-screen">
+      <div className={`flex-1 ${isVisible ? "hidden md:block" : "w-full h-full"}`}>
+        <div className="relative h-full overflow-hidden">
           {/* Toggle Button for Chat List (Mobile) */}
           <button
             onClick={() => setIsVisible(!isVisible)}
@@ -68,9 +67,6 @@ const EmployeeChatApp = () => {
               </div>
             </div>
           )}
-
-          {/* Embed the EmployeeChatUI component 
-          <EmployeeChatUI />*/}
         </div>
       </div>
     </div>

@@ -172,10 +172,14 @@ import MinistrySettings from "./component/MinistryDashboard/MinistrySettings"
 
 import { ThemeProvider } from "./component/ThemeContext";
 //import DisplaLayout from "./component/Layout/DisplayLayout.js";
-import DepartmentChatPage from "./component/Chat/DepartmentChatPage"
+import CreateChannelPage from "./component/Chat/CreateChannelPage.js"
 import CreateChannelModal from "./component/Chat/CreateChannelModal"
 import EmployeeChatUI from "./component/Chat/EmployeeChatUI"
 import ChatAppTesting from "./component/profile/ChatAppTesting"
+import DeleteChannelPage from "./component/Chat/DeleteChannelPage"
+import ChannelChatBox from "./component/Chat/ChannelChatBox"
+import ChannelList from "./component/Chat/ChannelList"
+import EmployeeChannelManager from "./component/Chat/EmployeeChannelManager"
 
 
 
@@ -240,6 +244,8 @@ const App = () => {
         {/* Nested routes under SuperLayout */}
         <Route path="/supertask" element={<AdminTaskAssignment/>} />
         <Route path="/explore" element={<ExploreAdminDashboard/>} />
+        <Route path="/delete-channel" element={<DeleteChannelPage/>} />
+        
         
         <Route path="/todos" element={<EmployeeTaskManager/>} />
         <Route path="/tasktracking" element={<TaskTracking/>} />
@@ -410,21 +416,23 @@ const App = () => {
           <Route path="/adminlist" element={<ChatList/>} />
           <Route path="/display" element={< DisplaySettings/>} /> 
           <Route path="/signout" element={< Logout/>} /> 
-          <Route path="/department-chatpage" element={<DepartmentChatPage/>} /> 
-          <Route path="/creat-channel" element={<CreateChannelModal/>} /> 
+          <Route path="/department-chatpage" element={<CreateChannelPage/>} /> 
+        {/*  Section 3: Independent Route 3     <Route path="/creat-channel" element={<CreateChannelModal/>} />  */}  
          {/*  Section 3: Independent Route 3    */} 
        <Route path="/chatui" element={<EmployeeChatUI/>} /> 
-          <Route path="/chatest" element={<ChatAppTesting/>} /> 
-         
-          
-          
-         
-          
-        
-          
-
         </Route>
-
+        <Route path="/chatest" element={<ChatAppTesting/>} /> 
+        <Route path="/chatui" element={<EmployeeChatUI/>} /> 
+        <Route path="/create-channel" element={<CreateChannelModal/>} /> 
+        <Route path="/deptcreate-channel" element={<CreateChannelPage/>} /> 
+        <Route path="/channel-chat" element={<ChannelChatBox/>} /> 
+        <Route path="/channelist" element={<ChannelList/>} /> 
+        <Route path="/channelmanager" element={<EmployeeChannelManager/>} /> 
+        
+        
+        
+        
+        
 
 
 

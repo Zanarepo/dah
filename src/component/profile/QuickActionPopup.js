@@ -53,7 +53,7 @@ const QuickActionPopup = () => {
           <div className="flex flex-col items-start space-y-4 p-4">
             {/* Employee Chat Option */}
             <button
-              onClick={() => navigate("/chatting")}
+              onClick={() => navigate("/chatest")}
               className="flex items-center space-x-3 w-full text-gray-700 hover:text-blue-600"
             >
               <HiChatAlt className="text-blue-600 text-xl" /> {/* Chat Icon */}
@@ -69,7 +69,7 @@ const QuickActionPopup = () => {
               <span className="text-sm font-medium">Leave Request</span>
             </button>
 
-            {/*  Checkin Compo */}
+            {/* Checkin Component */}
             <button
               onClick={() => navigate("/attendance-board")}
               className="flex items-center space-x-3 w-full text-gray-700 hover:text-blue-600"
@@ -87,17 +87,14 @@ const QuickActionPopup = () => {
               <span className="text-sm font-medium">Notifications</span>
             </button>
 
-
-              {/* Notifications Option */}
-              <button
+            {/* Notify Option */}
+            <button
               onClick={() => navigate("/notify")}
               className="flex items-center space-x-3 w-full text-gray-700 hover:text-blue-600"
             >
-              <FaBell className="text-blue-600 text-xl" /> {/* Mail Icon */}
+              <FaBell className="text-blue-600 text-xl" /> {/* Notify Icon */}
               <span className="text-sm font-medium">Notify</span>
-
             </button>
-
 
             {/* Task Management Option */}
             <button

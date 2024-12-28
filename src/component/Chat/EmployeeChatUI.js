@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { supabase } from "../../supabaseClient"; // Supabase client
-import ChatListTesting from "../profile/ChatListTesting"; // Replace the employee list with ChatListTesting
-import { FaChevronDown, FaChevronUp } from "react-icons/fa"; // Icons for dropdown arrows
+import { supabase } from "../../supabaseClient";
+import ChatListTesting from "../profile/ChatListTesting";
+import CreateChannelPage from "../Chat/CreateChannelPage"
+import { FaChevronDown, FaChevronUp, FaPlus } from "react-icons/fa"; 
 
-const EmployeeChatUI = ({ onSelectChat }) => {
+const EmployeeChatUI = ({ onSelectChat, onSelectChannel }) => {
   const [channels, setChannels] = useState([]);
   const [employeesVisible, setEmployeesVisible] = useState(false);
   const [channelsVisible, setChannelsVisible] = useState(false);
   const [activeChatsVisible, setActiveChatsVisible] = useState(false);
   const [activeChats, setActiveChats] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false); 
 
-  // Fetch data when the component mounts
   useEffect(() => {
     const fetchChannels = async () => {
       const { data, error } = await supabase
@@ -22,8 +23,8 @@ const EmployeeChatUI = ({ onSelectChat }) => {
 
     const fetchActiveChats = async () => {
       const { data, error } = await supabase
-        .from("direct_chats") // Assuming you have a table for direct chats
-        .select("chat_id, chat_name");
+        .from("direct_chats")
+        .select("id");
       if (error) console.log(error);
       else setActiveChats(data);
     };
@@ -32,12 +33,11 @@ const EmployeeChatUI = ({ onSelectChat }) => {
     fetchActiveChats();
   }, []);
 
+  const handleCreateChannel = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+
   return (
-    <div
-      className="h-full bg-gray-800 text-white p-4 overflow-y-auto 
-      md:w-48 md:h-full md:fixed md:top-0 md:left-0
-      w-64 h-screen fixed top-0 left-0 z-50"
-    >
+    <div className="h-screen bg-gray-800 text-white p-4 md:w-80 w-64 fixed top-0 left-0 z-50 overflow-hidden">
       {/* Active Chats Section */}
       <div className="mb-4">
         <div
@@ -53,6 +53,7 @@ const EmployeeChatUI = ({ onSelectChat }) => {
               <div
                 key={chat.chat_id}
                 className="p-2 border-b cursor-pointer hover:bg-gray-700"
+                onClick={() => onSelectChat(chat.chat_id)} 
               >
                 {chat.chat_name}
               </div>
@@ -63,12 +64,19 @@ const EmployeeChatUI = ({ onSelectChat }) => {
 
       {/* Chat Channels Section */}
       <div className="mb-4">
-        <div
-          className="flex justify-between items-center cursor-pointer"
-          onClick={() => setChannelsVisible(!channelsVisible)}
-        >
-          <h2 className="text-lg font-semibold">Chat Channels</h2>
-          {channelsVisible ? <FaChevronUp /> : <FaChevronDown />}
+        <div className="flex justify-between items-center cursor-pointer">
+          <div className="flex items-center">
+            <h2 className="text-lg font-semibold">Chat Channels</h2>
+            <button
+              onClick={handleCreateChannel}
+              className="ml-2 p-1 bg-blue-500 text-white rounded-full hover:bg-blue-600"
+            >
+              <FaPlus size={12} />
+            </button>
+          </div>
+          <div onClick={() => setChannelsVisible(!channelsVisible)}>
+            {channelsVisible ? <FaChevronUp /> : <FaChevronDown />}
+          </div>
         </div>
         {channelsVisible && (
           <div className="mt-2">
@@ -76,6 +84,7 @@ const EmployeeChatUI = ({ onSelectChat }) => {
               <div
                 key={channel.channel_id}
                 className="p-2 border-b cursor-pointer hover:bg-gray-700"
+                onClick={() => onSelectChannel(channel.channel_id)} 
               >
                 {channel.channel_name}
               </div>
@@ -99,7 +108,11 @@ const EmployeeChatUI = ({ onSelectChat }) => {
           </div>
         )}
       </div>
+
+      {/* Modal for Creating Channel */}
+      {isModalOpen && <CreateChannelPage closeModal={closeModal} />}
     </div>
+    
   );
 };
 

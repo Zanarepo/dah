@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "../../supabaseClient";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import CryptoJS from "crypto-js"; // Import CryptoJS for encryption and decryption
+import CryptoJS from "crypto-js";
 
-const SECRET_KEY = "your_secret_key_here"; // Define your secret key for encryption
+const SECRET_KEY = "your_secret_key_here";
 
 const ChatBox = ({ selectedUser, onClose }) => {
   const [messages, setMessages] = useState([]);
@@ -15,21 +15,19 @@ const ChatBox = ({ selectedUser, onClose }) => {
   const currentUserId = parseInt(localStorage.getItem("employee_id"), 10);
   const [isUserOnline] = useState(false);
 
-  // Encrypt message
-  const encryptMessage = (message) => {
-    return CryptoJS.AES.encrypt(message, SECRET_KEY).toString();
-  };
+  const encryptMessage = (message) =>
+    CryptoJS.AES.encrypt(message, SECRET_KEY).toString();
 
-  // Decrypt message
   const decryptMessage = (encryptedMessage) => {
     const bytes = CryptoJS.AES.decrypt(encryptedMessage, SECRET_KEY);
-    return bytes.toString(CryptoJS.enc.Utf8); // Convert bytes to string
+    return bytes.toString(CryptoJS.enc.Utf8);
   };
-
-  // Fetch messages
   useEffect(() => {
+    let isMounted = true; // To avoid state updates on unmounted components
+  
     const fetchMessages = async () => {
-      setError(null);
+      if (!isMounted) return;
+  
       try {
         const { data, error } = await supabase
           .from("direct_chats")
@@ -38,24 +36,25 @@ const ChatBox = ({ selectedUser, onClose }) => {
             `and(sender_id.eq.${currentUserId},receiver_id.eq.${selectedUser.employee_id}),and(sender_id.eq.${selectedUser.employee_id},receiver_id.eq.${currentUserId})`
           )
           .order("created_at", { ascending: true });
-
+  
         if (error) throw error;
-
-        // Decrypt messages before setting them
+  
         const decryptedMessages = data.map((msg) => ({
           ...msg,
           message: decryptMessage(msg.message),
         }));
-
-        setMessages(decryptedMessages || []);
+  
+        if (isMounted) {
+          setMessages(decryptedMessages || []);
+        }
       } catch (fetchError) {
         console.error("Error fetching messages:", fetchError);
-        setError("Failed to fetch messages. Please try again.");
+        if (isMounted) setError("Failed to fetch messages. Please try again.");
       }
     };
-
+  
     fetchMessages();
-
+  
     const subscription = supabase
       .channel("realtime:direct_chats")
       .on(
@@ -63,65 +62,59 @@ const ChatBox = ({ selectedUser, onClose }) => {
         { event: "INSERT", schema: "public", table: "direct_chats" },
         (payload) => {
           const newMessage = payload.new;
-
-          // Decrypt new message before adding it
           newMessage.message = decryptMessage(newMessage.message);
-
-          // Prevent duplicate messages by checking if the message already exists
-          if (
-            newMessage &&
-            !messages.some(
-              (msg) =>
-                msg.id === newMessage.id ||
-                (msg.sender_id === newMessage.sender_id &&
-                  msg.receiver_id === newMessage.receiver_id &&
-                  msg.message === newMessage.message)
-            ) &&
-            ((parseInt(newMessage.sender_id, 10) === currentUserId &&
-              parseInt(newMessage.receiver_id, 10) === selectedUser.employee_id) ||
+  
+          setMessages((prev) => {
+            // Filter messages locally here to avoid referencing `messages` directly
+            if (
+              prev.some(
+                (msg) =>
+                  msg.id === newMessage.id ||
+                  (msg.sender_id === newMessage.sender_id &&
+                    msg.receiver_id === newMessage.receiver_id &&
+                    msg.message === newMessage.message)
+              )
+            ) {
+              return prev;
+            }
+  
+            if (
+              (parseInt(newMessage.sender_id, 10) === currentUserId &&
+                parseInt(newMessage.receiver_id, 10) === selectedUser.employee_id) ||
               (parseInt(newMessage.sender_id, 10) === selectedUser.employee_id &&
-                parseInt(newMessage.receiver_id, 10) === currentUserId))
-          ) {
-            setMessages((prev) => [...prev, newMessage]);
-          }
-        }
-      )
-      .on(
-        "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "direct_chats" },
-        (payload) => {
-          const updatedMessage = payload.new;
-          updatedMessage.message = decryptMessage(updatedMessage.message); // Decrypt updated message
-          setMessages((prev) =>
-            prev.map((msg) =>
-              msg.id === updatedMessage.id
-                ? { ...msg, is_read: updatedMessage.is_read }
-                : msg
-            )
-          );
+                parseInt(newMessage.receiver_id, 10) === currentUserId)
+            ) {
+              return [...prev, newMessage];
+            }
+  
+            return prev;
+          });
         }
       )
       .subscribe();
-
+  
     return () => {
+      isMounted = false; // Cleanup to prevent updates after unmounting
       supabase.removeChannel(subscription);
     };
-  }, [selectedUser, currentUserId, messages]);
-
-  // Send message function
+  }, [selectedUser.employee_id, currentUserId]); // Remove `messages` from the dependency array
+  
+  
   const sendMessage = async () => {
     if (!newMessage.trim() || isSending) return;
 
     setIsSending(true);
-    const encryptedMessage = encryptMessage(newMessage.trim()); // Encrypt the message before sending
+    const encryptedMessage = encryptMessage(newMessage.trim());
 
     try {
-      const { error } = await supabase.from("direct_chats").insert([{
-        sender_id: currentUserId,
-        receiver_id: selectedUser.employee_id,
-        message: encryptedMessage, // Save the encrypted message
-        status: "", // Initially mark message as sent
-      }]);
+      const { error } = await supabase.from("direct_chats").insert([
+        {
+          sender_id: currentUserId,
+          receiver_id: selectedUser.employee_id,
+          message: encryptedMessage,
+          status: "sent",
+        },
+      ]);
 
       if (error) throw error;
 
@@ -131,14 +124,12 @@ const ChatBox = ({ selectedUser, onClose }) => {
           sender_id: currentUserId,
           receiver_id: selectedUser.employee_id,
           message: newMessage.trim(),
-          status: "sent", // Mark message as sent
+          status: "sent",
           created_at: new Date().toISOString(),
         },
       ]);
 
-      // Scroll to the bottom after sending a message
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-
     } catch (sendError) {
       console.error("Error sending message:", sendError);
       setError("Failed to send message. Please try again.");
@@ -148,22 +139,15 @@ const ChatBox = ({ selectedUser, onClose }) => {
     }
   };
 
-  // Handle profile picture click
-  const handleProfilePictureClick = () => {
-    setShowProfileModal(true);
-  };
+  const handleProfilePictureClick = () => setShowProfileModal(true);
 
-  // Close the profile modal
-  const handleCloseModal = () => {
-    setShowProfileModal(false);
-  };
+  const handleCloseModal = () => setShowProfileModal(false);
 
   return (
     <div
       className="flex flex-col h-full p-4 bg-gray-50 border-l border-gray-300 dark:bg-gray-800 dark:border-gray-600 max-w-full sm:max-w-lg md:max-w-md lg:max-w-lg xl:max-w-3xl mx-auto overflow-y-auto"
-      onClick={(e) => e.stopPropagation()} // Prevent closing the modal when clicking inside
+      onClick={(e) => e.stopPropagation()}
     >
-      {/* Profile Picture Modal */}
       {showProfileModal && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
           <div className="bg-white p-4 rounded-lg max-w-lg w-full mx-4">
@@ -174,7 +158,10 @@ const ChatBox = ({ selectedUser, onClose }) => {
               <XMarkIcon className="w-6 h-6" />
             </button>
             <img
-              src={selectedUser.profile_picture || `https://ui-avatars.com/api/?name=${selectedUser.first_name}+${selectedUser.last_name}`}
+              src={
+                selectedUser.profile_picture ||
+                `https://ui-avatars.com/api/?name=${selectedUser.first_name}+${selectedUser.last_name}`
+              }
               alt={`${selectedUser.first_name} ${selectedUser.last_name}`}
               className="w-full h-auto rounded-lg"
             />
@@ -185,7 +172,9 @@ const ChatBox = ({ selectedUser, onClose }) => {
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-2">
           <div
-            className={`w-3 h-3 rounded-full ${isUserOnline ? 'bg-blue-500' : 'bg-gray-400'}`}
+            className={`w-3 h-3 rounded-full ${
+              isUserOnline ? "bg-blue-500" : "bg-gray-400"
+            }`}
           />
           <h2 className="text-lg font-semibold text-gray-800 dark:text-white">
             {selectedUser.first_name} {selectedUser.last_name}
@@ -193,7 +182,10 @@ const ChatBox = ({ selectedUser, onClose }) => {
         </div>
         <div className="flex items-center space-x-2">
           <img
-            src={selectedUser.profile_picture || `https://ui-avatars.com/api/?name=${selectedUser.first_name}+${selectedUser.last_name}`}
+            src={
+              selectedUser.profile_picture ||
+              `https://ui-avatars.com/api/?name=${selectedUser.first_name}+${selectedUser.last_name}`
+            }
             alt={`${selectedUser.first_name} ${selectedUser.last_name}`}
             className="w-10 h-10 rounded-full cursor-pointer"
             onClick={handleProfilePictureClick}
@@ -202,7 +194,7 @@ const ChatBox = ({ selectedUser, onClose }) => {
             onClick={onClose}
             className="text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100"
           >
-            <XMarkIcon className="w-6 h-6" />
+         
           </button>
         </div>
       </div>
@@ -219,21 +211,18 @@ const ChatBox = ({ selectedUser, onClose }) => {
           return (
             <div
               key={index}
-              className={`flex ${isCurrentUser ? "justify-end" : "justify-start"} mb-2`}
+              className={`flex ${
+                isCurrentUser ? "justify-end" : "justify-start"
+              } mb-2`}
             >
               <div
                 className={`p-3 rounded-lg max-w-xs ${
-                  isCurrentUser ? "bg-blue-500 text-white" : "bg-gray-100 text-black"
+                  isCurrentUser
+                    ? "bg-blue-500 text-white"
+                    : "bg-gray-100 text-black"
                 }`}
               >
                 <p>{msg.message}</p>
-                <div className="flex items-center space-x-1 text-xs text-gray-500 mt-1">
-                  {isCurrentUser && msg.status === "sent" && (
-                    <span className="text-green-500">✔</span>
-                  )}
-                  <span>{msg.status === "sent" ? "•" : msg.status === "delivered" ? "••" : ""}</span>
-                  <span>{msg.status === "sent" ? "Sent" : msg.status === "delivered" ? "Delivered" : ""}</span>
-                </div>
               </div>
             </div>
           );
