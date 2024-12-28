@@ -9,7 +9,7 @@ const features = [
   },
   {
     title: "BuzzMe Chat App",
-    description: "Enable secure and efficient work communication.",
+    description: " Enable secure and efficient work communication (End-to-end Encrypted).",
     icon: "💬",
   },
   {

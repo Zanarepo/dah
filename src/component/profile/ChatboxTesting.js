@@ -5,7 +5,7 @@ import CryptoJS from "crypto-js"; // Import CryptoJS for encryption and decrypti
 
 const SECRET_KEY = "your_secret_key_here"; // Define your secret key for encryption
 
-const ChatBox = ({ selectedUser, onClose }) => {
+const ChatboxTestint = ({ selectedUser, onClose }) => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [error, setError] = useState(null);
@@ -263,4 +263,4 @@ const ChatBox = ({ selectedUser, onClose }) => {
   );
 };
 
-export default ChatBox;
+export default ChatboxTestint;

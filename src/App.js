@@ -172,8 +172,10 @@ import MinistrySettings from "./component/MinistryDashboard/MinistrySettings"
 
 import { ThemeProvider } from "./component/ThemeContext";
 //import DisplaLayout from "./component/Layout/DisplayLayout.js";
-
-
+import DepartmentChatPage from "./component/Chat/DepartmentChatPage"
+import CreateChannelModal from "./component/Chat/CreateChannelModal"
+import EmployeeChatUI from "./component/Chat/EmployeeChatUI"
+import ChatAppTesting from "./component/profile/ChatAppTesting"
 
 
 
@@ -408,6 +410,14 @@ const App = () => {
           <Route path="/adminlist" element={<ChatList/>} />
           <Route path="/display" element={< DisplaySettings/>} /> 
           <Route path="/signout" element={< Logout/>} /> 
+          <Route path="/department-chatpage" element={<DepartmentChatPage/>} /> 
+          <Route path="/creat-channel" element={<CreateChannelModal/>} /> 
+         {/*  Section 3: Independent Route 3    */} 
+       <Route path="/chatui" element={<EmployeeChatUI/>} /> 
+          <Route path="/chatest" element={<ChatAppTesting/>} /> 
+         
+          
+          
          
           
         

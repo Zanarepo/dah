@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { AiOutlineRight, AiOutlineLeft } from "react-icons/ai"; // Importing arrow icons
+import { AiOutlineRight, AiOutlineLeft } from "react-icons/ai"; // Arrow icons
 import ChatList from "../profile/EmpChatList";
 import ChatBox from "../Chat/EmployeeChatBox";
+import EmployeeChatUI from "../Chat/EmployeeChatUI"; // Import the new UI component
 
-const ChatApp = () => {
+const EmployeeChatApp = () => {
   const [selectedUser, setSelectedUser] = useState(null);
-  const [isVisible, setIsVisible] = useState(true); // Tracks visibility of chat list
+  const [isVisible, setIsVisible] = useState(true); // For mobile view toggle
 
   const handleSelectChat = (user) => {
     setSelectedUser(user);
@@ -17,12 +18,10 @@ const ChatApp = () => {
   };
 
   return (
-    <div className="flex h-screen">
+    <div className="flex flex-col md:flex-row h-screen overflow-hidden">
       {/* Chat List */}
       <div
-        className={`transition-all duration-300 ${
-          isVisible ? "w-80" : "w-0"
-        } bg-gray-800 text-white overflow-hidden`}
+        className={`transition-all duration-300 ${isVisible ? "w-80" : "w-0"} bg-gray-800 text-white overflow-y-auto md:w-80 md:h-full`}
       >
         {isVisible && (
           <div className="h-full">
@@ -32,32 +31,50 @@ const ChatApp = () => {
       </div>
 
       {/* Chat Box */}
-      <div className={`flex-1 ${isVisible ? "hidden md:block" : ""}`}>
-        <div className="relative h-full">
+      <div className={`flex-1 ${isVisible ? "hidden md:block" : "w-full"}`}>
+        <div className="relative h-screen">
           {/* Toggle Button for Chat List (Mobile) */}
           <button
             onClick={() => setIsVisible(!isVisible)}
-            className="absolute top-16 left-4 md:hidden z-10 bg-blue-500 text-white px-3 py-2 rounded-md shadow-md"
+            className="absolute top-4 left-4 md:hidden z-10 bg-blue-500 text-white px-3 py-2 rounded-md shadow-md"
           >
-            {/* Toggle with arrow icons */}
-            {isVisible ? (
-              <AiOutlineLeft size={24} />
-            ) : (
-              <AiOutlineRight size={24} />
-            )}
+            {isVisible ? <AiOutlineLeft size={24} /> : <AiOutlineRight size={24} />}
           </button>
 
           {selectedUser ? (
             <ChatBox selectedUser={selectedUser} />
           ) : (
-            <div className="flex items-center justify-center h-full text-gray-400">
-              Select a user to start a conversation
+            // Placeholder Welcome Message when no user is selected
+            <div className="flex items-center justify-center h-full bg-gray-50">
+              <div className="text-center p-8 bg-white shadow-lg rounded-lg max-w-lg w-full space-y-6">
+                <div className="flex justify-center">
+                  <img
+                    src="/images/logos1.jpg"
+                    alt="BuzzMe Logo"
+                    className="w-24 h-24 object-contain"
+                  />
+                </div>
+                <div className="space-y-4">
+                  <h1 className="text-4xl font-bold text-gray-800">
+                    Welcome to <span className="text-blue-600">BuzzMe</span>
+                  </h1>
+                  <p className="text-lg text-gray-600">
+                    An easy and fast way to engage with your co-workers - on the go.
+                  </p>
+                </div>
+                <div className="text-gray-400 text-sm">
+                  Select a co-worker to start a conversation
+                </div>
+              </div>
             </div>
           )}
+
+          {/* Embed the EmployeeChatUI component */}
+          <EmployeeChatUI />
         </div>
       </div>
     </div>
   );
 };
 
-export default ChatApp;
+export default EmployeeChatApp;

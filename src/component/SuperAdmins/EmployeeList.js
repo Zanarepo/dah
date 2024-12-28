@@ -3,6 +3,7 @@ import { supabase } from '../../supabaseClient';
 import { toast } from 'react-toastify';
 import Papa from 'papaparse';
 
+
 const EmployeeList = () => {
   const [employees, setEmployees] = useState([]);
   const [departments, setDepartments] = useState([]);
