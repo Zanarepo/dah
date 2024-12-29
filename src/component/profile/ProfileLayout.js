@@ -75,7 +75,7 @@ const EmployeeDashboard = () => {
 
   const menuItems = [
     { name: "Home", icon: <HomeIcon className="h-6 w-6" />, route: "/" },
-    { name: "BuzzMe", icon: <ChatBubbleLeftIcon className="h-6 w-6" />, route: "/chatting" },
+    { name: "BuzzMe", icon: <ChatBubbleLeftIcon className="h-6 w-6" />, route: "/chatest" },
     { name: "Personal Details", icon: <UserIcon className="h-6 w-6" />, route: "/personal-details" },
     { name: "Employment Details", icon: <BriefcaseIcon className="h-6 w-6" />, route: "/employment-details" },
     { name: "Attendance Board", icon: <CheckCircleIcon className="h-6 w-6" />, route: "/attendance-board" },

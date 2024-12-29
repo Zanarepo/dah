@@ -28,7 +28,7 @@ const SuperAdmin = () => {
     { name: "Employees", icon: <UserGroupIcon className="h-6 w-6" />, route: "/generallist" },
    
     { name: "Ministries", icon: <BuildingLibraryIcon className="h-6 w-6" />, route: "/activity" },
-    { name: "BuzzMe", icon: <ChatBubbleLeftIcon className="h-6 w-6" />, route: "/chats" },
+    { name: "BuzzMe", icon: <ChatBubbleLeftIcon className="h-6 w-6" />, route: "/chatest" },
     { name: "Task Board", icon: <ViewColumnsIcon className="h-6 w-6" />, route: "/taskboard" },
     { name: "Dashboards", icon: <ChartPieIcon className="h-6 w-6" />, route: "/g-dashboards" },
     { name: "Admins", icon: <UsersIcon className="h-6 w-6" />, route: "/superadmins" },

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaCalendarAlt } from "react-icons/fa"; // Calendar Icon
+import { FaCalendarAlt, FaUser, FaHome } from "react-icons/fa"; // Calendar, User and Home Icon
 import { MdAdd } from "react-icons/md"; // Plus icon for the floating action button
 import { HiChatAlt } from "react-icons/hi"; // Chat icon
 import { MdAddAlert } from "react-icons/md"; // Mail icon for notifications
@@ -51,6 +51,23 @@ const QuickActionPopup = () => {
           className="fixed top-1/2 right-6 transform -translate-y-1/2 bg-white shadow-md rounded-lg w-48 z-50"
         >
           <div className="flex flex-col items-start space-y-4 p-4">
+            {/* Home Option - New added button */}
+            <button
+              onClick={() => navigate("/")}
+              className="flex items-center space-x-3 w-full text-gray-700 hover:text-blue-600"
+            >
+              <FaHome className="text-blue-600 text-xl" /> {/* Home Icon */}
+              <span className="text-sm font-medium">Home</span>
+            </button>
+              {/* Profile Option */}
+           
+            <button
+              onClick={() => navigate("/personal-details")}
+              className="flex items-center space-x-3 w-full text-gray-700 hover:text-blue-600"
+            >
+              <FaUser className="text-blue-600 text-xl" /> {/* User Icon */}
+              <span className="text-sm font-medium">Profile</span>
+            </button>
             {/* Employee Chat Option */}
             <button
               onClick={() => navigate("/chatest")}
@@ -59,7 +76,7 @@ const QuickActionPopup = () => {
               <HiChatAlt className="text-blue-600 text-xl" /> {/* Chat Icon */}
               <span className="text-sm font-medium">Employee Chat</span>
             </button>
-          
+
             {/* Leave Request Option */}
             <button
               onClick={() => navigate("/leave")}
@@ -104,6 +121,8 @@ const QuickActionPopup = () => {
               <FaTasks className="text-blue-600 text-xl" /> {/* Tasks Icon */}
               <span className="text-sm font-medium">Task Management</span>
             </button>
+
+          
           </div>
         </div>
       )}

@@ -25,7 +25,7 @@ const Admin = () => {
     { name: "Notifications", icon: <BellIcon className="h-6 w-6" />, route: "/admin-notification" },
     { name: "Ministry", icon: <BuildingLibraryIcon className="h-6 w-6" />, route: "/departactvities" },
     { name: "Dashboards", icon: <ChartPieIcon className="h-6 w-6" />, route: "/admin-dashboard" },
-    { name: "BuzzMe", icon: <ChatBubbleLeftIcon className="h-6 w-6" />, route: "/hello" },
+    { name: "BuzzMe", icon: <ChatBubbleLeftIcon className="h-6 w-6" />, route: "/chatest" },
     { name: "Task Board", icon: <ViewColumnsIcon className="h-6 w-6" />, route: "/admintaskboard" },
     { name: "Employees", icon: <UserGroupIcon className="h-6 w-6" />, route: "/adminlists" },
     { name: "Attendance", icon: <CheckCircleIcon className="h-6 w-6" />, route: "/dept-attendance" },
