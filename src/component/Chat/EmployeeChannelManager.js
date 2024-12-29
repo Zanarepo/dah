@@ -151,33 +151,36 @@ const ManageChannelMembers = ({ channelId }) => {
         </button>
       </div>
 
-      <ul className="mb-4">
-        {filteredEmployees.map((employee) => (
-          <li
-            key={employee.employee_id}
-            className="flex justify-between items-center border-b py-2 text-white"
-          >
-            <span>
-              {employee.first_name} {employee.last_name}
-            </span>
-            {channelMembers.includes(employee.employee_id) ? (
-              <button
-                onClick={() => handleRemoveMember(employee.employee_id)}
-                className="bg-red-500 text-white px-4 py-1 rounded-lg"
-              >
-                Remove
-              </button>
-            ) : (
-              <button
-                onClick={() => handleAddMember(employee.employee_id)}
-                className="bg-green-500 text-white px-4 py-1 rounded-lg"
-              >
-                Add
-              </button>
-            )}
-          </li>
-        ))}
-      </ul>
+      {/* Scrollable Employee List */}
+      <div className="max-h-96 overflow-y-auto">
+        <ul className="mb-4">
+          {filteredEmployees.map((employee) => (
+            <li
+              key={employee.employee_id}
+              className="flex justify-between items-center border-b py-2 text-white"
+            >
+              <span>
+                {employee.first_name} {employee.last_name}
+              </span>
+              {channelMembers.includes(employee.employee_id) ? (
+                <button
+                  onClick={() => handleRemoveMember(employee.employee_id)}
+                  className="bg-red-500 text-white px-4 py-1 rounded-lg"
+                >
+                  Remove
+                </button>
+              ) : (
+                <button
+                  onClick={() => handleAddMember(employee.employee_id)}
+                  className="bg-green-500 text-white px-4 py-1 rounded-lg"
+                >
+                  Add
+                </button>
+              )}
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 };
