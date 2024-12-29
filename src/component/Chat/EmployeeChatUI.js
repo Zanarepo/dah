@@ -1,38 +1,37 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../../supabaseClient";
 import ChatListTesting from "../profile/ChatListTesting";
-import CreateChannelPage from "../Chat/CreateChannelPage"
-import { FaChevronDown, FaChevronUp, FaPlus } from "react-icons/fa"; 
+import CreateChannelPage from "../Chat/CreateChannelPage";
+import { FaChevronDown, FaChevronUp, FaPlus } from "react-icons/fa";
+//import ActiveChatList from "../Chat/ActiveChatList"; // Import ActiveChatList component
+//import ActiveChatBox from "../Chat/ActiveChatBox"; // Import ActiveChatBox for active chat
 
-const EmployeeChatUI = ({ onSelectChat, onSelectChannel }) => {
+const EmployeeChatUI = ({ onSelectChat, onSelectChannel, onSelectActiveChat }) => {
   const [channels, setChannels] = useState([]);
   const [employeesVisible, setEmployeesVisible] = useState(false);
   const [channelsVisible, setChannelsVisible] = useState(false);
   const [activeChatsVisible, setActiveChatsVisible] = useState(false);
-  const [activeChats, setActiveChats] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false); 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+ // const [selectedActiveChat, setSelectedActiveChat] = useState(null); // Track selected active chat
 
+  // Fetch channels data from Supabase
   useEffect(() => {
     const fetchChannels = async () => {
       const { data, error } = await supabase
-        .from("department_chat_channels")
+        .from("department_chat_channels") // Check your table name here
         .select("channel_id, channel_name");
-      if (error) console.log(error);
-      else setChannels(data);
-    };
 
-    const fetchActiveChats = async () => {
-      const { data, error } = await supabase
-        .from("direct_chats")
-        .select("id");
-      if (error) console.log(error);
-      else setActiveChats(data);
+      if (error) {
+        console.error("Error fetching channels:", error);
+      } else {
+        setChannels(data);
+      }
     };
 
     fetchChannels();
-    fetchActiveChats();
   }, []);
 
+  // Handle the modal for creating a new channel
   const handleCreateChannel = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
@@ -44,22 +43,20 @@ const EmployeeChatUI = ({ onSelectChat, onSelectChannel }) => {
           className="flex justify-between items-center cursor-pointer"
           onClick={() => setActiveChatsVisible(!activeChatsVisible)}
         >
-          <h2 className="text-lg font-semibold">Active Chats</h2>
-          {activeChatsVisible ? <FaChevronUp /> : <FaChevronDown />}
+       {/* Active Chats Section   <h2 className="text-lg font-semibold">Active Chats</h2>*/} 
+          {activeChatsVisible }
         </div>
-        {activeChatsVisible && (
-          <div className="mt-2">
-            {activeChats.map((chat) => (
-              <div
-                key={chat.chat_id}
-                className="p-2 border-b cursor-pointer hover:bg-gray-700"
-                onClick={() => onSelectChat(chat.chat_id)} 
-              >
-                {chat.chat_name}
-              </div>
-            ))}
+      {/*   {activeChatsVisible && (
+          <div>
+            <ActiveChatList onSelectChat={handleSelectActiveChat} /> Render list of active chats 
+            {selectedActiveChat && (
+              <ActiveChatBox
+                selectedChat={selectedActiveChat}
+                onClose={() => setSelectedActiveChat(null)}
+              />
+            )}
           </div>
-        )}
+        )}*/}
       </div>
 
       {/* Chat Channels Section */}
@@ -80,15 +77,19 @@ const EmployeeChatUI = ({ onSelectChat, onSelectChannel }) => {
         </div>
         {channelsVisible && (
           <div className="mt-2">
-            {channels.map((channel) => (
-              <div
-                key={channel.channel_id}
-                className="p-2 border-b cursor-pointer hover:bg-gray-700"
-                onClick={() => onSelectChannel(channel.channel_id)} 
-              >
-                {channel.channel_name}
-              </div>
-            ))}
+            {channels && channels.length > 0 ? (
+              channels.map((channel) => (
+                <div
+                  key={channel.channel_id}
+                  className="p-2 border-b cursor-pointer hover:bg-gray-700"
+                  onClick={() => onSelectChannel(channel.channel_id)} // Passing channel ID to parent
+                >
+                  {channel.channel_name}
+                </div>
+              ))
+            ) : (
+              <p>No channels available</p>
+            )}
           </div>
         )}
       </div>
@@ -112,7 +113,6 @@ const EmployeeChatUI = ({ onSelectChat, onSelectChannel }) => {
       {/* Modal for Creating Channel */}
       {isModalOpen && <CreateChannelPage closeModal={closeModal} />}
     </div>
-    
   );
 };
 

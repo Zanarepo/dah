@@ -149,6 +149,16 @@ const ChatBox = ({ selectedUser, onClose }) => {
     setShowProfileModal(false);
   };
 
+
+
+
+
+
+
+
+
+
+  
   return (
     <div
       className="flex flex-col h-full p-4 bg-gray-50 border-l border-gray-300 dark:bg-gray-800 dark:border-gray-600 overflow-hidden"

@@ -180,6 +180,9 @@ import DeleteChannelPage from "./component/Chat/DeleteChannelPage"
 import ChannelChatBox from "./component/Chat/ChannelChatBox"
 import ChannelList from "./component/Chat/ChannelList"
 import EmployeeChannelManager from "./component/Chat/EmployeeChannelManager"
+import ActiveChats from "./component/Chat/ActiveChats"
+import ActiveChatBox from "./component/Chat/ActiveChatBox"
+import ActiveChatList from "./component/Chat/ActiveChatList"
 
 
 
@@ -428,7 +431,11 @@ const App = () => {
         <Route path="/channel-chat" element={<ChannelChatBox/>} /> 
         <Route path="/channelist" element={<ChannelList/>} /> 
         <Route path="/channelmanager" element={<EmployeeChannelManager/>} /> 
-        
+         <Route path="/activechats" element={<ActiveChats/>} /> 
+         <Route path="/activebox" element={<ActiveChatBox/>} /> 
+         <Route path="/activelist" element={<ActiveChatList/>} /> 
+         
+         
         
         
         

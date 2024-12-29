@@ -100,10 +100,10 @@ const ChannelChatBox = ({ channelId, channelName, onClose }) => {
     if (!newMessage.trim() || isSending || !currentUserId) {
       return;
     }
-
+  
     setIsSending(true);
     const encryptedMessage = encryptMessage(newMessage.trim());
-
+  
     try {
       const { error } = await supabase.from("channel_chats").insert([
         {
@@ -113,28 +113,18 @@ const ChannelChatBox = ({ channelId, channelName, onClose }) => {
           timestamp: new Date().toISOString(),
         },
       ]);
-
+  
       if (error) throw error;
-
-      setMessages((prev) => [
-        ...prev,
-        {
-          channel_id: channelId,
-          sender_id: currentUserId,
-          message: newMessage.trim(),
-          timestamp: new Date().toISOString(),
-        },
-      ]);
-
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      
+      // Reset the input field after sending
+      setNewMessage("");
     } catch (sendError) {
       console.error("Error sending message:", sendError);
     } finally {
-      setNewMessage("");
       setIsSending(false);
     }
   };
-
+  
   return (
     <div
       className="flex flex-col h-full p-4 bg-gray-50 border-l border-gray-300 dark:bg-gray-800 dark:border-gray-600 overflow-hidden"
