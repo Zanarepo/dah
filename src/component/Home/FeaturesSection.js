@@ -1,15 +1,15 @@
-import React from "react";
-import { FaCalendarAlt, FaTasks } from "react-icons/fa"; // Importing the task icon
+import React, {  } from "react";
+import { FaCalendarAlt, FaTasks, FaUserCheck } from "react-icons/fa"; // Added icons for check-in and check-out
 
 const features = [
   {
     title: "Leave Management",
     description: "Track employee leave requests across departments.",
-    icon: <FaCalendarAlt className="text-4xl text-blue-600" />, // Using the calendar icon with consistent styling
+    icon: <FaCalendarAlt className="text-4xl text-blue-600" />,
   },
   {
     title: "BuzzMe Chat App",
-    description: " Enable secure and efficient work communication (End-to-end Encrypted).",
+    description: "Enable secure and efficient work communication (End-to-end Encrypted).",
     icon: "💬",
   },
   {
@@ -38,9 +38,15 @@ const features = [
     icon: "📢",
   },
   {
-    title: "Task Management", // New task management feature
+    title: "Task Management",
     description: "Create and manage both personal and assigned tasks for improved productivity and tracking.",
-    icon: <FaTasks className="text-4xl text-blue-600" />, // Task management icon
+    icon: <FaTasks className="text-4xl text-blue-600" />,
+  },
+  // New feature for Check-In/Check-Out
+  {
+    title: "Employee Check-In/Check-Out",
+    description: "Track employee attendance with a simple check-in/check-out system.",
+    icon: <FaUserCheck className="text-4xl text-green-600" />,
   },
 ];
 
@@ -58,11 +64,18 @@ const FeaturesSection = () => {
           >
             <div className="flex justify-center items-center text-4xl mb-4">
               {feature.icon}
-            </div> {/* Ensures icons are centered */}
+            </div>
             <h3 className="text-xl font-semibold text-gray-800 mb-2">
               {feature.title}
             </h3>
-            <p className="text-gray-600">{feature.description}</p>
+            <p className="text-gray-600 mb-4">{feature.description}</p>
+
+            {/* Display Check-In/Check-Out button */}
+            {feature.title === "Employee Check-In/Check-Out" && (
+              <div className="mt-4">
+                {/* You can add the Check-In/Check-Out button logic here */}
+              </div>
+            )}
           </div>
         ))}
       </div>

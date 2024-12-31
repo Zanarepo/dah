@@ -10,12 +10,11 @@ const Attendance = () => {
   const [accessDetails, setAccessDetails] = useState(null);
 
   const WORK_LOCATION = {
-    latitude: 6.4520192,
-    longitude: 3.4275328,
+    latitude:  6.537216,
+    longitude: 3.3718272,
     radius: 50, // 50 meters radius
 
 
-  
   };
 
   const calculateDistance = (lat1, lon1, lat2, lon2) => {

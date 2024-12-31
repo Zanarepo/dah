@@ -163,7 +163,7 @@ const LeaveRequest = () => {
   };
 
   return (
-    <div className="p-6 bg-gray-100 rounded-lg shadow-md">
+    <div className="">
       <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
 
       {/* Back Button */}
@@ -173,62 +173,64 @@ const LeaveRequest = () => {
       >
         <FaArrowLeft className="mr-2" /> Back
       </button>
+{/* Header */}
+<h2 className="text-2xl font-semibold mb-4 w-full text-center">Leave Management</h2>
 
-      {/* Header */}
-      <h2 className="text-2xl font-semibold mb-6">Leave Management</h2>
+{/* Add Leave Button */}
+<button
+  className="bg-blue-500 text-white py-1 px-4 rounded-lg mb-4 hover:bg-blue-600 w-full sm:w-auto"
+  onClick={() => handleOpenModal("add")}
+>
+  Request Leave
+</button>
 
-      {/* Add Leave Button */}
-      <button
-        className="bg-blue-500 text-white py-2 px-4 rounded-lg mb-4 hover:bg-blue-600"
-        onClick={() => handleOpenModal("add")}
-      >
-        Request Leave
-      </button>
 
       {/* Leave Records Table */}
       <div className="overflow-x-auto">
-        <table className="table-auto w-full border-collapse text-sm">
-          <thead>
-            <tr>
-              <th className="py-2 px-4 border">Leave Type</th>
-              <th className="py-2 px-4 border">Start Date</th>
-              <th className="py-2 px-4 border">End Date</th>
-              <th className="py-2 px-4 border">Status</th>
-              <th className="py-2 px-4 border">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {leaveRecords.map((record) => (
-              <tr key={record.id}>
-                <td className="py-2 px-4 border">{record.leave_type}</td>
-                <td className="py-2 px-4 border">{record.start_date}</td>
-                <td className="py-2 px-4 border">{record.end_date}</td>
-                <td className="py-2 px-4 border">{record.status}</td>
-                <td className="py-2 px-4 border">
-                  <div className="flex space-x-2">
-                    <button
-                      className="text-green-500 hover:text-green-700"
-                      onClick={() => handleOpenModal("view", record)}
-                    >
-                      <FaEye />
-                    </button>
-                    <button
-                      className="text-blue-500 hover:text-blue-700"
-                      onClick={() => handleOpenModal("edit", record)}
-                    >
-                      <FaEdit />
-                    </button>
-                    <button
-                      className="text-red-500 hover:text-red-700"
-                      onClick={() => handleDeleteLeave(record.id)}
-                    >
-                      <FaTrash />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
+      <table className="table-auto w-full border-collapse text-sm">
+    <thead>
+      <tr>
+        <th className="py-2 px-4 border text-left">Leave Type</th>
+        <th className="py-2 px-4 border text-left">Start Date</th>
+        <th className="py-2 px-4 border text-left">End Date</th>
+        <th className="py-2 px-4 border text-left">Status</th>
+        <th className="py-2 px-4 border text-left">Actions</th>
+      </tr>
+    </thead>
+
+        <tbody>
+  {leaveRecords.map((record) => (
+    <tr key={record.id}>
+      <td className="py-1 px-2 sm:py-2 sm:px-4 border text-xs sm:text-sm">{record.leave_type}</td>
+      <td className="py-1 px-2 sm:py-2 sm:px-4 border text-xs sm:text-sm">{record.start_date}</td>
+      <td className="py-1 px-2 sm:py-2 sm:px-4 border text-xs sm:text-sm">{record.end_date}</td>
+      <td className="py-1 px-2 sm:py-2 sm:px-4 border text-xs sm:text-sm">{record.status}</td>
+      <td className="py-1 px-2 sm:py-2 sm:px-4 border text-xs sm:text-sm">
+        <div className="flex space-x-1 sm:space-x-2 justify-center">
+          <button
+            className="text-green-500 hover:text-green-700"
+            onClick={() => handleOpenModal("view", record)}
+          >
+            <FaEye />
+          </button>
+          <button
+            className="text-blue-500 hover:text-blue-700"
+            onClick={() => handleOpenModal("edit", record)}
+          >
+            <FaEdit />
+          </button>
+          <button
+            className="text-red-500 hover:text-red-700"
+            onClick={() => handleDeleteLeave(record.id)}
+          >
+            <FaTrash />
+          </button>
+        </div>
+      </td>
+    </tr>
+  ))}
+</tbody>
+
         </table>
       </div>
 

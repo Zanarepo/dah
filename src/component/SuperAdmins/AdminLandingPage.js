@@ -3,14 +3,14 @@ import { Link } from 'react-router-dom';
 
 const AdminLandingPage = () => {
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-6">
-      <div className="w-full max-w-4xl bg-white shadow-lg rounded-lg p-8">
-        <h1 className="text-3xl font-bold text-center text-blue-600 mb-4">Welcome, Admin!</h1>
+    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center w-full">
+      <div className="w-full max-w-full bg-white shadow-lg rounded-none">
+        <h1 className="text-3xl font-bold text-center text-blue-600 mb-4">Welcome, Super Admin!</h1>
         <p className="text-lg text-gray-700 text-center mb-6">
-          As an admin, you have powerful tools to effectively manage your teams and ensure smooth operations.
+          As a Super admin, you have powerful tools to effectively manage your teams and ensure smooth operations.
         </p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-0">
           <div className="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-md">
             <h2 className="text-xl font-semibold text-blue-600 mb-2">Assign Roles</h2>
             <p className="text-gray-600">

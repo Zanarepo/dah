@@ -1,7 +1,6 @@
-import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-
-
+import React, { useEffect } from "react"; 
+import { BrowserRouter as Router, Routes, Route,  } from "react-router-dom";
+import setEmployeeIdInSession from './supabaseClient';
 
 
 
@@ -183,16 +182,22 @@ import EmployeeChannelManager from "./component/Chat/EmployeeChannelManager"
 import ActiveChats from "./component/Chat/ActiveChats"
 import ActiveChatBox from "./component/Chat/ActiveChatBox"
 import ActiveChatList from "./component/Chat/ActiveChatList"
-
-
-
-
-
-
+import ListChannels from  "./component/Productivity/ListChannels"
+import ListDepartments from "./component/Productivity/ListDepartments"
+import ListEmployees from "./component/Productivity/ListEmployees"
+import AddEmployeesChannel from "./component/Productivity/AddEmployeesChannel.js"
+import ManageChannel from "./component/Productivity/ManageChannel"
+ import RemoveEmployeesChannel from "./component/Productivity/RemoveEmployeesChannel"
+import ChannelMembersDashboard from "./component/Productivity/ChannelMembersDashboard"
+import ChannelManagementDashboard from "./component/Productivity/ChannelManagementDashboard"
 
 
 
 const App = () => {
+  useEffect(() => {
+    // Set the employee_id session when the app loads
+    setEmployeeIdInSession();// This will call the setEmployeeIdInSession function
+  }, []);
   return (
     <ThemeProvider> 
     <Router>
@@ -235,9 +240,9 @@ const App = () => {
           <Route path="/reports" element={<EmployeeIssueReport/>} />
           <Route path="/logout" element={< Logout/>} /> 
           
-       
+    
           
-
+          
           {/* -------------Section 1: Independent Route 2 Profile Layout-------------------------------*/}
         </Route>
 
@@ -248,8 +253,19 @@ const App = () => {
         <Route path="/supertask" element={<AdminTaskAssignment/>} />
         <Route path="/explore" element={<ExploreAdminDashboard/>} />
         <Route path="/delete-channel" element={<DeleteChannelPage/>} />
+        <Route path="/list-channels" element={<ListChannels/>} />
+        <Route path="/list-department" element={<ListDepartments/>} />
+        <Route path="/list-employees" element={<ListEmployees/>} />
+        <Route path="/add-employees-channels" element={<AddEmployeesChannel/>} />
+        <Route path="/remove-employees-channels" element={<RemoveEmployeesChannel/>} />
+        <Route path="/channel-members-manager" element={<ChannelMembersDashboard/>} />
+        <Route path="/channel-management" element={<ChannelManagementDashboard/>} />
         
+        <Route path="/managechannel" element={<ManageChannel/>} />
         
+
+
+
         <Route path="/todos" element={<EmployeeTaskManager/>} />
         <Route path="/tasktracking" element={<TaskTracking/>} />
         <Route path="/performance-board" element={<PerformanceDashboard/>} />
@@ -383,11 +399,11 @@ const App = () => {
          <Route path="/ministrysettings" element={<   MinistrySettings/>} />
          <Route path="/display" element={< DisplaySettings/>} /> 
         
-        
+         
 
         </Route>
 
-
+       
       
         {/* Section 3: Independent Route 3 */}
         
@@ -436,7 +452,7 @@ const App = () => {
          <Route path="/activelist" element={<ActiveChatList/>} /> 
          
          
-        
+         
         
         
         

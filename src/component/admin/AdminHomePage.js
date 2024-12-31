@@ -3,14 +3,14 @@ import { Link } from 'react-router-dom';
 
 const AdminHomePage = () => {
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-6">
-      <div className="w-full max-w-4xl bg-white shadow-lg rounded-lg p-8">
-        <h1 className="text-3xl font-bold text-center text-blue-600 mb-4">Welcome, Admin!</h1>
+    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center">
+      <div className="w-full max-w-6xl bg-white shadow-lg rounded-lg px-4 sm:px-8">
+        <h1 className="text-3xl font-bold text-center text-blue-600 my-6">Welcome, Admin!</h1>
         <p className="text-lg text-gray-700 text-center mb-6">
           As an admin, you have powerful tools to effectively manage your teams and ensure smooth operations.
         </p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <div className="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-md">
             <h2 className="text-xl font-semibold text-blue-600 mb-2">Assign Roles</h2>
             <p className="text-gray-600">
@@ -47,7 +47,7 @@ const AdminHomePage = () => {
           </div>
         </div>
 
-        <div className="mt-8 text-center">
+        <div className="text-center mt-6">
           <Link to="/onboard" className="inline-block bg-blue-600 text-white py-2 px-6 rounded-md shadow-md hover:bg-blue-700 transition">
             Explore Admin Dashboard
           </Link>

@@ -4,12 +4,11 @@ import Backfunction from '../MinistryDashboard/Backfunction';
 
 const ExploreAdminDashboard = () => {
   return (
-    
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-6">
-      <div className="w-full max-w-5xl bg-white shadow-lg rounded-lg p-8">
-        <h1 className="text-3xl font-bold text-center text-blue-600 mb-6">Explore Admin Dashboard</h1>
-        <Backfunction/>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-start px-0 md:px-6 lg:px-8">
+      <div className="w-full max-w-full bg-white shadow-lg rounded-lg p-4 md:p-6">
+        <h1 className="text-3xl font-bold text-center text-blue-600 mb-6">Explore Super Admin Dashboard</h1>
+        <Backfunction />
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           <Link to="/adddept-dashboard" className="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-md shadow-md hover:shadow-lg transition">
             <h2 className="text-xl font-semibold text-blue-600 mb-2">Add Department Dashboard</h2>
             <p className="text-gray-600">Manage and add departments effectively within the workforce.</p>

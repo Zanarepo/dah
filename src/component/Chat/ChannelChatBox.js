@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "../../supabaseClient";
-import { XMarkIcon } from "@heroicons/react/24/outline";
+//import { XMarkIcon } from "@heroicons/react/24/outline";
 import CryptoJS from "crypto-js";
-import EmployeeChannelManager from "../Chat/EmployeeChannelManager";
+//import EmployeeChannelManager from "../Chat/EmployeeChannelManager";
 
 
 const SECRET_KEY = "your_secret_key_here"; // Replace with your secret key
@@ -15,7 +15,7 @@ const ChannelChatBox = ({ channelId, channelName, onClose }) => {
   const messagesEndRef = useRef(null);
 
   const currentUserId = parseInt(localStorage.getItem("employee_id"), 10);
-  const [showEmployeeChannelManager, setEmployeeChannelManager] = useState(false);
+  //const [showEmployeeChannelManager, setEmployeeChannelManager] = useState(false);
 
   const encryptMessage = (message) =>
     CryptoJS.AES.encrypt(message, SECRET_KEY).toString();
@@ -136,7 +136,7 @@ const ChannelChatBox = ({ channelId, channelName, onClose }) => {
           {channelName}
         </h2>
         <div className="flex items-center gap-2">
-          {/* Toggle Manage Members Button */}
+          {/* Toggle Manage Members Button 
           <button
             onClick={() => setEmployeeChannelManager((prev) => !prev)}
             className="px-3 py-1 text-sm font-semibold text-white bg-green-500 rounded hover:bg-green-600"
@@ -148,18 +148,18 @@ const ChannelChatBox = ({ channelId, channelName, onClose }) => {
             className="text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100"
           >
             <XMarkIcon className="w-6 h-6" />
-          </button>
+          </button>*/}
         </div>
       </div>
   
-      {/* Manage Channel Members Section */}
+      {/* Manage Channel Members Section 
       {showEmployeeChannelManager && (
         <EmployeeChannelManager
           channelId={channelId}
           onUpdateMembers={() => console.log("Channel members updated!")}
         />
       )}
-  
+  */}
       {/* Messages Section */}
       <div className="flex-1 overflow-y-auto p-2 mb-4 border-b border-gray-200 dark:border-gray-500">
         {messages.map((msg, index) => {

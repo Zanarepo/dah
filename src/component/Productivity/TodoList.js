@@ -145,7 +145,7 @@ const TaskManagement = () => {
   };
 
   return (
-    <div className="max-w-full mx-auto p-4 overflow-x-hidden">
+    <div className="">
       {/* Header */}
       <h1 className="text-2xl sm:text-3xl font-semibold text-gray-800 mb-4 text-center">Personal Tasks</h1>
   
@@ -153,7 +153,7 @@ const TaskManagement = () => {
       <div className="text-right mb-4">
         <button
           onClick={() => setIsModalOpen(true)}
-          className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700"
+          className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-indigo-700"
         >
           Create Task
         </button>

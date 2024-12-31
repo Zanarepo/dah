@@ -4,7 +4,7 @@ import { NavLink, Outlet } from "react-router-dom";
 
 import {
   BuildingLibraryIcon,
-  UsersIcon,
+  //UsersIcon,
   ChartPieIcon,
   CogIcon,
   BellIcon,
@@ -31,7 +31,7 @@ const SuperAdmin = () => {
     { name: "BuzzMe", icon: <ChatBubbleLeftIcon className="h-6 w-6" />, route: "/chatest" },
     { name: "Task Board", icon: <ViewColumnsIcon className="h-6 w-6" />, route: "/taskboard" },
     { name: "Dashboards", icon: <ChartPieIcon className="h-6 w-6" />, route: "/g-dashboards" },
-    { name: "Admins", icon: <UsersIcon className="h-6 w-6" />, route: "/superadmins" },
+    //{ name: "Admins", icon: <UsersIcon className="h-6 w-6" />, route: "/superadmins" },
     { name: "Attendance", icon: <CheckCircleIcon className="h-6 w-6" />, route: "/super-attendance" },
     { name: "Issue_Tracker", icon: <CheckCircleIcon className="h-6 w-6" />, route: "/issue-tracker" },
     { name: "Settings", icon: <CogIcon className="h-6 w-6" />, route: "/settings" }

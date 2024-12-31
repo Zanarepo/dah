@@ -9,6 +9,7 @@ import "../Productivity/parallaxTransitions.css";
 // Lazy load the tab components (Ensure the path is correct)
 const DepartmentManagement = lazy(() => import("../SuperAdmins/SuperAdmin"));
 const DisplaySettings = lazy(() => import("../SuperAdmins/DisplaySettings"));
+const ChannelManagementDashboard = lazy(() => import("../Productivity/ChannelManagementDashboard"));
 
 const SuperAdminSettings = () => {
   const [activeTab, setActiveTab] = useState("departmentManagement");
@@ -34,6 +35,8 @@ const SuperAdminSettings = () => {
         return <DepartmentManagement />;
       case "displaySettings":
         return <DisplaySettings />;
+      case "channel-management":
+        return <ChannelManagementDashboard />;
       default:
         return <DepartmentManagement />;
     }
@@ -55,9 +58,9 @@ const SuperAdminSettings = () => {
               : "bg-gray-300 text-gray-600"
           }`}
         >
-          Department & Ministry Management
+          Dept/Ministry Manager
         </button>
-        <button
+         {/*<button
           onClick={() => setActiveTab("displaySettings")}
           className={`px-6 py-2 rounded-lg ${
             activeTab === "displaySettings"
@@ -65,7 +68,18 @@ const SuperAdminSettings = () => {
               : "bg-gray-300 text-gray-600"
           }`}
         >
-          Display Settings
+       Tab Buttons (Horizontally aligned)    Display Settings
+        </button>
+*/} 
+        <button
+          onClick={() => setActiveTab("channel-management")}
+          className={`px-6 py-2 rounded-lg ${
+            activeTab === "channel-management"
+              ? "bg-blue-500 text-white"
+              : "bg-gray-300 text-gray-600"
+          }`}
+        >
+          Channel Management
         </button>
       </div>
 
@@ -73,7 +87,7 @@ const SuperAdminSettings = () => {
       <div className="w-full flex-grow flex justify-center items-center">
         <TransitionGroup>
           <CSSTransition key={activeTab} timeout={800} classNames="parallax">
-            <div className="w-full p-0 rounded-lg shadow">
+            <div className="w-full p-0 rounded-lg shadow-lg">
               <Suspense fallback={<div className="text-center text-xl">Loading...</div>}>
                 {renderTabContent()}
               </Suspense>
@@ -121,7 +135,7 @@ const SuperAdminSettings = () => {
       )}
 
       {/* Toast Notifications */}
-      <ToastContainer />
+      <ToastContainer autoClose={3000} closeButton={false} />
     </div>
   );
 };
